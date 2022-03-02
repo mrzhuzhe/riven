@@ -39,11 +39,22 @@ const server = http.createServer((req, res) => {
           res.setHeader('Content-Type', 'application/javascript');
           fs.createReadStream(filePath).pipe(res);
         }
-        else {
-            filePath = path.resolve('./public/404.html');
-            res.statusCode = 404;
-            res.setHeader('Content-Type', 'text/html');
+        else if (fileExt == '.json') {
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json');
             fs.createReadStream(filePath).pipe(res);
+          }         
+        else {
+            try {
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/octet-stream');
+                fs.createReadStream(filePath).pipe(res);
+            } catch(e) {
+                filePath = path.resolve('./public/404.html');
+                res.statusCode = 404;
+                res.setHeader('Content-Type', 'text/html');
+                fs.createReadStream(filePath).pipe(res);
+            }            
         }
     }
     else {
