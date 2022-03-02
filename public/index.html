@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/speech-commands"></script>
+  </head>
+  <body>
+
+    <button id="left" onmousedown="collect(0)" onmouseup="collect(null)">Left</button>
+    <button id="right" onmousedown="collect(1)" onmouseup="collect(null)">Right</button>
+    <button id="noise" onmousedown="collect(2)" onmouseup="collect(null)">Noise</button>
+
+    <div id="console"></div>
+    <script src="index.js"></script>
+  </body>
+</html>
