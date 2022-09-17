@@ -1,6 +1,9 @@
 # reference ==> https://www.shadertoy.com/view/MdXSzS
 
 import taichi as ti
+import os
+import sys
+sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import handy_shader_functions as hsf
 
 ti.init(arch = ti.cuda)
@@ -28,7 +31,7 @@ def render(time:ti.f32):
             p = s * uv
             ps = s
 
-            p = ma @ p # rotate
+            #p = ma @ p # rotate
             p += ti.Vector([0.22, 0.3])
             ps += s - 1.5 - ti.sin(time * 0.13) * 0.1
 
