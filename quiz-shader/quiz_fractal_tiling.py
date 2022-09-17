@@ -30,14 +30,15 @@ def render(t: ti.f32):
         for k in range(2):
             #... # do something
             pos = ti.Vector([i % tile_size, j % tile_size]) # keeps the pos in [0, tile_size - 1]
+            tile_id = ti.Vector([i // tile_size, j//tile_size]) # save the tile ids as the random number seeds
             uv = pos / float(tile_size) # uv coordinates in [0.0, 1.0)
             
             #i = hsf.mod(i_ + offset, res_x)
             #j = hsf.mod(j_ + offset, res_y)
             
-            time_dependent_rand = uv[0] + uv[1] + ti.sin(t)
+            time_dependent_rand = fract(ti.sin(tile_id[0]*7 + tile_id[1]*31 + 0.0005 * t) * 128)
 
-            color = ti.Vector([time_dependent_rand, uv[0], uv[1]])
+            color = ti.Vector([time_dependent_rand * 0.8, uv[0], uv[1]])
             tile_size = tile_size //  2
             
         color = hsf.clamp(color, 0.0, 1.0)
