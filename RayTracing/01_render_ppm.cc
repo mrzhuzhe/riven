@@ -1,6 +1,12 @@
+/*
+    Build command: g++ 01_render_ppm.cc  -o outputs/01_render_ppm
+    Run comman: ./outputs/01_render_ppm >> ./outputs/01_render_ppm.ppm
+
+*/
+
+#include "constant.h"
 #include "color.h"
 #include "vec3.h"
-
 #include <iostream>
 
 int main() {
@@ -18,7 +24,7 @@ int main() {
         std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
         for (int i = 0; i < image_width; ++i) {
             color pixel_color(double(i)/(image_width-1), double(j)/(image_height-1), 0.25);
-            write_color(std::cout, pixel_color);
+            write_color_old(std::cout, pixel_color);
         }
     }
 

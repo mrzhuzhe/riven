@@ -2,7 +2,7 @@
     Build command: g++ 03_ray.cc  -o outputs/03_ray
     Run comman: ./outputs/03_ray >> ./outputs/03_ray.ppm
  */
-
+#include "constant.h"
 #include "color.h"
 #include "ray.h"
 #include "vec3.h"
@@ -98,7 +98,7 @@ int main() {
             auto v = double(j) / (image_height-1);
             ray r(origin, lower_left_corner + u*horizontal + v*vertical - origin);
             color pixel_color = ray_color(r);
-            write_color(std::cout, pixel_color);
+            write_color_old(std::cout, pixel_color);
         }
     }
 

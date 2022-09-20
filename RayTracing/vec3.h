@@ -1,9 +1,3 @@
-/*
-    Build command: g++ 01.render_ppm.cc  -o outputs/01.render_ppm
-    Run comman: ./outputs/01.render_ppm >> ./outputs/01.render_ppm.ppm
-
-*/
-
 #ifndef VEC3_H
 #define VEC3_H
 
