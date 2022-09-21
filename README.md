@@ -6,4 +6,4 @@
 
 1. [del]julia set 3D
 2. ray tracing
-3. 
+3. Iteration method

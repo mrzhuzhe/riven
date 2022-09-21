@@ -1,6 +1,6 @@
 /*
-    Build command: g++ 07_metal.cc  -o outputs/07_metal
-    Run comman: ./outputs/07_metal >> ./outputs/07_metal.ppm
+    Build command: g++ 08_dielectrics.cc  -o outputs/08_dielectrics
+    Run comman: ./outputs/08_dielectrics >> ./outputs/08_dielectrics.ppm
  */
 #include "constant.h"
 
@@ -55,17 +55,26 @@ int main() {
     
     auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
     auto material_center = make_shared<lambertian>(color(0.7, 0.3, 0.3));
-    //auto material_left   = make_shared<metal>(color(0.8, 0.8, 0.8));
-    //auto material_right  = make_shared<metal>(color(0.8, 0.6, 0.2));
     
-    auto material_left   = make_shared<metal>(color(0.8, 0.8, 0.8), 0.3);
-    auto material_right  = make_shared<metal>(color(0.8, 0.6, 0.2), 1.0);
+    //auto material_left   = make_shared<metal>(color(0.8, 0.8, 0.8));
+    auto material_right  = make_shared<metal>(color(0.8, 0.6, 0.2));
+
+    //  auto material_center = make_shared<dielectric>(1.5);
+    auto material_left   = make_shared<dielectric>(1.5);
+
+    // fuzzy
+    //auto material_left   = make_shared<metal>(color(0.8, 0.8, 0.8), 0.3);
+    //auto material_right  = make_shared<metal>(color(0.8, 0.6, 0.2), 1.0);
+
+
 
     world.add(make_shared<sphere>(point3( 0.0, -100.5, -1.0), 100.0, material_ground));
     world.add(make_shared<sphere>(point3( 0.0,    0.0, -1.0),   0.5, material_center));
+    // two ?
     world.add(make_shared<sphere>(point3(-1.0,    0.0, -1.0),   0.5, material_left));
+    world.add(make_shared<sphere>(point3(-1.0,    0.0, -1.0),  -0.4, material_left));
     world.add(make_shared<sphere>(point3( 1.0,    0.0, -1.0),   0.5, material_right));
-    
+
 
 
     // Camera
