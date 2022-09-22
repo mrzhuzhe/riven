@@ -3,7 +3,8 @@
     Run comman: ./outputs/03_ray >> ./outputs/03_ray.ppm
 
     In this case light is from camera 
-
+    How to hit a box  ?
+    How to hit a face ?
  */
 #include "constant.h"
 #include "color.h"
