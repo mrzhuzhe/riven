@@ -5,7 +5,7 @@
 
 class camera {
     public:
-        /*
+        
         camera(
             ) {
                 
@@ -47,7 +47,7 @@ class camera {
             
 
         }
-        */
+        
         camera(
             point3 lookfrom,
             point3 lookat,
