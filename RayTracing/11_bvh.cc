@@ -1,8 +1,7 @@
 /*
-    Build command: g++ 10_focus.cc  -o outputs/10_focus
-    Run comman: ./outputs/10_focus >> ./outputs/10_focus.ppm
+    Build command: g++ 11_bvh.cc  -o outputs/11_bvh
+    Run comman: ./outputs/11_bvh >> ./outputs/11_bvh.ppm
 
-    focus and motion blur not work yet
  */
 #include "constant.h"
 

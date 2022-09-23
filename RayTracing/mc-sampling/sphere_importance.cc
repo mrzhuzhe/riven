@@ -1,10 +1,10 @@
 /*
-    g++ sphere_importance.cc -o outputs/sphere_importance
-    outputs/sphere_importance
+    g++ sphere_importance.cc -o ../outputs/sphere_importance
+    ../outputs/sphere_importance
 */
 
 
-#include "constant.h"
+#include "../constant.h"
 
 #include <iostream>
 #include <iomanip>
