@@ -1,7 +1,26 @@
 /*
     Build command: g++ 11_bvh.cc  -o outputs/11_bvh
     Run comman: ./outputs/11_bvh >> ./outputs/11_bvh.ppm
+    
+    //  Hierarchies
+    if (hits purple)
+    hit0 = hits blue enclosed objects
+    hit1 = hits red enclosed objects
+    if (hit0 or hit1)
+        return true and info of closer hit
+    return false
 
+    // aabb
+    compute (tx0, tx1)
+    compute (ty0, ty1)
+    compute (tz0, tz1)
+    return overlap?( (tx0, tx1), (ty0, ty1), (tz0, tz1))
+
+    bool overlap(d, D, e, E, f, F)
+    f = max(d, e)
+    F = min(D, E)
+    return (f < F)
+    
  */
 #include "constant.h"
 
@@ -12,6 +31,8 @@
 #include "material.h"
     
 #include "moving_sphere.h"
+#include "aarect.h"
+#include "box.h"
 
 #include <iostream>
 
@@ -53,6 +74,20 @@ int main() {
 
     // World
     hittable_list world;
+
+   
+
+    auto difflight = make_shared<lambertian>(color(4,4,4));
+    //world.add(make_shared<xy_rect>(3, 5, 1, 3, -2, difflight));
+
+    world.add(make_shared<box>(point3(1, 1, 1), point3(3, 5, 3), difflight));
+
+
+    shared_ptr<hittable> box2 = make_shared<box>(point3(3,2,2), point3(4,3,3), difflight);
+    box2 = make_shared<rotate_y>(box2, -18);
+    box2 = make_shared<translate>(box2, vec3(1,1,1));
+    world.add(box2);
+
     /*
     world.add(make_shared<sphere>(point3(0,0,-1), 0.5));
     world.add(make_shared<sphere>(point3(0,-100.5,-1), 100));
@@ -88,7 +123,7 @@ int main() {
 
 
     // Camera
-    point3 lookfrom(5,5,2);
+    point3 lookfrom(15,15,5);
     point3 lookat(0,0,-1);
     vec3 vup(0,1,0);
     auto dist_to_focus = (lookfrom-lookat).length();
