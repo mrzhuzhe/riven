@@ -13,6 +13,11 @@ char &get_val(string &str, string::size_type ix)
     return str[ix];
 }
 
+string make_plural(size_t ctr, const string& word, const string& ending )
+{
+    return (ctr > 1) ? word + ending : word;
+}
+
 struct TestClass
 {
     std::string isbn() const {
@@ -49,6 +54,14 @@ int main(int argc, char **argv) {
     });
 
     cout << words[0] << words[1] << words[2] << endl;
+    
+
+    vector<string>::size_type sz;
+    auto wc = find_if(words.begin(), words.end(), [sz](const string &a){
+        return a.size() >= sz;
+    });
+    auto count = words.end() - wc; 
+    cout << count << " " << make_plural(count, "word", "s") << " of length " << sz << " or longer " << endl;
     
     return 0;
 }
