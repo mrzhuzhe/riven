@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <list>
+#include <memory>
 
 using namespace std;
 
@@ -23,5 +24,31 @@ int main() {
         ++r_iter)
     cout << *r_iter << endl;
     //cout << lst2(1) << endl;
+
+
+
+
+    unique_ptr<int[]> up(new int[10]);
+    //up.release();
+
+    for (size_t i =0; i != 10; ++i){
+        up[i] = i;
+        cout << " i: " << up[i]; 
+    }
+    cout << endl;
+
+    up.release();
+    
+
+    shared_ptr<int> sp(new int[10], [](int *p){ delete[] p;});
+
+    for (size_t i=0; i != 10; ++i){
+        *(sp.get() + i) = i;
+        cout << *(sp.get() + i) << "\n" ;
+    }
+
+    sp.reset();
+
+
     return 0;
 }
