@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <map>
+#include <functional>
 
 using std::vector;
 using namespace std;
@@ -20,8 +22,24 @@ Sales_data::Sales_data(const Sales_data &orig):
     revenue(orig.revenue)
     {}
 
+int add(int i, int j) { return i +j; };
+auto mod = [](int i, int j) { return i % j; };
 
+struct divide {
+    int operator()(int dominator, int divisor) {
+        return dominator / divisor;
+    }
+};
 
+map<string, function<int(int, int)>> binops = {
+    { "+", add },
+    { "-", minus<int>() },
+    { "/", divide() },
+    { "*", [](int i, int j){
+        return i * j;
+    }},
+    { "%", mod }
+};
 
 /*
 Sales_data& Sales_data::operator=(const Sales_data &rhs)
@@ -33,22 +51,45 @@ Sales_data& Sales_data::operator=(const Sales_data &rhs)
 }
 */
 
+class SmallInt {
+    public:
+        SmallInt(int i = 0): val(i)
+        {
+            if (i < 0 || i > 255)
+                throw   out_of_range("Bad SmallInt value");
+        }
+        operator int() const { return val; }
+    private:
+        size_t val;
+};
+
 int main(int argc, char **argv) {
 
 
     //Sales_data *p = new Sales_data;
 
     
+    /*
     Sales_data data1({
         bookNo: "123",
         units_sold: 0.0,
         revenue: 0.0
     });
+    */
     //data1.bookNo = "123123";
 
 
     //data2 = data1;
     
+    cout << binops["+"](10, 5) << endl;
+    cout << binops["-"](10, 5) << endl;
+    cout << binops["/"](10, 5) << endl;
+    cout << binops["*"](10, 5) << endl;
+    cout << binops["%"](10, 5) << endl;
+
+    SmallInt si;
+    si = 4.13;
+    cout << si + 3 << endl;;
 
     return 0;
 }
