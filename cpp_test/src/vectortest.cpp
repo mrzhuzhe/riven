@@ -6,6 +6,7 @@ using std::vector;
 using namespace std;
 
 //vector<int> ivec;
+
 vector<Sales_data> Sales_vec;
 vector<vector<string>> file;
 //vector<string> svec;
@@ -44,6 +45,8 @@ bool is_sentence(const string &s)
 }
 
 int main(int argc, char **argv) {
+
+
 
     for (int i=0; i !=100; ++i)
         v2.push_back(i);

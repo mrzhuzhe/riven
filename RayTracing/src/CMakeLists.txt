@@ -31,3 +31,12 @@ add_executable(integrate_x_sq.o mc-sampling/integrate_x_sq.cc)
 add_executable(pi.o mc-sampling/pi.cc)
 
 add_executable(sphere_importance.o mc-sampling/sphere_importance.cc)
+
+
+# lib test
+
+#add_library(zzlibs.so SHARED constant.h color.h hittable_list.h sphere.h camera.h material.h moving_sphere.h aarect.h box.h)
+
+#add_executable(11_bvh_withLib.o 11_bvh.cc)
+
+#target_link_libraries(11_bvh_withLib.o PUBLIC zzlibs.so)
