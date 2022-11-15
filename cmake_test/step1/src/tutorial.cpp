@@ -5,6 +5,8 @@
 
 #ifdef USE_MYMATH
 #include "MathFunctions.h"
+
+mysqrt mysqrt;
 #endif
 
 
@@ -18,7 +20,7 @@ int main (int argc, char *argv[])
 
     double inputValue = atof(argv[1]);
     #ifdef USE_MYMATH
-        double outputValue = mysqrt(inputValue);
+        double outputValue = mysqrt.fn1(inputValue);
     #else
         double outputValue = sqrt(inputValue);
     #endif

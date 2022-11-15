@@ -1,3 +1,6 @@
-int mysqrt(int inp){
-    return 0;
-}
+class mysqrt
+{
+    public:
+        mysqrt();
+        int fn1(int inp);
+};
