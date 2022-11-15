@@ -10,7 +10,19 @@ configure_file(
     "${PROJECT_SOURCE_DIR}/TutorialConfig.h"
 )
 
+
 # add the binary tree to the search path for include files so that we will find TutorialConfig.h
 #include_directories("$PROJECT_BINARY_DIR")
 
+option (USE_MYMATH  "Use tutorial provided math implementation" ON)
+
+if (USE_MYMATH)
+    include_directories ("${PROJECT_SOURCE_DIR}/MathFunctions")
+    add_subdirectory(MathFunctions)
+    set (EXTRA_LIBS ${EXTRA_LIBS} MathFunctions)
+endif (USE_MYMATH)
+
+add_library(MathFunctions mysqrt.cpp)
 add_executable(Tutorial tutorial.cpp)
+target_link_libraries(Tutorial ${EXTRA_LIBS})
+

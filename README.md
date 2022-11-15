@@ -2,7 +2,17 @@
 
 > playground for shader and fluid physics rendering
 
-## todos 
+## Build
+
+```
+$cd RayTracing
+
+cmake -S src -B build
+cmake --build build
+
+```
+
+## Todos 
 
 1. [del]julia set 3D
 2. ray tracing 
