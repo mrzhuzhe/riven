@@ -5,6 +5,7 @@
 
 #ifdef USE_MYMATH
 #include "MathFunctions.h"
+//#include "mysqrt.cpp"
 
 mysqrt mysqrt;
 #endif

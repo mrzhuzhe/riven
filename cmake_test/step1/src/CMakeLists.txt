@@ -17,8 +17,8 @@ include_directories("$PROJECT_BINARY_DIR")
 option (USE_MYMATH  "Use tutorial provided math implementation" ON)
 
 
-
 add_library(MathFunctions mysqrt.cpp)
+#add_library(MathFunctions SHARED mysqrt.cpp)
 
 if (USE_MYMATH)
     include_directories ("${PROJECT_SOURCE_DIR}/MathFunctions")
@@ -31,4 +31,5 @@ target_link_libraries(Tutorial ${EXTRA_LIBS})
 
 
 #install (TARGETS Tutorial DESTINATION bin)
+
 #install (FILES "${PROJECT_BINARY_DIR}/TutorialConfig.h" DESTINATION include)
