@@ -124,5 +124,31 @@ int main(int argc, char **argv) {
 
     cout << *ps << *pi << endl;
 
+    int *__pi = new int(1024);
+    string *__ps = new string(10, '9');
+    vector<int> *pv = new vector<int>{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+    cout << *__pi << *__ps << " " << (*pv)[1] << endl;
+
+    string *_ps1 = new string;
+    string *_ps = new string();
+    int *_pi1 = new int;
+    int *_pi2 = new int();
+
+    cout << *_ps1 << "|" << *_ps << "|" << endl;
+    cout << *_pi1 << "|" << *_pi2 << "|" << endl;
+    
+
+    //auto p1 = new auto(obj);
+    //auto p2 = new auto{a, b, c};
+
+    const int *pci = new const int(1024);
+    const string *pcs = new const string;
+
+
+    //*pci = 999; error: assignment of read-only location ‘* pci’
+
+    cout << *pci << *pcs << endl;
+
     return 0;
 }
