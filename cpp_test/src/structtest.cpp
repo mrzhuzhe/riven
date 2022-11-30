@@ -27,6 +27,7 @@ int main() {
     
     string result;
     string::size_type n;
+    // unix ctrl + d windows ctrl + c
     while (cin >> n)
         if (n < hexdigits.size())
             result += hexdigits[n];
