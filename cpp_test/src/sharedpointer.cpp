@@ -104,10 +104,19 @@ int main(int argc, char **argv) {
     cout << *r << " " << r.get() << endl;
 
     // compare to normal pointer
-    int *aaa; 
+    //int *aaa; 
     int bbb = 123;
-    aaa = &bbb;
+    //aaa = &bbb;
+    
+    int *aaa = &bbb;
     cout << *aaa << " " << aaa << " " << bbb << " " << &bbb << endl;
+
+    // normal pointer point to same 
+
+    int *ccc;
+    ccc = &bbb;
+    cout << *aaa << " " << aaa << " " << bbb << " " << &bbb << " " << *ccc << " " << ccc << " "  << &ccc << endl;
+
 
 
     cout << *factory(456) << endl;
@@ -150,5 +159,19 @@ int main(int argc, char **argv) {
 
     cout << *pci << *pcs << endl;
 
+    //  reset delete value 
+
+    delete _pi1;
+    cout << *_pi1 << endl;
+    
+    _pi1 = nullptr;
+    //cout << *_pi1 << endl;    //  Segmentation fault (core dumped)
+
+    // refference test
+    int ref_test = 123987; 
+    int &show_ref_test = ref_test;
+    cout << show_ref_test << endl;
+
+    
     return 0;
 }
