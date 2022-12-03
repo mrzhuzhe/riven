@@ -170,7 +170,19 @@ int main(int argc, char **argv) {
     // refference test
     int ref_test = 123987; 
     int &show_ref_test = ref_test;
-    cout << show_ref_test << endl;
+    int *pointer_test;
+    cout << show_ref_test << " pointer_test: " << pointer_test << " " << *pointer_test << endl;
+    pointer_test = &ref_test ;
+    cout << show_ref_test << " pointer_test: " << *pointer_test << endl;
+
+    const int ci = 0, &cj = ci;
+    decltype(ci) x = 0;
+    decltype(cj) y = x;
+    //decltype(cj) z;   //  error
+    
+    //cout << string(decltype(ci)) << endl;
+    //cout << decltype(ci) << endl;
+    //printf(decltype(ci));
 
     
     return 0;

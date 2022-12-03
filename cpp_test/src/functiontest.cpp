@@ -28,6 +28,23 @@ struct TestClass
 // lambda
 auto f = []{ return "I m f()"; };
 
+// function pointer 
+
+string lengthCompare(const string &, const string &);
+
+// must be init or cannot be invoke
+string lengthCompare(const string &s1, const string &s2){
+    return s1 + "" + s2;
+};
+
+string (*pf)(const string &, const string &); // params and return type must be same
+
+
+string useBigger(const string &s1, const string &s2, string (*pf)(const string &, const string &)){
+    return pf(s1, s2);
+}
+
+
 int main(int argc, char **argv) {
     
     string s("a value");
@@ -63,5 +80,12 @@ int main(int argc, char **argv) {
     auto count = words.end() - wc; 
     cout << count << " " << make_plural(count, "word", "s") << " of length " << sz << " or longer " << endl;
     
+
+
+    pf = lengthCompare;
+    cout << pf("aaaa", "bbbb") << endl;
+
+    cout << useBigger("cccc", "dddd", pf) << endl;
+
     return 0;
 }
