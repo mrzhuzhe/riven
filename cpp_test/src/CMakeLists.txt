@@ -21,6 +21,8 @@ add_executable(vectortest.o vectortest.cpp)
 
 add_executable(sharedpointer.o sharedpointer.cpp)
 
+add_executable(templateTest.o templateTest.cpp)
+
 # lib test
 #add_library(sales_data sales_data.h)
 
