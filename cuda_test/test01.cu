@@ -7,7 +7,7 @@ __global__ void print_from_gpu(void) {
 
 int main(void) {
     printf("Hello world from host! \n");
-    print_from_gpu<<<1,1>>>();
+    print_from_gpu<<<1,2>>>();
     cudaDeviceSynchronize();
     return 0;
 }
