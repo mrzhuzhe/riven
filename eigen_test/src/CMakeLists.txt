@@ -3,7 +3,8 @@ project(Eigen_Test)
 
 # cmake -S src -B build
 # cmake --build build
- 
+
+# https://eigen.tuxfamily.org/dox/TopicCMakeGuide.html
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 
 add_executable(test01.o test01.cpp)
