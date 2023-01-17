@@ -1,5 +1,5 @@
 //  https://llvm.org/docs/tutorial/MyFirstLanguageFrontend/LangImpl05.html  
-//  clang++ -g flow.cpp `llvm-config --cxxflags --ldflags --system-libs --libs core orcjit native` -O3 -o outputs/flow.o
+//  clang++ -g flow.cpp `llvm-config --cxxflags --ldflags --system-libs --libs core orcjit native` -O3 -o outputs/flow-wolink.o
 
 //  【BUG】putchard will mising in jit  
 //  dll missing https://stackoverflow.com/questions/57612173/llvm-jit-symbols-not-found
@@ -943,11 +943,12 @@ static void MainLoop() {
 //===----------------------------------------------------------------------===//
 // "Library" functions that can be "extern'd" from user code.
 //===----------------------------------------------------------------------===//
-/*
+
 #ifdef _WIN32
 #define DLLEXPORT __declspec(dllexport)
 #else
-#define DLLEXPORT __attribute__((visibility("default")))
+//#define DLLEXPORT __attribute__((visibility("default")))
+#define DLLEXPORT
 #endif
 
 /// putchard - putchar that takes a double and returns 0.
@@ -961,18 +962,6 @@ extern "C" DLLEXPORT double printd(double X) {
   fprintf(stderr, "%f\n", X);
   return 0;
 }
-*/
-
-extern "C" double putchard(double X) {
-  fputc((char)X, stderr);
-  return 0;
-}
-
-extern "C" double printd(double X) {
-  fprintf(stderr, "%f\n", X);
-  return 0;
-}
-
 
 //===----------------------------------------------------------------------===//
 // Main driver code.
