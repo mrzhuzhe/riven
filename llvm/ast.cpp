@@ -1,4 +1,5 @@
 //  clang++ -g -O3 ast.cpp `llvm-config --cxxflags` -o outputs/ast.o
+// reffer https://llvm.org/docs/tutorial/MyFirstLanguageFrontend/LangImpl02.html
 
 #include <cctype>
 #include <cstdio>
