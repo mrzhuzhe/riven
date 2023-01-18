@@ -28,7 +28,7 @@ a beginner guide to cuda project
 
 [TODO] need test with nvdia-profiler  
 
-[TODO]play with memory
+[TODO] play with memory
 
 
 ### eigen_test
