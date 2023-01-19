@@ -11,6 +11,7 @@ llvm_test:
 ifeq ($(UNAME_S),Linux)
 	clang++ ${FORUBUNTU} ${CFLAGS} flow.cpp ${LVVMFLAGS} -o outputs/flow.o
 	clang++ ${FORUBUNTU} ${CFLAGS} customize.cpp ${LVVMFLAGS} -o outputs/customize.o
+	clang++ ${FORUBUNTU} ${CFLAGS} ssa.cpp ${LVVMFLAGS} -o outputs/ssa.o
 else 
 	clang++ ${CFLAGS} flow.cpp ${LVVMFLAGS} -o outputs/flow-wolink.o
 	clang++ ${CFLAGS} customize.cpp ${LVVMFLAGS} -o outputs/customize-wolink.o
