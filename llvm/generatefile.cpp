@@ -35,6 +35,7 @@ def average(x y) (x + y) * 0.5;
 #include <system_error>
 #include <utility>
 #include <vector>
+#include <iostream>
 
 using namespace llvm;
 using namespace llvm::sys;
@@ -1235,6 +1236,9 @@ int main() {
 
   std::string Error;
   auto Target = TargetRegistry::lookupTarget(TargetTriple, Error);
+
+  //printf("Target %c", Target);
+  //std::cout << "Target: " << &Target;
 
   // Print an error and exit if we couldn't find the requested target.
   // This generally occurs if we've forgotten to initialise the
