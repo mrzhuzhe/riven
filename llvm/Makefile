@@ -1,5 +1,6 @@
 CFLAGS = -g -O3
 LVVMFLAGS = `llvm-config --cxxflags --ldflags --system-libs --libs core orcjit native`
+
 #FORUBUNTU = -export-dynamic
 FORUBUNTU = -Xlinker -export-dynamic
 #FORUBUNTU = -Xlinker
@@ -12,6 +13,7 @@ ifeq ($(UNAME_S),Linux)
 	clang++ ${FORUBUNTU} ${CFLAGS} flow.cpp ${LVVMFLAGS} -o outputs/flow.o
 	clang++ ${FORUBUNTU} ${CFLAGS} customize.cpp ${LVVMFLAGS} -o outputs/customize.o
 	clang++ ${FORUBUNTU} ${CFLAGS} ssa.cpp ${LVVMFLAGS} -o outputs/ssa.o
+	clang++ ${FORUBUNTU} ${CFLAGS} generatefile.cpp `llvm-config --cxxflags --ldflags --system-libs --libs all` -o outputs/generatefile.o
 else 
 	clang++ ${CFLAGS} flow.cpp ${LVVMFLAGS} -o outputs/flow-wolink.o
 	clang++ ${CFLAGS} customize.cpp ${LVVMFLAGS} -o outputs/customize-wolink.o
