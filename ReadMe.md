@@ -12,8 +12,6 @@ with LLVM vulkan cuda and morden Cpp basic
 
 clang test project
 
-[TODO] need add a makefile to llvm project
-
 ### cmake_test 
 
 cmake test project
@@ -39,7 +37,7 @@ libary Eigen test
 
 llvm project 
 
-[TODO] need add a makefile to llvm project
+[TODO] so we shall play with real jit https://llvm.org/docs/tutorial/BuildingAJIT1.html
 
 ### RayTracing
 
