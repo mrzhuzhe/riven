@@ -1,3 +1,5 @@
+//  https://llvm.org/docs/tutorial/BuildingAJIT1.html 
+//  version 01 
 //===- KaleidoscopeJIT.h - A simple JIT for Kaleidoscope --------*- C++ -*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
