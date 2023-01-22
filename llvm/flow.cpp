@@ -9,7 +9,8 @@
 //  extern language linkage https://en.cppreference.com/w/cpp/language/language_linkage
 
 
-#include "./include/KaleidoscopeJIT.h"
+//#include "./include/KaleidoscopeJIT.h"
+#include "./include/codjit.h"
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/IR/BasicBlock.h"
