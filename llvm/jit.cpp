@@ -2,7 +2,8 @@
 // run fpm pass first
 //  clang++ -g jit.cpp `llvm-config --cxxflags --ldflags --system-libs --libs core orcjit native` -O3 -o outputs/jit.o
 
-#include "./include/KaleidoscopeJIT.h"
+//#include "./include/KaleidoscopeJIT.h"
+#include "./include/optpassjit.h"
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/IR/BasicBlock.h"
