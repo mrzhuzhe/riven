@@ -8,6 +8,13 @@ Available Metrics:
 
 //  nsignt https://docs.nvidia.com/nsight-systems/UserGuide/index.html
 
+//  complier options  https://docs.nvidia.com/cuda/cuda-compiler-driver-nvcc/
+//  arch:  Specify the name of the class of NVIDIA virtual GPU architecture for which the CUDA input files must be compiled. 
+//  https://docs.nvidia.com/cuda/cuda-compiler-driver-nvcc/index.html#options-for-steering-gpu-code-generation TODO why multi arch in a single file
+//  RTX3090 sm_80, sm_86 and sm_87 NVIDIA Ampere GPU architecture support 
+
+// code /Specify the name of the NVIDIA GPU to assemble and optimize PTX for.
+
 /*
 
 /usr/bin/nvcc -ccbin \
@@ -21,6 +28,14 @@ g++ -I../include \
 -gencode arch=compute_70,code=sm_70 \
 -gencode arch=compute_75,code=sm_75 \
 -o outputs/sgemm \
+test01.cu
+
+
+// sm_80 seem not with cuda 10
+nvcc -ccbin \
+g++ -I../include \
+-gencode arch=compute_75,code=sm_75 \
+-o outputs/sgemm3090 \
 test01.cu
 
 */
@@ -100,7 +115,7 @@ int main()
     int N, M, K;
     float alpha = 2.f;
     float beta = 1.f;
-    N = M = K = 2048;
+    N = M = K = 2048 * 2048;
     
     //
     A = (float *)malloc(N * K *sizeof(float));
