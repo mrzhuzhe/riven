@@ -1,11 +1,11 @@
 /*
 nvcc -ccbin \
 g++ -I../include \
--gencode arch=compute_75,code=sm_75 \
+-gencode arch=compute_80,code=sm_80 \
 -o outputs/add2 \
 add2.cu
 */
-// nvcc version wrong 
+// nvcc version wrong  https://stackoverflow.com/questions/53422407/different-cuda-versions-shown-by-nvcc-and-nvidia-smi
 
 #include <stdio.h>
 
