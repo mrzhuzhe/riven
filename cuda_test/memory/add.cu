@@ -19,6 +19,7 @@ void host_add(int *a, int *b, int *c){
 __global__ void device_add(int *a, int *b, int *c){
     int index = threadIdx.x + blockIdx.x * blockDim.x;
     c[index] = a[index] + b[index];
+    //printf("%f", index);
 }
 
 void fill_array(int *data){
@@ -48,9 +49,15 @@ int main(void){
     cudaMemcpy(d_a, a, size, cudaMemcpyHostToDevice);
     cudaMemcpy(d_b, b, size, cudaMemcpyHostToDevice);
 
-    threads_per_block = 4;
+    threads_per_block = 16;
     no_of_blocks = N/threads_per_block;
-    device_add<<<no_of_blocks, threads_per_block>>>(d_a, d_b, d_c);
+
+    int threadsPerBlock = 256;
+    int blocksPerGrid =
+            (N + threadsPerBlock - 1) / threadsPerBlock;
+    device_add<<<blocksPerGrid, threadsPerBlock>>>(d_a, d_b, d_c);
+
+    //device_add<<<no_of_blocks, threads_per_block>>>(d_a, d_b, d_c);
 
     cudaMemcpy(c, d_c, size, cudaMemcpyDeviceToHost);
 
