@@ -85,7 +85,9 @@ int main(void) {
 
     //fun() = 30;
     //cout << fun();
-    int array[] = { 1, 2,  3};
+    //int array[] = { 1, 2,  3};
+    std::vector<int> array(4);
+    array = { 1, 2, 3, 4};
     //cout << -2*[array];
     for (int &vi : array){
         cout << vi << " ";
