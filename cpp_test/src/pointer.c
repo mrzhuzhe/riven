@@ -2,6 +2,10 @@
 #include <cstdlib>
 #include <cstdint>
 #include <type_traits>
+#include <vector>
+#include <string>
+#include <iostream>
+#include <cstring>
 
 float SqrtByCarmack( float number )
 {
@@ -24,11 +28,21 @@ int func(int& second){
     return 1;
 }
 
-int* makearr() {
-    int a[1024];
+auto makearr() {    
+    //int a[1024];
+    //int* a = (int*)malloc(1024*sizeof(int));
+    std::vector<int> a(1024);
     for (int i=0;i<1024;i++)
         a[i] = i;
     return a;
+}
+
+
+void func(int arr[6], int size){
+    printf("sizeof(arr) %ld\n", sizeof(arr));
+    for (int i = 0; i < 6; i++ ) {
+        printf("%d\n", arr[i]);
+    }
 }
 
 int main(){
@@ -92,9 +106,32 @@ int main(){
     printf("result: %d %d\n", first, second);
 
 
-    int* a3 = makearr();
+    auto a3 = makearr();
     for (int i =0;i<1024;i++)
         a3[i] += 1;
+    //free(a3);
+
+    int arr1[6] = {1, 2, 3, 4, 5, 6};
+    func(arr1, 6);
+
+    //std::string str1;
+    //printf("input str:\n");
+    //std::cin >> str1;
+    //printf("str: %s\n", str1.c_str());
+    //printf("str: %s\n", str1.c_str());
+    
+    const char* str2 = "Hello world";
+    const char* str3 = "Hello world";
+    bool equal = str3 == str2;
+    printf("%d\n", equal);
+
+    char str4[] = "hello";
+    char str5[] = "hello";
+    bool equal2 = str5 == str4;
+    printf("%d\n", equal2);
+
+    bool equal3 = !strcmp(str5, str4);
+    printf("%d\n", equal3);
 
     return 0;
 }
