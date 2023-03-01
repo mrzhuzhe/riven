@@ -73,4 +73,38 @@ void BM_x_blur_tiled_prefetched_streamed(benchmark::State &bm){
 }
 BENCHMARK(BM_x_blur_tiled_prefetched_streamed);
 
+void BM_transpose(benchmark::State &bm){
+    for (auto _: bm){
+#pragma omp parallel for collapse(2)
+        for (int y = 0; y < ny; y++){
+            for (int x =0; x< nx; x++){
+                b(x, y) = a(y, x);
+            }
+        }
+        benchmark::DoNotOptimize(b);
+    }
+
+}
+BENCHMARK(BM_transpose);
+
+
+void BM_transpose_tiled(benchmark::State &bm){
+    for (auto _: bm){
+        constexpr int blockSize = 64;
+#pragma omp parallel for collapse(2)
+        for (int yBase = 0; yBase < ny; yBase += blockSize){
+            for (int xBase =0; xBase < nx; xBase += blockSize){
+                for (int y = yBase; yBase < ny + blockSize; yBase++){
+                    for (int x = xBase; xBase < nx+blockSize; xBase++){                        
+                        b(x, y) = a(y, x);
+                    }
+                }
+            }
+        }
+        benchmark::DoNotOptimize(b);
+    }
+
+}
+BENCHMARK(BM_transpose_tiled);
+
 BENCHMARK_MAIN();
