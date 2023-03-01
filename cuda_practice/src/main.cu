@@ -40,6 +40,9 @@ int main(){
     //kernel<<<2, 3>>>();
     //kernel2<<<dim3(2, 1, 1), dim3(2, 2, 2)>>>();
     kernel3<<<1, 3>>>();
-    cudaDeviceSynchronize();
+    cudaError_t err = cudaDeviceSynchronize();
+    printf("error code: %d\n", err);
+    printf("error name %s\n", cudaGetErrorName(err));
+    //printf("%d\n", ret);
     return 0;
 }

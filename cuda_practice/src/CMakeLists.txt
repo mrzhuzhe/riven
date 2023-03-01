@@ -7,5 +7,6 @@ set(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
 
 project(hellocuda LANGUAGES CXX CUDA)
 add_executable(main main.cu)
+add_executable(memmory memmory.cu)
 #set_property(TARGET main PROPERTY_CUDA_SEPARABLE_COMPILATION ON)
-#CUDA_SEPARABLE_COMPILATION。
+
