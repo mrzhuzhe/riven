@@ -46,11 +46,29 @@ struct CudaAllocator {
     void deallocate(T *ptr, size_t size = 0) {
         cudaFree(ptr);
     }
+
+    template <class ...Args>
+    void construct(T *p, Args &&...args){
+        if constexpr (!(sizeof...(Args) == 0 && std::is_pod_v<T>))::new((void *)p) T(std::forward<Args>(args)...);        
+    }
+};
+
+template <class Func>
+__global__ void parallel_for(int n, Func func){
+    for (int i = blockDim.x * blockIdx.x + threadIdx.x; i < n; i += blockDim.x * gridDim.x ){
+        func(i);
+    }
+}
+
+struct MyFunctor {
+    __device__ void operator()(int i) const {
+        printf("number %d\n", i);
+    }
 };
 
 
 int main(){
-    // simple copy
+    // simple copy    
     int *pret;
     cudaMalloc(&pret, sizeof(int));
     kernel<<<1, 1>>>(pret);
@@ -90,6 +108,22 @@ int main(){
         printf("arr[%d]: %d\n", i, arr[i]);
     }
     //cudaFree(arr);
+    
+    //int n = 1024;
+    //parallel_for<<<32, 128>>>(n, MyFunctor{});
+
+    //  parallel_for<<<32, 128>>>(n, [&] __device__ (int i) {
+    //int *arr_data = arr.data();
+    //parallel_for<<<32, 128>>>(n, [=] __device__ (int i) {
+    parallel_for<<<32, 128>>>(n, [arr = arr.data()] __device__ (int i) {
+        //printf("number %d\n", i);
+        //arr_data[i] = i;
+        arr[i] = i;
+    });
+    for (int i = 0 ; i < n; i++){
+        printf("arr[%d]: %d\n", i, arr[i]);
+    }
+    cudaDeviceSynchronize();
     
     return 0;
 }

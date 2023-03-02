@@ -9,4 +9,4 @@ project(hellocuda LANGUAGES CXX CUDA)
 add_executable(main main.cu)
 add_executable(memmory memmory.cu)
 #set_property(TARGET main PROPERTY_CUDA_SEPARABLE_COMPILATION ON)
-
+target_compile_options(memmory PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:--extended-lambda>)
