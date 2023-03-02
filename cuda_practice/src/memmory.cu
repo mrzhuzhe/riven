@@ -27,7 +27,7 @@ __global__ void kernel(int *arr, int n){
    arr[i] = i;
 }
 
-__global__ void kernel2(int *arr, int n){
+__global__ void kernel2(float *arr, int n){
     for (int i = blockDim.x * blockIdx.x + threadIdx.x; i < n; i+= blockDim.x *gridDim.x){
         arr[i] = i;
     }
@@ -99,13 +99,14 @@ int main(){
     //int nblocks = n / nthreads;
     //int nblocks = (n + nthreads + 1) / nthreads;
     //kernel<<<nblocks, nthreads>>>(arr, n);
-    std::vector<int, CudaAllocator<int>> arr(n);
+    //std::vector<int, CudaAllocator<int>> arr(n);
+    std::vector<float, CudaAllocator<float>> arr(n);
     //kernel2<<<32, 128>>>(arr, n);
     kernel2<<<32, 128>>>(arr.data(), n);
 
     cudaDeviceSynchronize();
     for (int i = 0 ; i < n; i++){
-        printf("arr[%d]: %d\n", i, arr[i]);
+        printf("arr[%d]: %f\n", i, arr[i]);
     }
     //cudaFree(arr);
     
@@ -118,10 +119,11 @@ int main(){
     parallel_for<<<32, 128>>>(n, [arr = arr.data()] __device__ (int i) {
         //printf("number %d\n", i);
         //arr_data[i] = i;
-        arr[i] = i;
+        //arr[i] = sinf(i);
+        arr[i] = __sinf(i); // less precise __expf __logf __cosf __powf
     });
     for (int i = 0 ; i < n; i++){
-        printf("arr[%d]: %d\n", i, arr[i]);
+        printf("arr[%d]: %f\n", i, arr[i] - sinf(i));
     }
     cudaDeviceSynchronize();
     
