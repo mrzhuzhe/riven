@@ -278,6 +278,7 @@ int parallel_sum7(T const *arr, int n){
     return final_sum;
 }
 
+//  https://developer.download.nvidia.cn/CUDA/training/register_spilling.pdf
 template <int reduceScale = 4096, int blockSize = 256, int cutoffSize = reduceScale * 2, class T>
 int parallel_sum8(T const *arr, int n){
 
@@ -293,6 +294,38 @@ int parallel_sum8(T const *arr, int n){
         }
         return final_sum;
     }    
+}
+
+template <class T>
+__global__ void parallel_transpose(T *out, T const *in, int nx, int ny){
+    int linearized = blockIdx.x * blockDim.x + threadIdx.x;
+    int y = linearized / nx;
+    int x = linearized % nx;
+    if (x >= nx || y >= ny) return;
+    out[y*nx + x] = in[x*nx +y];
+}
+
+
+template <class T>
+__global__ void parallel_transpose2(T *out, T const *in, int nx, int ny){    
+    int y = blockIdx.x * blockDim.x + threadIdx.x;
+    int x = blockIdx.y * blockDim.y + threadIdx.y;
+    if (x >= nx || y >= ny) return;
+    out[y*nx + x] = in[x*nx +y];
+}
+
+// bank conflict
+template <int blockSize, class T>
+__global__ void parallel_transpose3(T *out, T const *in, int nx, int ny){    
+    int x = blockIdx.x * blockSize + threadIdx.x;
+    int y = blockIdx.y * blockSize + threadIdx.y;
+    if (x >= nx || y >= ny) return;
+    __shared__ T tmp[(blockSize+1) * blockSize];
+    int rx = blockIdx.y * blockSize + threadIdx.x;
+    int ry = blockIdx.x * blockSize + threadIdx.y;
+    tmp[threadIdx.y * (blockSize+1) + threadIdx.x] = in[ry*nx + rx];
+    __syncthreads();
+    out[y*nx + x] = tmp[threadIdx.x * (blockSize+1) + threadIdx.y];
 }
 
 
@@ -327,6 +360,34 @@ int main() {
     Tok("parallel sum kernel");
     printf("BLS result: %d\n", final_sum);
     
+
+    int nx = 1<< 14, ny = 1 << 14;
+    std::vector<int, CudaAllocator<int>> in(nx*ny);
+    std::vector<int, CudaAllocator<int>> out(nx*ny);
+
+    for (int i = 0; i < nx*ny; i++){
+        in[i] = i;
+    }
+
+    Tik();
+    /*
+    parallel_transpose2<<<nx*ny/1024, 1024>>>
+        (out.data(), in.data(), nx, ny);
+    */
+   parallel_transpose3<32><<<dim3(nx/32, ny/32, 1), dim3(32, 32, 1)>>>
+        (out.data(), in.data(), nx, ny);
+    cudaDeviceSynchronize();
+    Tok("parallel_transpose");
+    for (int y = 0; y < ny ; y++){
+        for (int x = 0; x < nx; x++){
+            if (out[y*nx + x] != in[x*nx + y]){
+                printf("Wrong At x=%d, y=%d: %d != %d\n", 
+                    x, y, out[y*nx+x], in[x*nx+y]);
+                return -1;
+            }
+        }
+    }
+
 
     return 0;
 }
