@@ -7,5 +7,7 @@ set(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
 
 project(hellocuda LANGUAGES CXX CUDA)
 add_executable(main main.cu)
+target_compile_options(main PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:--extended-lambda>)
+target_compile_options(main PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:--expt-relaxed-constexpr>)
 
 #set_property(TARGET main PROPERTY_CUDA_SEPARABLE_COMPILATION ON)
