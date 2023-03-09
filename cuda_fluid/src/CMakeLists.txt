@@ -11,3 +11,8 @@ target_compile_options(main PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:--extended-lambda>
 target_compile_options(main PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:--expt-relaxed-constexpr>)
 
 #set_property(TARGET main PROPERTY_CUDA_SEPARABLE_COMPILATION ON)
+
+find_package(OpenVDB REQUIRED)
+message(STATUS "Found OpenVDB ${OpenVDB_VERSION} at ${OpenVDB_LIBRARIES}")
+target_link_libraries(main PUBLIC OpenVDB::openvdb)
+target_sources(main PUBLIC writevdb.cpp)
