@@ -10,3 +10,12 @@ find_package(OpenMP REQUIRED)
 
 add_executable(main main.cpp)
 target_link_libraries(main PRIVATE OpenMP::OpenMP_CXX)
+
+#   this is wrong
+if (APPLE) 
+    MESSAGE(STATUS "this is APPLE")
+    add_executable(neon neon.cpp)
+elseif (UNIX) 
+    MESSAGE(STATUS "this is UNIX")
+    add_executable(sse sse.cpp)
+endif()
