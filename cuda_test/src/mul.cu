@@ -17,8 +17,7 @@ __global__ void sgemm_gpu_kernel(const float *A, const float *B, float *C, int N
         sum += A[row*K+i] * B[i*K+col];
     }
 
-    //C[row*M+col] = alpha * sum + beta * C[row*M + col];
-    C[row*M+col] = sum;
+    C[row*M+col] = alpha * sum + beta * C[row*M + col];
 }
 
 void sgemm_gpu(const float *A, const float *B, float *C, int N, int M, int K, float alpha, float beta)
@@ -61,22 +60,32 @@ const float *A, const float *B, float *C, int N, int M, int K, float alpha, floa
 }
 
 
-
-void print_output(float *a, float *b, float *c) {
-    int N = 16;
-    for (int idx=0;idx<N;idx++)
-        printf("\n %f = %f + %f", c[idx], a[idx], b[idx]);
-}
-
-
 void random_init(float *data, int size)
 {
     for (int i = 0; i<size; ++i){
-        //data[i] = (float)i;
-        data[i] = 1.f;
+        data[i] = (float)i;
+        //data[i] = 1.f;
         //data[i] = (rand() & 0xFF) / (float)RAND_MAX;       
     }    
 }
+
+void print_output(float *a, float *b, float *c, int m, int n, int k) {
+    int count = 10;
+    int begin = 100;
+    for (int idx=begin;idx<begin+count;idx++){
+        int col = idx % n; // mod
+        int row = idx / n; // residual
+        printf("%f =", c[idx]);
+        for (int i = 0; i < k; i++){
+            if (i > 0)
+                printf(" +");
+            printf(" %f * %f", a[row*k+i], b[i*k+col]);
+        }
+        printf("\n");
+    }
+}
+
+
 
 int main()
 {
@@ -86,7 +95,7 @@ int main()
     float alpha = 1.f;
     float beta = 0.f;
     //  N = M = K = 2048 * 2048;    // out of range
-    N = M = K = 10 * 10; 
+    N = M = K = 128; 
     
     //
     A = (float *)malloc(N * K *sizeof(float));
@@ -113,7 +122,7 @@ int main()
 
     cudaMemcpy(C, d_C, N * M *sizeof(float), cudaMemcpyDeviceToHost);
 
-    print_output(A, B, C);    
+    print_output(A, B, C, M, N, K);    
     
     //
     cudaFree(d_A);
