@@ -12,7 +12,10 @@ target_compile_options(main PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:--expt-relaxed-con
 
 #set_property(TARGET main PROPERTY_CUDA_SEPARABLE_COMPILATION ON)
 
+#https://github.com/AcademySoftwareFoundation/openvdb/issues/412
+list(APPEND CMAKE_MODULE_PATH "/usr/local/lib/cmake/OpenVDB")
 find_package(OpenVDB REQUIRED)
 message(STATUS "Found OpenVDB ${OpenVDB_VERSION} at ${OpenVDB_LIBRARIES}")
 target_link_libraries(main PUBLIC OpenVDB::openvdb)
 target_sources(main PUBLIC writevdb.cpp)
+
