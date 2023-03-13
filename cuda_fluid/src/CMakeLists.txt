@@ -12,7 +12,7 @@ target_compile_options(main PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:--expt-relaxed-con
 
 #set_property(TARGET main PROPERTY_CUDA_SEPARABLE_COMPILATION ON)
 
-#https://github.com/AcademySoftwareFoundation/openvdb/issues/412
+# Cannot find Openvdb by default this maybe my CMAKE_PREFIX is CHANGED by default https://github.com/AcademySoftwareFoundation/openvdb/issues/412
 list(APPEND CMAKE_MODULE_PATH "/usr/local/lib/cmake/OpenVDB")
 message(STATUS "CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}")
 
