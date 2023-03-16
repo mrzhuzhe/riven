@@ -3,7 +3,7 @@
 #include "cuda_runtime.h"
 
 #define N 16
-#define BLOCK_SIZE 4
+#define BLOCK_SIZE 4 // thread per block
 
 void host_add(int *a, int *b, int *c) {
     for (int idx=0;idx<N;idx++)
@@ -99,7 +99,7 @@ int main(void) {
     //int thread_per_block = dim3(4, 4, 1);
     //int no_of_blocks = dim3(N / thread_per_block.x, N / thread_per_block.y, 1);
     
-    dim3 thread_per_block(4, 4, 1);
+    dim3 thread_per_block(BLOCK_SIZE, BLOCK_SIZE, 1);
     dim3 no_of_blocks(N / thread_per_block.x, N / thread_per_block.y, 1);
     //device_add<<<no_of_blocks, thread_per_block>>>(d_a,d_b,d_c);
 
