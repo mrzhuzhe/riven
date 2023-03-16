@@ -59,6 +59,8 @@ __global__ void matrix_traspose_navie(int *input, int *output) {
 
 __global__ void matrix_traspose_shared(int *input, int *output) {
     __shared__ int sharedMemory [BLOCK_SIZE] [BLOCK_SIZE];
+    //__shared__ int sharedMemory [BLOCK_SIZE] [BLOCK_SIZE + 1];    // seems wrong
+
     int indexX = threadIdx.x + blockIdx.x * blockDim.x;
     int indexY = threadIdx.y + blockIdx.y * blockDim.y;
 
@@ -71,7 +73,7 @@ __global__ void matrix_traspose_shared(int *input, int *output) {
     int transposedIndex = tindexY * N + tindexX;
 
     sharedMemory[localIndexX][localIndexY] = input[index];
-    __syncthreads();
+    __syncthreads();    // still run without this ?
     output[transposedIndex] = sharedMemory[localIndexY][localIndexX];
 
 }
@@ -80,8 +82,8 @@ int main(void) {
     int *a, *b, *c;
     int *d_a, *d_b, *d_c;
 
-    int size = N * sizeof(int);
-    int qsize = size * size;
+    int size = N;
+    int qsize = size * size * sizeof(int);
     a = (int *)malloc(qsize); fill_2darray(a);
     b = (int *)malloc(qsize); fill_2darray(b);
     c = (int *)malloc(qsize);
