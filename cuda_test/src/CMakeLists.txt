@@ -9,6 +9,7 @@ project(hellocuda LANGUAGES CXX CUDA)
 
 add_executable(add add.cu)
 add_executable(mul mul.cu)
+add_executable(trans trans.cu)
 
 target_include_directories(mul PUBLIC . ../include)
 
