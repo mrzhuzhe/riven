@@ -1,3 +1,5 @@
+// nvprof ncu permision problem  https://developer.nvidia.com/nvidia-development-tools-solutions-err_nvgpuctrperm-permission-issue-performance-counters
+//  nsys profile -t osrt,cuda,nvtx -o build/aos -w true ./build/aos
 #include <iostream>
 #include <string.h>
 

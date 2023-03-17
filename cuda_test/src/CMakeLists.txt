@@ -12,8 +12,10 @@ add_executable(mul mul.cu)
 add_executable(trans trans.cu)
 add_executable(aos aos.cu)
 add_executable(soa soa.cu)
+add_executable(image_scaling image_scaling.cu srcImagePgmPpmPackage.cpp)
 
 target_include_directories(mul PUBLIC . ../include)
+target_include_directories(image_scaling PUBLIC . ../include)
 
 
 #target_compile_options(main PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:--extended-lambda>)

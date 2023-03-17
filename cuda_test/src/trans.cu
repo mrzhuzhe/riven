@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include "cuda_runtime.h"
 
-#define N 16
-#define BLOCK_SIZE 4 // thread per block
+#define N 2048
+#define BLOCK_SIZE 64 // thread per block
 
 void host_add(int *a, int *b, int *c) {
     for (int idx=0;idx<N;idx++)
@@ -58,8 +58,8 @@ __global__ void matrix_traspose_navie(int *input, int *output) {
 }
 
 __global__ void matrix_traspose_shared(int *input, int *output) {
-    __shared__ int sharedMemory [BLOCK_SIZE] [BLOCK_SIZE];
-    //__shared__ int sharedMemory [BLOCK_SIZE] [BLOCK_SIZE + 1];    // seems wrong
+    //__shared__ int sharedMemory [BLOCK_SIZE] [BLOCK_SIZE];
+    __shared__ int sharedMemory [BLOCK_SIZE] [BLOCK_SIZE + 1];    // seems wrong
 
     int indexX = threadIdx.x + blockIdx.x * blockDim.x;
     int indexY = threadIdx.y + blockIdx.y * blockDim.y;
@@ -113,10 +113,11 @@ int main(void) {
 
     cudaMemcpy(c, d_c, qsize, cudaMemcpyDeviceToHost);
 
+    /*
     print_2doutput(a);
     printf("\n\n\n");
     print_2doutput(c);
-
+    */
     //  host_add(a, b, c);
     //print_output(a, b, c);
     

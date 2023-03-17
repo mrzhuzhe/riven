@@ -1,3 +1,7 @@
+//  ======== Warning: nvprof is not supported on devices with compute capability 8.0 and higher.
+//                 Use NVIDIA Nsight Systems for GPU tracing and CPU sampling and NVIDIA Nsight Compute for GPU profiling.
+//                  Refer https://developer.nvidia.com/tools-overview for more details.
+
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
@@ -122,7 +126,7 @@ int main()
 
     cudaMemcpy(C, d_C, N * M *sizeof(float), cudaMemcpyDeviceToHost);
 
-    print_output(A, B, C, M, N, K);    
+    //print_output(A, B, C, M, N, K);    
     
     //
     cudaFree(d_A);
