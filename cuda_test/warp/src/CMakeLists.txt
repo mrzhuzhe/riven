@@ -8,3 +8,8 @@ set(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
 project(hellocuda LANGUAGES CXX CUDA)
 
 add_executable(warp warp.cu)
+add_executable(reduction reduction.cu)
+add_executable(reduction_shared reduction_shared.cu)
+
+target_include_directories(reduction PUBLIC . ../../include)
+target_include_directories(reduction_shared PUBLIC . ../../include)
