@@ -13,6 +13,8 @@ add_executable(trans trans.cu)
 add_executable(aos aos.cu)
 add_executable(soa soa.cu)
 add_executable(image_scaling image_scaling.cu srcImagePgmPpmPackage.cpp)
+add_executable(pinmem pinmem.cu)
+add_executable(pinmem_64 pinmem_64.cu)
 
 target_include_directories(mul PUBLIC . ../include)
 target_include_directories(image_scaling PUBLIC . ../include)
