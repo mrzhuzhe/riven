@@ -10,16 +10,26 @@ __global__ void init(int n, float *x, float *y){
     size_t warps_per_grid = (blockDim.x * gridDim.x) >> 5;
     size_t warp_total = ((sizeof(float)*n) + STRIDE_64K-1)/STRIDE_64K;
 
-    /*
+    
     if(blockIdx.x == 0 && threadIdx.x == 0){
         printf("\n TID[%d]", threadIdx.x);
         printf("\n WID[%d]", warp_id);
         printf("\n LANEID[%d]", lane_id);
         printf("\n warps_per_grid[%d]", warps_per_grid);
         printf("\n warp_total[%d]", warp_total);
-        printf("\n rep[%d]", STRIDE_64K/sizeof(float)/32);
+        printf("\n rep[%d]", STRIDE_64K/sizeof(float) >> 5);
     }
+
+    /*
+        TID[0]
+        WID[0]
+        LANEID[0]
+        warps_per_grid[64]
+        warp_total[64]
+        rep[512]
+        Max error 0 
     */
+    
 
     for (; warp_id < warp_total; warp_id += warps_per_grid){
         #pragma unroll
