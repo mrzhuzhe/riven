@@ -11,7 +11,8 @@ __global__ void shared_reduction_kernel(float *data_out, float *data_in, int siz
     __syncthreads();
 
     for (unsigned int stride =1; stride < blockDim.x; stride *= 2 ){
-        if ((idx % (stride *2)) == 0)
+        //if ((idx % (stride *2)) == 0)
+        if ( (idx & (stride * 2 - 1)) == 0 )  
             s_data[threadIdx.x] += s_data[threadIdx.x + stride];
         __syncthreads();
     }
@@ -47,9 +48,9 @@ float *d_outPtr, float *d_inPtr, int size){
     cudaDeviceSynchronize();
     sdkStopTimer(&timer);
 
-    float elapsed_time_msed = sdkGetTimerValue(&timer) / (float)test_iter;
+    double elapsed_time_msed = sdkGetTimerValue(&timer) / (float)test_iter;
     float bandwidth = size * sizeof(float ) / elapsed_time_msed / 1e6;
-    printf("Time= %3.f msec, bandwidth= %f GB/s\n", elapsed_time_msed, bandwidth);
+    printf("Time= %f msec, bandwidth= %f GB/s\n", elapsed_time_msed, bandwidth);
 
     sdkDeleteTimer(&timer);
 

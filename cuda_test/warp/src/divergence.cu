@@ -1,19 +1,52 @@
 #include <iostream>
 #include <helper_timer.h>
 
-__global__ void global_reduction_kernel(float *data_out, float *data_in, int stride, int size){
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx + stride < size){
-        data_out[idx] += data_in[idx + stride];
+__global__ void shared_reduction_kernel_1(float *data_out, float *data_in, int size){
+    unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
+
+    extern __shared__ float s_data[];
+
+    s_data[threadIdx.x] = (idx < size) ? data_in[idx] : 0.f;
+
+    __syncthreads();
+
+    for (unsigned int stride =1; stride < blockDim.x; stride *= 2 ){
+        if ((idx % (stride *2)) == 0)
+            s_data[threadIdx.x] += s_data[threadIdx.x + stride];
+        __syncthreads();
     }
+    if (threadIdx.x == 0)
+        data_out[blockIdx.x] = s_data[0];
+}
+
+
+__global__ void shared_reduction_kernel_2(float *data_out, float *data_in, int size){
+    unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
+
+    extern __shared__ float s_data[];
+
+    s_data[threadIdx.x] = (idx < size) ? data_in[idx] : 0.f;
+
+    __syncthreads();
+
+    //  for (unsigned int stride =1; stride < blockDim.x; stride *= 2 ){
+    for (unsigned int stride = blockDim.x / 2; stride > 0; stride >>= 1){
+        //if ((idx % (stride *2)) == 0)
+        if (threadIdx.x < stride) 
+            s_data[threadIdx.x] += s_data[threadIdx.x + stride];
+        __syncthreads();
+    }
+    if (threadIdx.x == 0)
+        data_out[blockIdx.x] = s_data[0];
 }
 
 void global_reduction(float *d_out, float *d_in, int n_threads, int size){
-    int n_blocks = (size+n_threads-1) / n_threads;
+    cudaMemcpy(d_out, d_in, size*sizeof(float), cudaMemcpyDeviceToDevice);
 
-    for (int stride =1; stride <size; stride *= 2 ){
-
-        global_reduction_kernel<<<n_blocks, n_threads>>>(d_out, d_in, stride, size);
+    while (size > 1){
+        int n_blocks =(size + n_threads -1) / n_threads;
+        shared_reduction_kernel_2<<<n_blocks, n_threads, n_threads*sizeof(float), 0>>>(d_out, d_in, size);
+        size = n_blocks;
     }
 }
 
@@ -29,9 +62,7 @@ float *d_outPtr, float *d_inPtr, int size){
     sdkStartTimer(&timer);
 
     for (int i = 0; i < test_iter; i++){
-        cudaMemcpy(d_outPtr, d_inPtr, size*sizeof(float), cudaMemcpyDeviceToDevice);
         reduce(d_outPtr, d_inPtr, num_threads, size);
-        cudaDeviceSynchronize();
     }
 
     cudaDeviceSynchronize();
