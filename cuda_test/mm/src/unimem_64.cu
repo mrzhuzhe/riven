@@ -12,6 +12,7 @@ __global__ void init(int n, float *x, float *y){
 
     
     if(blockIdx.x == 0 && threadIdx.x == 0){
+    //if(blockIdx.x == 0){        
         printf("\n TID[%d]", threadIdx.x);
         printf("\n WID[%d]", warp_id);
         printf("\n LANEID[%d]", lane_id);
@@ -71,7 +72,8 @@ int main(){
     int numBlocks = (N + blockSize - 1) / blockSize;
 
     size_t warp_total = ((sizeof(float)*N) + STRIDE_64K - 1) / STRIDE_64K;
-    int numBlocksInit = (warp_total*32) / blockSize;
+    int numBlocksInit = (warp_total*32) / blockSize;    // 8?
+    printf("numBlocksInit %d\n", numBlocksInit);
 
     init<<<numBlocksInit, blockSize>>>(N, x, y);
     add<<<numBlocks, blockSize>>>(N, x, y);

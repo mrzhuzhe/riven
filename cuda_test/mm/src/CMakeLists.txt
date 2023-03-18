@@ -18,8 +18,8 @@ add_executable(unimem_64 unimem_64.cu)
 add_executable(unimem_init unimem_init.cu)
 add_executable(unimem_pre unimem_pre.cu)
 
-target_include_directories(mul PUBLIC . ../include)
-target_include_directories(image_scaling PUBLIC . ../include)
+target_include_directories(mul PUBLIC . ../../include)
+target_include_directories(image_scaling PUBLIC . ../../include)
 
 
 #target_compile_options(main PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:--extended-lambda>)
