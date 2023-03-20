@@ -1,83 +1,73 @@
 /*
-    Time= 0.251090 msec, bandwidth= 267.270172 GB/s
+    Time= 0.246060 msec, bandwidth= 272.733734 GB/s
     host 16777216.000000, device 16777216.00000
 */
 
 #include <iostream>
 #include <helper_timer.h>
-#include "utils.h"
 
 #define NUM_LOAD 4
+#include "utils.h"
 
+__global__ void reduction_kernel_opt(float *data_out, float *data_in, int size){
+    unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
-/**
-    Two warp level primitives are used here for this example
-    https://devblogs.nvidia.com/faster-parallel-reductions-kepler/
-    https://devblogs.nvidia.com/using-cuda-warp-level-primitives/
- */
-__inline__ __device__ float warp_reduce_sum(float val)
-{
-    #pragma unroll 5
-    for (int offset = warpSize / 2; offset > 0; offset >>=1){
-        unsigned int mask = __activemask();
-        val += __shfl_down_sync(mask, val, offset);
-    }
-    return val;
-}
+    extern __shared__ float s_data[];
 
-__inline__ __device__ float block_reduce_sum(float val){
-    static __shared__ float shared[32];
-    int lane = threadIdx.x % warpSize;
-    int wid = threadIdx.x / warpSize;
-
-    val = warp_reduce_sum(val);
-
-    if (lane == 0)
-        shared[wid] = val;
-
-    __syncthreads();
-
-    if (wid == 0){
-        val = (threadIdx.x < blockDim.x / warpSize) ? shared[lane] : 0;
-        val = warp_reduce_sum(val);
-    }
-    return val;
-}
-
-__global__ void reduction_kernel(float *data_out, float *data_in, int size){
-    unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;    
-
-    float sum[NUM_LOAD] = {0.f};
+    float input[NUM_LOAD] = {0.f};
     for (int i = idx; i < size; i += blockDim.x * gridDim.x * NUM_LOAD){
         for (int step = 0; step < NUM_LOAD; step ++ ){
             int _cur = i + step * blockDim.x * gridDim.x;
-            sum[step] += (_cur < size ) ? data_in[_cur] : 0.f;
+            input[step] += (_cur < size ) ? data_in[_cur] : 0.f;
         }        
     }
     for (int i = 1; i < NUM_LOAD; i++){
-        sum[0] += sum[i];
+        input[0] += input[i];
     }
-    sum[0] = block_reduce_sum(sum[0]);
+    s_data[threadIdx.x] = input[0];
+    __syncthreads();
+
+    for (unsigned int stride = blockDim.x / 2; stride > 0; stride >>= 1){
+        if (threadIdx.x < stride){
+            s_data[threadIdx.x] += s_data[threadIdx.x + stride];
+        }
+        __syncthreads();
+    }
 
     if (threadIdx.x == 0){
-        data_out[blockIdx.x] = sum[0];
+        data_out[blockIdx.x] = s_data[0];
     }
+
 }
 
 int reduction(float *d_out, float *d_in, int size, int n_threads){
     int num_sms;
     int num_blocks_per_sm;
     cudaDeviceGetAttribute(&num_sms, cudaDevAttrMultiProcessorCount, 0);
-    cudaOccupancyMaxActiveBlocksPerMultiprocessor(&num_blocks_per_sm, reduction_kernel, n_threads, n_threads*sizeof(float));
+    cudaOccupancyMaxActiveBlocksPerMultiprocessor(&num_blocks_per_sm, reduction_kernel_opt, n_threads, n_threads*sizeof(float));
+    
     int n_blocks = min(num_blocks_per_sm * num_sms, (size + n_threads - 1)/ n_threads);
     
-    //reduction_kernel<<<n_blocks, n_threads, n_threads*sizeof(float), 0>>>(d_out, d_in, size);
-    //reduction_kernel<<<1, n_threads, n_threads*sizeof(float), 0>>>(d_out, d_in, n_blocks);
-    reduction_kernel<<<n_blocks, n_threads>>>(d_out, d_in, size);
-    reduction_kernel<<<1, n_threads>>>(d_out, d_in, n_blocks);
+    reduction_kernel_opt<<<n_blocks, n_threads, n_threads*sizeof(float), 0>>>(d_out, d_in, size);
+    reduction_kernel_opt<<<1, n_threads, n_threads*sizeof(float), 0>>>(d_out, d_in, n_blocks);
     
-
+    /*
+    float result_gpu;
+    cudaMemcpy(&result_gpu, &d_out[0], sizeof(float), cudaMemcpyDeviceToHost);
+    printf(" %f \n", result_gpu);
+    */
     return 1;
+}
+
+
+void
+run_reduction(int (*reduce)(float*, float*, int, int), 
+              float *d_outPtr, float *d_inPtr, int size, int n_threads)
+{
+    while(size > 1) 
+    {
+        size = reduce(d_outPtr, d_inPtr, size, n_threads);
+    }
 }
 
 void run_benchmark(int (*reduce)(float *, float *, int, int), 
@@ -85,22 +75,32 @@ float *d_outPtr, float *d_inPtr, int size){
     int num_threads = 256;
     int test_iter = 100;
 
-    reduce(d_outPtr, d_inPtr, size, num_threads);
+    reduce(d_outPtr, d_inPtr, size, num_threads);    
 
     StopWatchInterface *timer;
     sdkCreateTimer(&timer);
     sdkStartTimer(&timer);
-    int _size;
+    int _size; 
     for (int i = 0; i < test_iter; i++){
         cudaMemcpy(d_outPtr, d_inPtr, size * sizeof(float), cudaMemcpyDeviceToDevice);
-        _size = size;
+        _size = size;   // reset size
         while (_size > 1){
-            _size = reduce(d_outPtr, d_outPtr, size, num_threads);
+            _size = reduce(d_outPtr, d_outPtr, size, num_threads);            
         }        
+        
+        //run_reduction(reduce, d_outPtr, d_outPtr, size, num_threads);
+        /*
+        float result_gpu = 0;
+        cudaMemcpy(&result_gpu, &d_outPtr[0], sizeof(float), cudaMemcpyDeviceToHost);
+        printf(" %f\n", result_gpu);
+        */
     }
 
     cudaDeviceSynchronize();
+
     sdkStopTimer(&timer);
+
+    
 
     double elapsed_time_msed = sdkGetTimerValue(&timer) / (float)test_iter;
     float bandwidth = size * sizeof(float ) / elapsed_time_msed / 1e6;
@@ -109,7 +109,6 @@ float *d_outPtr, float *d_inPtr, int size){
     sdkDeleteTimer(&timer);
 
 }
-
 
 int main(){
     float *h_inPtr;
@@ -120,7 +119,7 @@ int main(){
     float result_host, result_gpu;
     //int mode = 0;
 
-    srand(2023);
+    srand(2019);
 
     h_inPtr = (float *)malloc(size*sizeof(float));
 

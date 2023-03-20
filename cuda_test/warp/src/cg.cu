@@ -1,12 +1,23 @@
+/*
+    Time= 0.246580 msec, bandwidth= 272.158569 GB/s
+    host 16777216.000000, device 16777216.000000
+    */
+
+//  https://developer.nvidia.com/blog/cooperative-groups/
+
 #include <iostream>
-#include <cooperative_group.h>
+#include <cooperative_groups.h>
 #include <helper_timer.h>
+#include "utils.h"
 
 #define NUM_LOAD 4
 
+//https://en.cppreference.com/w/cpp/language/namespace_alias
+namespace cg = cooperative_groups;
+
 __global__ void reduction_kernel(float *data_out, float *data_in, int size){
     unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    thread_block block = this_thread_block();
+    cg::thread_block block = cg::this_thread_block();
 
     extern __shared__ float s_data[];
 
@@ -30,7 +41,7 @@ __global__ void reduction_kernel(float *data_out, float *data_in, int size){
             //  __syncthreads();    
             //  block.sync();   //  Benefit of cooperative group, performance may drop but provides programming flexibility
         }
-        //__synchthreads();
+        //__synchthreads(); //  Original
         block.sync();   // Equivalent operation
     }
 
@@ -39,20 +50,24 @@ __global__ void reduction_kernel(float *data_out, float *data_in, int size){
     }
 }
 
-void reduction(float *d_out, float *d_in, int size, int n_threads){
+int reduction(float *d_out, float *d_in, int size, int n_threads){
     int num_sms;
     int num_blocks_per_sm;
     cudaDeviceGetAttribute(&num_sms, cudaDevAttrMultiProcessorCount, 0);
-    cudaOccupancyMaxActiveBlockPerMultiprocessor(&num_block_per_sm, reduction_kernel, n_threads, n_threads*sizeof(float));
+    cudaOccupancyMaxActiveBlocksPerMultiprocessor(&num_blocks_per_sm, reduction_kernel, n_threads, n_threads*sizeof(float));
     int n_blocks = min(num_blocks_per_sm * num_sms, (size + n_threads - 1)/ n_threads);
     
+    /*
     reduction_kernel<<<n_blocks, n_threads, n_threads*sizeof(float), 0>>>(d_out, d_in, size);
     reduction_kernel<<<1, n_threads, n_threads*sizeof(float), 0>>>(d_out, d_in, n_blocks);
+    */
+    reduction_kernel<<<n_blocks, n_threads>>>(d_out, d_in, size);
+    reduction_kernel<<<1, n_threads>>>(d_out, d_in, n_blocks);
     
     return 1;
 }
 
-void run_benchmark(void (*reduce)(float *, float *, int, int), 
+void run_benchmark(int (*reduce)(float *, float *, int, int), 
 float *d_outPtr, float *d_inPtr, int size){
     int num_threads = 256;
     int test_iter = 100;
@@ -65,7 +80,7 @@ float *d_outPtr, float *d_inPtr, int size){
 
     for (int i = 0; i < test_iter; i++){
         cudaMemcpy(d_outPtr, d_inPtr, size * sizeof(float), cudaMemcpyDeviceToDevice);
-        reduce(d_outPtr, d_inPtr, size, num_threads);               
+        reduce(d_outPtr, d_outPtr, size, num_threads);               
     }
 
     cudaDeviceSynchronize();
@@ -79,18 +94,6 @@ float *d_outPtr, float *d_inPtr, int size){
 
 }
 
-void init_input(float *data, int size){
-    for (int i = 0; i< size; i++){
-        data[i] = (rand() & 0xFF) / (float)RAND_MAX;
-    }
-}
-
-float get_cpu_result(float *data, int size){
-    double result = 0.f;
-    for (int i = 0; i< size; i++)
-        result += data[i];
-    return (float)result;
-}
 
 int main(){
     float *h_inPtr;
@@ -99,7 +102,7 @@ int main(){
     unsigned int size = 1 << 24;
     
     float result_host, result_gpu;
-    int mode = 0;
+    //int mode = 0;
 
     srand(2019);
 

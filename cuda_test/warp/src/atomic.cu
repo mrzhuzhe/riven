@@ -1,6 +1,11 @@
+/*
+    Time= 27.767040 msec, bandwidth= 2.416853 GB/s
+    host 16777216.000000, device 16777216.000000
+*/
+
 #include <iostream>
-#include <cooperative_group.h>
 #include <helper_timer.h>
+#include "utils.h"
 
 __global__ void reduction_kernel(float *data_out, float *data_in, int size){
     unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -25,7 +30,7 @@ float *d_outPtr, float *d_inPtr, int size){
 
     for (int i = 0; i < test_iter; i++){
         cudaMemcpy(d_outPtr, d_inPtr, size * sizeof(float), cudaMemcpyDeviceToDevice);
-        reduce(d_outPtr, d_inPtr, size, num_threads);               
+        reduce(d_outPtr, d_outPtr, size, num_threads);               
     }
 
     cudaDeviceSynchronize();
@@ -39,18 +44,6 @@ float *d_outPtr, float *d_inPtr, int size){
 
 }
 
-void init_input(float *data, int size){
-    for (int i = 0; i< size; i++){
-        data[i] = (rand() & 0xFF) / (float)RAND_MAX;
-    }
-}
-
-float get_cpu_result(float *data, int size){
-    double result = 0.f;
-    for (int i = 0; i< size; i++)
-        result += data[i];
-    return (float)result;
-}
 
 int main(){
     float *h_inPtr;
@@ -59,9 +52,8 @@ int main(){
     unsigned int size = 1 << 24;
     
     float result_host, result_gpu;
-    int mode = 0;
 
-    srand(2019);
+    srand(2023);
 
     h_inPtr = (float *)malloc(size*sizeof(float));
 

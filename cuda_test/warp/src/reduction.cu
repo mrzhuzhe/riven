@@ -1,19 +1,30 @@
 #include <iostream>
 #include <helper_timer.h>
+#include "utils.h"
 
 __global__ void global_reduction_kernel(float *data_out, float *data_in, int stride, int size){
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    //printf("222, %d", idx);
     if (idx + stride < size){
         data_out[idx] += data_in[idx + stride];
-    }
+        //printf("333, %d %d %f %f \n", idx ,idx + stride, data_in[idx], data_in[idx + stride]);
+    }    
 }
 
 void global_reduction(float *d_out, float *d_in, int n_threads, int size){
     int n_blocks = (size+n_threads-1) / n_threads;
 
     for (int stride =1; stride <size; stride *= 2 ){
-
+        //printf("111 %d \n", stride);
         global_reduction_kernel<<<n_blocks, n_threads>>>(d_out, d_in, stride, size);
+
+        /*
+        cudaDeviceSynchronize();
+        float result_gpu;
+        cudaMemcpy(&result_gpu, &d_out[0], sizeof(float), cudaMemcpyDeviceToHost);
+        //cudaMemcpy(&result_gpu, &d_in[50], sizeof(float), cudaMemcpyDeviceToHost);
+        printf("111 %d %d %d %d %f \n", n_blocks, n_threads, size, stride, result_gpu);
+        */
     }
 }
 
@@ -22,16 +33,22 @@ float *d_outPtr, float *d_inPtr, int size){
     int num_threads = 256;
     int test_iter = 100;
 
-    reduce(d_outPtr, d_inPtr, num_threads, size);
+    //reduce(d_outPtr, d_inPtr, num_threads, size);
 
     StopWatchInterface *timer;
     sdkCreateTimer(&timer);
     sdkStartTimer(&timer);
-
+    //printf("1111 %d\n", size);
     for (int i = 0; i < test_iter; i++){
         cudaMemcpy(d_outPtr, d_inPtr, size*sizeof(float), cudaMemcpyDeviceToDevice);
-        reduce(d_outPtr, d_inPtr, num_threads, size);
+        // must self add self
+        reduce(d_outPtr, d_outPtr, num_threads, size);
         cudaDeviceSynchronize();
+
+        //float result_gpu;
+        //cudaMemcpy(&result_gpu, &d_outPtr[0], sizeof(float), cudaMemcpyDeviceToHost);
+        //printf("111 %f \n", result_gpu);
+    
     }
 
     cudaDeviceSynchronize();
@@ -43,19 +60,6 @@ float *d_outPtr, float *d_inPtr, int size){
 
     sdkDeleteTimer(&timer);
 
-}
-
-void init_input(float *data, int size){
-    for (int i = 0; i< size; i++){
-        data[i] = (rand() & 0xFF) / (float)RAND_MAX;
-    }
-}
-
-float get_cpu_result(float *data, int size){
-    double result = 0.f;
-    for (int i = 0; i< size; i++)
-        result += data[i];
-    return (float)result;
 }
 
 int main(){

@@ -1,7 +1,8 @@
 #include <iostream>
 #include <helper_timer.h>
+#include "utils.h"
 
-__global__ void shared_reduction_kernel_1(float *data_out, float *data_in, int size){
+__global__ void shared_reduction_kernel(float *data_out, float *data_in, int size){
     unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
     extern __shared__ float s_data[];
@@ -9,7 +10,8 @@ __global__ void shared_reduction_kernel_1(float *data_out, float *data_in, int s
     s_data[threadIdx.x] = (idx < size) ? data_in[idx] : 0.f;
 
     __syncthreads();
-
+    
+    // interleaved addressing
     for (unsigned int stride =1; stride < blockDim.x; stride *= 2 ){
         if ((idx % (stride *2)) == 0)
             s_data[threadIdx.x] += s_data[threadIdx.x + stride];
@@ -20,7 +22,7 @@ __global__ void shared_reduction_kernel_1(float *data_out, float *data_in, int s
 }
 
 
-__global__ void shared_reduction_kernel_2(float *data_out, float *data_in, int size){
+__global__ void shared_reduction_kernel_without_divergence(float *data_out, float *data_in, int size){
     unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
     extern __shared__ float s_data[];
@@ -29,9 +31,8 @@ __global__ void shared_reduction_kernel_2(float *data_out, float *data_in, int s
 
     __syncthreads();
 
-    //  for (unsigned int stride =1; stride < blockDim.x; stride *= 2 ){
+    // interleaved addressing
     for (unsigned int stride = blockDim.x / 2; stride > 0; stride >>= 1){
-        //if ((idx % (stride *2)) == 0)
         if (threadIdx.x < stride) 
             s_data[threadIdx.x] += s_data[threadIdx.x + stride];
         __syncthreads();
@@ -45,7 +46,19 @@ void global_reduction(float *d_out, float *d_in, int n_threads, int size){
 
     while (size > 1){
         int n_blocks =(size + n_threads -1) / n_threads;
-        shared_reduction_kernel_2<<<n_blocks, n_threads, n_threads*sizeof(float), 0>>>(d_out, d_in, size);
+        // wrong
+        //shared_reduction_kernel_without_divergence<<<n_blocks, n_threads, n_threads*sizeof(float), 0>>>(d_out, d_in, size);
+        /*
+            Time= 0.514730 msec, bandwidth= 130.376831 GB/s
+            host 16777216.000000, device 16777216.000000
+        */
+
+        //shared_reduction_kernel<<<n_blocks, n_threads, n_threads*sizeof(float), 0>>>(d_out, d_out, size);
+        /*
+            Time= 0.419230 msec, bandwidth= 160.076477 GB/s
+            host 16777216.000000, device 16777216.000000
+        */
+        shared_reduction_kernel_without_divergence<<<n_blocks, n_threads, n_threads*sizeof(float), 0>>>(d_out, d_out, size);
         size = n_blocks;
     }
 }
@@ -74,19 +87,6 @@ float *d_outPtr, float *d_inPtr, int size){
 
     sdkDeleteTimer(&timer);
 
-}
-
-void init_input(float *data, int size){
-    for (int i = 0; i< size; i++){
-        data[i] = (rand() & 0xFF) / (float)RAND_MAX;
-    }
-}
-
-float get_cpu_result(float *data, int size){
-    double result = 0.f;
-    for (int i = 0; i< size; i++)
-        result += data[i];
-    return (float)result;
 }
 
 int main(){

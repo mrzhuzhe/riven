@@ -1,6 +1,16 @@
+/*
+    Time= 0.243930 msec, bandwidth= 275.115265 GB/s
+    host 16777216.000000, device 16777216.000000
+*/
+
 #include <iostream>
-#include <cooperative_group.h>
+#include <cooperative_groups.h>
 #include <helper_timer.h>
+#include "utils.h"
+
+#define NUM_LOAD 4
+
+namespace cg = cooperative_groups;
 
 template <typename group_t>
 __inline__ __device__ float warp_reduce_sum(group_t group, float val)
@@ -13,16 +23,16 @@ __inline__ __device__ float warp_reduce_sum(group_t group, float val)
 }
 
 
-__inline__ __device__ float block_reduce_sum(thread_block block,float val){
+__inline__ __device__ float block_reduce_sum(cg::thread_block block,float val){
     __shared__ float shared[32];
     int warp_idx = threadIdx.x / warpSize;
 
-    thread_block_tile<32> tile32 = tiled_partition<32>(block);
+    cg::thread_block_tile<32> tile32 = cg::tiled_partition<32>(block);
     val = warp_reduce_sum(tile32, val);
 
     if (tile32.thread_rank() == 0){
         shared[warp_idx] = val;
-
+    }
     __syncthreads();
 
     val = (threadIdx.x < blockDim.x / warpSize) ? shared[tile32.thread_rank()] : 0;
@@ -35,7 +45,7 @@ __inline__ __device__ float block_reduce_sum(thread_block block,float val){
 
 __global__ void reduction_kernel(float *data_out, float *data_in, int size){
     unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;    
-    thread_block block = this_thread_block();
+    cg::thread_block block = cg::this_thread_block();
     
     float sum[NUM_LOAD] = {0.f};
     for (int i = idx; i < size; i += blockDim.x * gridDim.x * NUM_LOAD){
@@ -58,7 +68,7 @@ void reduction(float *d_out, float *d_in, int size, int n_threads){
     int num_sms;
     int num_blocks_per_sm;
     cudaDeviceGetAttribute(&num_sms, cudaDevAttrMultiProcessorCount, 0);
-    cudaOccupancyMaxActiveBlockPerMultiprocessor(&num_block_per_sm, shared_reduction_kernel, n_threads, n_threads*sizeof(float));
+    cudaOccupancyMaxActiveBlocksPerMultiprocessor(&num_blocks_per_sm, reduction_kernel, n_threads, n_threads*sizeof(float));
     int n_blocks = min(num_blocks_per_sm * num_sms, (size + n_threads - 1)/ n_threads);
     
     reduction_kernel<<<n_blocks, n_threads>>>(d_out, d_in, size);
@@ -77,7 +87,7 @@ float *d_outPtr, float *d_inPtr, int size){
 
     for (int i = 0; i < test_iter; i++){
         cudaMemcpy(d_outPtr, d_inPtr, size * sizeof(float), cudaMemcpyDeviceToDevice);
-        reduce(d_outPtr, d_inPtr, size, num_threads);               
+        reduce(d_outPtr, d_outPtr, size, num_threads);               
     }
 
     cudaDeviceSynchronize();
@@ -91,18 +101,6 @@ float *d_outPtr, float *d_inPtr, int size){
 
 }
 
-void init_input(float *data, int size){
-    for (int i = 0; i< size; i++){
-        data[i] = (rand() & 0xFF) / (float)RAND_MAX;
-    }
-}
-
-float get_cpu_result(float *data, int size){
-    double result = 0.f;
-    for (int i = 0; i< size; i++)
-        result += data[i];
-    return (float)result;
-}
 
 int main(){
     float *h_inPtr;
@@ -111,9 +109,8 @@ int main(){
     unsigned int size = 1 << 24;
     
     float result_host, result_gpu;
-    int mode = 0;
 
-    srand(2019);
+    srand(2023);
 
     h_inPtr = (float *)malloc(size*sizeof(float));
 

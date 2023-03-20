@@ -1,11 +1,19 @@
-#include <cuda_fp16>
+// https://docs.nvidia.com/cuda/cuda-math-api/group__CUDA__MATH____HALF__ARITHMETIC.html
+
+/*
+
+#ifndef __CUDA_ARCH__
+#define __CUDA_ARCH__ 800
+#endif
+*/
+
+#include <cuda_fp16.h>
 #include <helper_timer.h>
-#include <cooperative_groups.h>
 #include <cstdio>
 #include <sm_61_intrinsics.h>
+#include "cb.h"
 
-
-__global__ void hfma_kernel(char *d_x, char *d_y, int *d_z, int size){
+__global__ void hfma_kernel(half *d_x, half *d_y, float *d_z, int size){
     int idx_x = blockIdx.x * blockDim.x + threadIdx.x;
     int stride = gridDim.x * blockDim.x;
 
@@ -15,9 +23,11 @@ __global__ void hfma_kernel(char *d_x, char *d_y, int *d_z, int size){
 
     extern __shared__ float2 s_data[];
 
-#if __CUDA_ARCH__ > 530
+#if __CUDA_ARCH__ >= 530
     for (int i = idx_x; i < size; i += stride){
-        dual_z[i] = __half22float2(dual_x[i]), dual_y[i]);
+        //dual_z[i] = __half22float2(dual_x[i], dual_y[i]);
+        //  calling a __device__ function("__internal_device_float2_to_half2_rn(float, float)") from a __host__ __device__ function("__floats2half2_rn") is not allowed
+        dual_z[i] = __half22float2(__hmul2(dual_x[i], dual_y[i]));
     }
 #else 
     for (int i = idx_x; i < size; i += stride){
@@ -28,7 +38,7 @@ __global__ void hfma_kernel(char *d_x, char *d_y, int *d_z, int size){
 }
 
 
-void fhma_host(float *h_x, float *h_y, float *h_z, int size){
+void fhma_host(half *h_x, half *h_y, float *h_z, int size){
     #pragma omp parallel
     {
     #pragma omp for
@@ -45,7 +55,7 @@ int main() {
     CBuffer<float> Z;
 
     int size = 1 << 26;
-    srand(2019);
+    srand(2023);
 
     X.init(size, true);
     Y.init(size, true);
@@ -78,7 +88,7 @@ int main() {
     fhma_host(X.h_ptr_, Y.h_ptr_, Z.h_ptr_, size);
 
     int diff_count = Z.diff_count();
-    (diff_count == 0) ? prinf("Success!!\n") : printf("Counted diff!! (%d times)\n", diff_count);
+    (diff_count == 0) ? printf("Success!!\n") : printf("Counted diff!! (%d times)\n", diff_count);
 
     sdkDeleteTimer(&timer);    
 

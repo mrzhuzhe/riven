@@ -1,5 +1,6 @@
 #include <iostream>
 #include <helper_timer.h>
+#include "utils.h"
 
 __global__ void shared_reduction_kernel(float *data_out, float *data_in, int size){
     unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -11,8 +12,8 @@ __global__ void shared_reduction_kernel(float *data_out, float *data_in, int siz
     __syncthreads();
 
     for (unsigned int stride =1; stride < blockDim.x; stride *= 2 ){
-        //if ((idx % (stride *2)) == 0)
-        if ( (idx & (stride * 2 - 1)) == 0 )  
+        if ((idx % (stride *2)) == 0)
+        //if ( (idx & (stride * 2 - 1)) == 0 )  
             s_data[threadIdx.x] += s_data[threadIdx.x + stride];
         __syncthreads();
     }
@@ -20,12 +21,13 @@ __global__ void shared_reduction_kernel(float *data_out, float *data_in, int siz
         data_out[blockIdx.x] = s_data[0];
 }
 
-void global_reduction(float *d_out, float *d_in, int n_threads, int size){
+void shared_reduction(float *d_out, float *d_in, int n_threads, int size){
     cudaMemcpy(d_out, d_in, size*sizeof(float), cudaMemcpyDeviceToDevice);
 
     while (size > 1){
         int n_blocks =(size + n_threads -1) / n_threads;
-        shared_reduction_kernel<<<n_blocks, n_threads, n_threads*sizeof(float), 0>>>(d_out, d_in, size);
+        //shared_reduction_kernel<<<n_blocks, n_threads, n_threads*sizeof(float), 0>>>(d_out, d_in, size);
+        shared_reduction_kernel<<<n_blocks, n_threads, n_threads*sizeof(float), 0>>>(d_out, d_out, size);
         size = n_blocks;
     }
 }
@@ -56,19 +58,6 @@ float *d_outPtr, float *d_inPtr, int size){
 
 }
 
-void init_input(float *data, int size){
-    for (int i = 0; i< size; i++){
-        data[i] = (rand() & 0xFF) / (float)RAND_MAX;
-    }
-}
-
-float get_cpu_result(float *data, int size){
-    double result = 0.f;
-    for (int i = 0; i< size; i++)
-        result += data[i];
-    return (float)result;
-}
-
 int main(){
     float *h_inPtr;
     float *d_inPtr, *d_outPtr;
@@ -88,7 +77,7 @@ int main(){
 
     cudaMemcpy(d_inPtr, h_inPtr, size*sizeof(float), cudaMemcpyHostToDevice);
 
-    run_benchmark(global_reduction, d_outPtr, d_inPtr, size);
+    run_benchmark(shared_reduction, d_outPtr, d_inPtr, size);
     cudaMemcpy(&result_gpu, &d_outPtr[0], sizeof(float), cudaMemcpyDeviceToHost);
 
     result_host = get_cpu_result(h_inPtr, size);
