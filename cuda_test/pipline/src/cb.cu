@@ -17,24 +17,42 @@ class Operator
     private:
         int index;
         cudaStream_t stream;
+        StopWatchInterface *p_timer;
+
+        static void CUDART_CB Callback(cudaStream_t stream, cudaError_t status, void* userDate);
+        void print_time();
     public:
         Operator(){
             cudaStreamCtreate(&stream);
+            sdkCreateTimer(&p_timer);
         }
         ~Operator(){
             cudaStreamDestroy(&stream);
+            sdkDeleteTimer(&p_timer);
         }
         void set_index(int idx) { index = idx; }
         void async_operation(float *h_c, const float *h_a, const float *h_b,
             float *d_c, float *d_a, float *d_b,
             const int size, const int bufsize
         );
+};
+
+void Operator::CUDART_CB Callback(cudaStream_t stream, cudaError_t status, void* userData){
+    Operator* this_ = (Operator*) userData;
+    this_->print_time();
+}
+
+void Operator::print_time(){
+    sdkStopTimer(&p_timer);
+    float elapsed_time_msed = sdkGetTimerValue(&p_timer);
+    printf("stream %d - elapsed %f ms \n", _index, elasped_time_msed);
 }
 
 void Operator::async_operation(float *h_c, const float *h_a, const float *h_b,
             float *d_c, float *d_a, float *d_b,
             const int size, const int bufsize
         ){
+            sdkStartTimer(&p_timer);
             cudaMemcpyAsync(d_a, h_a, bufsize, cudaMemcpyHostToDevice, stream);
             cudaMemcpyAsync(d_b, h_b, bufsize, cudaMemcpyHostToDevice, stream);
 
@@ -44,8 +62,9 @@ void Operator::async_operation(float *h_c, const float *h_a, const float *h_b,
 
             cudaMemcpyAsync(h_c, d_c, bufsize, cudaMemcpyDeviceToHost, stream);
 
-            cudaStreamSynchronize(stream);
-            printf("Launched GPU task %d\n", index);
+            cudaStreamAddCallback(stream, Operator::Callback, this, 0);
+            //cudaStreamSynchronize(stream);
+            //printf("Launched GPU task %d\n", index);
         }
 
 int main(){
@@ -54,6 +73,9 @@ int main(){
     int size = 1 << 24;
     int bufsizec = size * sizeof(float);
     int num_operator = 4;
+
+    StopWatchInterface *timer;
+    sdkCreateTimer(&timer);
 
     cudaMallocHost((void **)&h_a, bufsize);
     cudaMallocHost((void **)&h_b, bufsize);
@@ -64,10 +86,13 @@ int main(){
     init_buffer(h_b, size);
     init_buffer(h_c, size);
 
+    // allocate device memories
+    cudaMalloc((void**)&d_a, bufsize);
+    cudaMalloc((void**)&d_b, bufsize);
+    cudaMalloc((void**)&d_c, bufsize);
+
     Operator *ls_operator = new Operator[num_operator];
 
-    StopWatchInterface *timer;
-    sdkCreateTimer(&timer);
     sdkStartTimer(&timer);
 
     for (int i =0; i < num_operator; i++){
