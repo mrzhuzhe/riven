@@ -1,5 +1,8 @@
 // https://docs.nvidia.com/cuda/cuda-math-api/group__CUDA__MATH____HALF__ARITHMETIC.html
-
+/*
+  FMA, FLOPS = 97683939262464.000000 GFLops, Operation Time= 0.687000 msec
+  Success!!  
+*/
 /*
 
 #ifndef __CUDA_ARCH__
@@ -9,6 +12,7 @@
 
 #include <cuda_fp16.h>
 #include <helper_timer.h>
+#include <helper_math.h>
 #include <cstdio>
 #include <sm_61_intrinsics.h>
 #include "cb.h"
@@ -25,6 +29,7 @@ __global__ void hfma_kernel(half *d_x, half *d_y, float *d_z, int size){
 
 #if __CUDA_ARCH__ >= 530
     for (int i = idx_x; i < size; i += stride){
+        //  https://docs.nvidia.com/cuda/cuda-math-api/group__CUDA__MATH____HALF__MISC.html
         //dual_z[i] = __half22float2(dual_x[i], dual_y[i]);
         //  calling a __device__ function("__internal_device_float2_to_half2_rn(float, float)") from a __host__ __device__ function("__floats2half2_rn") is not allowed
         dual_z[i] = __half22float2(__hmul2(dual_x[i], dual_y[i]));
@@ -50,7 +55,6 @@ void fhma_host(half *h_x, half *h_y, float *h_z, int size){
 
 
 int main() {
-
     CBuffer<half> X, Y;
     CBuffer<float> Z;
 
