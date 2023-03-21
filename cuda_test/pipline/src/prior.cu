@@ -1,11 +1,12 @@
 /*
-stream 0 - elapsed 6.178000 ms 
-stream 1 - elapsed 8.134000 ms 
-stream 2 - elapsed 11.395000 ms 
-stream 3 - elapsed 14.647000 ms 
-compared a sample result...
-host: 2.000000, device 2.000000
-Time=14.920000 msec, bandwidth=53.974957 GB/s
+    Priority Range: low(0), high(-5)
+    stream 0 - elapsed 7.327000 ms 
+    stream 3 - elapsed 12.630000 ms 
+    stream 1 - elapsed 13.706000 ms 
+    stream 2 - elapsed 15.910000 ms 
+    compared a sample result...
+    host: 2.000000, device 2.000000
+    Time=16.164000 msec, bandwidth=49.820984 GB/s
 */
 
 #include <iostream>
@@ -16,18 +17,22 @@ class Operator
 {
     private:
         int _index;
-        cudaStream_t stream;
+        //cudaStream_t stream;
         StopWatchInterface *p_timer;
 
         static void CUDART_CB Callback(cudaStream_t stream, cudaError_t status, void* userDate);
         void print_time();
+    protected:
+        cudaStream_t stream = nullptr;
     public:
-        Operator(){
-            cudaStreamCreate(&stream);
+        Operator(bool create_stream = true){
+            if (create_stream)
+                cudaStreamCreate(&stream);
             sdkCreateTimer(&p_timer);
         }
         ~Operator(){
-            cudaStreamDestroy(stream);
+            if (stream != nullptr)
+                cudaStreamDestroy(stream);
             sdkDeleteTimer(&p_timer);
         }
         void set_index(int idx) { _index = idx; }
@@ -66,12 +71,27 @@ void Operator::async_operation(float *h_c, const float *h_a, const float *h_b,
     cudaStreamAddCallback(stream, Operator::Callback, this, 0);
 }
 
+class Operator_with_priority: public Operator {
+    public:
+        Operator_with_priority(): Operator(false) {}
+    void set_priority(int priority){
+        cudaStreamCreateWithPriority(&stream, cudaStreamNonBlocking, priority);
+    }
+};
+
 int main(){
     float *h_a, *h_b, *h_c;
     float *d_a, *d_b, *d_c;
     int size = 1 << 24;
     int bufsize = size * sizeof(float);
     int num_operator = 4;
+
+    cudaDeviceProp prop;
+    cudaGetDeviceProperties(&prop, 0);
+    if (prop.streamPrioritiesSupported == 0){
+        printf("This device does not support priority streams");
+        return 1;
+    }
 
     StopWatchInterface *timer;
     sdkCreateTimer(&timer);
@@ -90,13 +110,25 @@ int main(){
     cudaMalloc((void**)&d_b, bufsize);
     cudaMalloc((void**)&d_c, bufsize);
 
-    Operator *ls_operator = new Operator[num_operator];
+    Operator_with_priority *ls_operator = new Operator_with_priority[num_operator];
+
+    int priority_low, priority_high;
+    cudaDeviceGetStreamPriorityRange(&priority_low, &priority_high);
+    printf("Priority Range: low(%d), high(%d)\n ", priority_low, priority_high);
 
     sdkStartTimer(&timer);
 
+    for (int i =0; i < num_operator; i++){        
+        ls_operator[i].set_index(i);
+        if (i+1 == num_operator)
+            ls_operator[i].set_priority(priority_high); // 3 
+        else
+            ls_operator[i].set_priority(priority_low);
+    }
+
+
     for (int i =0; i < num_operator; i++){
         int offset = i * size / num_operator;
-        ls_operator[i].set_index(i);
         ls_operator[i].async_operation(&h_c[offset], &h_a[offset], &h_b[offset],
         &d_c[offset], &d_a[offset], &d_b[offset],
         size / num_operator, bufsize / num_operator

@@ -34,6 +34,7 @@ void Operator::async_operation(float *h_c, const float *h_a, const float *h_b,
             float *d_c, float *d_a, float *d_b,
             const int size, const int bufsize
         ){
+            // is you dont malloc device memory this shall throw a error in nsight
             cudaMemcpyAsync(d_a, h_a, bufsize, cudaMemcpyHostToDevice, stream);
             cudaMemcpyAsync(d_b, h_b, bufsize, cudaMemcpyHostToDevice, stream);
 

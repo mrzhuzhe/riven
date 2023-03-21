@@ -1,3 +1,4 @@
+#https://developer.nvidia.com/zh-cn/blog/building-cuda-applications-cmake/
 cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -9,6 +10,18 @@ project(hellocuda LANGUAGES CXX CUDA)
 
 add_executable(sm sm.cu)
 add_executable(pip pip.cu)
-
+add_executable(cb cb.cu)
+add_executable(prior prior.cu)
+add_executable(event event.cu)
+add_executable(sm_event sm_event.cu)
+#   calling a __host__ function("cudaDeviceSynchronize") from a __global__ function("parent_kernel") is not allowed
+#add_executable(dynamic_parenet dynamic_parenet.cu)
+#add_executable(dynamic_recursion dynamic_recursion.cu)
+add_executable(cg cg.cu)    # still wrong
 
 target_include_directories(pip PUBLIC . ../../include)
+target_include_directories(cb PUBLIC . ../../include)
+target_include_directories(prior PUBLIC . ../../include)
+target_include_directories(event PUBLIC . ../../include)
+target_include_directories(sm_event PUBLIC . ../../include)
+target_include_directories(cg PUBLIC . ../../include)
