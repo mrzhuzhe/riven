@@ -1,6 +1,6 @@
 #include <iostream>
 #include "TikTok.h"
-//#include <omp.h>
+#include <omp.h>
 
 float cpuPi(int num) {
     float sum = 0.0;
@@ -15,7 +15,9 @@ float cpuPi(int num) {
 float cpuPiCriticNaive(int num) {
     float sum = 0.0;
 #pragma omp parallel for default(none) shared(num, sum)
+
     for (int i = 0; i< num; i++ ){
+        printf("cpu %d \n", omp_get_thread_num());
         float temp = (i + 0.5f)/num;
     #pragma omp critical
     {

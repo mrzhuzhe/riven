@@ -8,9 +8,25 @@ host: 2.000000, device 2.000000
 Time=14.920000 msec, bandwidth=53.974957 GB/s
 */
 
+/*
+    // openmp
+   cpu 1
+    cpu 3
+    cpu 2
+    cpu 0
+    stream 1 - elapsed 6.524000 ms 
+    stream 3 - elapsed 8.972000 ms 
+    stream 0 - elapsed 11.969000 ms 
+    stream 2 - elapsed 15.458000 ms 
+    compared a sample result...
+    host: 2.000000, device 2.000000
+    Time=15.693000 msec, bandwidth=51.316280 GB/s
+*/
+
 #include <iostream>
 #include <helper_functions.h>
 #include "common.h"
+#include "omp.h"
 
 class Operator
 {
@@ -94,6 +110,8 @@ int main(){
 
     sdkStartTimer(&timer);
 
+    /*
+    
     for (int i =0; i < num_operator; i++){
         int offset = i * size / num_operator;
         ls_operator[i].set_index(i);
@@ -101,6 +119,22 @@ int main(){
         &d_c[offset], &d_a[offset], &d_b[offset],
         size / num_operator, bufsize / num_operator
         );
+    }
+    */
+
+
+    omp_set_num_threads(num_operator);
+    #pragma omp parallel
+    {  
+        int i = omp_get_thread_num();
+        printf("cpu %i\n", i);
+        int offset = i * size / num_operator;
+        ls_operator[i].set_index(i);
+        ls_operator[i].async_operation(&h_c[offset], &h_a[offset], &h_b[offset],
+        &d_c[offset], &d_a[offset], &d_b[offset],
+        size / num_operator, bufsize / num_operator
+        );
+            
     }
 
     cudaDeviceSynchronize();

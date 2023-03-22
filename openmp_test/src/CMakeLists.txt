@@ -8,7 +8,7 @@ project(helloopenmp LANGUAGES CXX)
 find_package(OpenMP REQUIRED)
 
 add_executable(main main.cpp)
-target_link_libraries(main PRIVATE OpenMP::OpenMP_CXX)
+target_link_libraries(main PUBLIC OpenMP::OpenMP_CXX)
 
 #   this is wrong
 if (APPLE) 

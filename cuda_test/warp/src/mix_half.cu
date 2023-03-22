@@ -36,6 +36,7 @@ __global__ void hfma_kernel(half *d_x, half *d_y, float *d_z, int size){
     }
 #else 
     for (int i = idx_x; i < size; i += stride){
+        // float2 multiply is in helper_math
         dual_z[i] = __half22float2(dual_x[i]) * __half22float2(dual_y[i]);
     }
 #endif

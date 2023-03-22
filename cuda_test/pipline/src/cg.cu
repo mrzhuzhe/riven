@@ -1,3 +1,8 @@
+/*
+    Time= 0.092800 msec, bandwidth= 723.155884 GB/s
+    host 16777216.000000, device 16777216.000000
+    // this implement is much faster
+*/
 #include <iostream>
 #include <cooperative_groups.h>
 #include <helper_timer.h>
@@ -14,7 +19,6 @@ __device__ void Block_reduction(float *out, float *in, float *s_data, int active
         s_data[tid] += in[i];
     
     block.sync();
-
     for (unsigned int stride = blockDim.x / 2; stride > 0; stride >>=1){
         if (tid < stride)
             s_data[tid] += s_data[tid + stride];
@@ -33,7 +37,7 @@ __global__ void reduction_kernel(float *data_out, float *data_in, int size){
     
     extern __shared__ float s_data[];
     
-    Block_reduction(data_out, data_out, s_data, block.size(), gridDim.x, grid, block);
+    Block_reduction(data_out, data_in, s_data, grid.size(), size, grid, block);
 
     grid.sync();
 
@@ -55,7 +59,8 @@ int reduction_grid_sync(float *g_outPtr, float *g_inPtr, int size, int n_threads
     params[0] = (void*)&g_outPtr;
     params[1] = (void*)&g_inPtr;
     params[2] = (void*)&size;
-
+    
+    // much much faster
     cudaLaunchCooperativeKernel((void*)reduction_kernel, n_blocks, n_threads, params, n_threads * sizeof(float), NULL);
 
     return n_blocks;
@@ -74,8 +79,7 @@ float *d_outPtr, float *d_inPtr, int size){
     sdkStartTimer(&timer);
 
     for (int i = 0; i < test_iter; i++){
-        cudaMemcpy(d_outPtr, d_inPtr, size * sizeof(float), cudaMemcpyDeviceToDevice);
-        reduce(d_outPtr, d_outPtr, size, num_threads);               
+        reduce(d_outPtr, d_inPtr, size, num_threads);               
     }
 
     cudaDeviceSynchronize();
@@ -89,6 +93,14 @@ float *d_outPtr, float *d_inPtr, int size){
 
 }
 
+int check_cooperative_launch_support(){
+    cudaDeviceProp deviceProp;
+
+    cudaGetDeviceProperties(&deviceProp, 0);
+    if (deviceProp.cooperativeLaunch == 0)
+        return 0;
+    return 1;
+}
 
 int main(){
     float *h_inPtr;
@@ -100,6 +112,11 @@ int main(){
     //int mode = 0;
 
     srand(2019);
+
+    if (check_cooperative_launch_support() == 0){
+        printf("CPU does not support cooperative kernel");
+    }
+
 
     h_inPtr = (float *)malloc(size*sizeof(float));
 
