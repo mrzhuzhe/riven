@@ -9,6 +9,7 @@ project(hellocuda LANGUAGES CXX CUDA)
 
 
 add_executable(segmm segmm.cu)
-
+add_executable(conv conv.cu)
 
 target_include_directories(segmm PUBLIC . ../../include)
+target_include_directories(conv PUBLIC . ../../include)

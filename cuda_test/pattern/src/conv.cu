@@ -14,16 +14,16 @@ __global__ void conv_kernel_v1(float *d_out, float *d_in, float *d_filter, int n
     float res = 0.f;
     for (int f_row = -filter_size/2; f_row <= filter_size/2; ++f_row){
         for (int f_col = -filter_size/2; f_col <= filter_size/2; ++f_col){
-            int img_r = id_y + f_row;
-            int img_c = id_x + f_col;
-            float img_v = (img_r >= 0 && img_r < n_row && img_c >=0; img_c < n_col) ? 
-                d_in[img_row * n_col + img_c] : 0.f;
+            int img_r = i_y + f_row;
+            int img_c = i_x + f_col;
+            float img_v = (img_r >= 0 && img_r < n_r && img_c >=0 && img_c < n_c) ? 
+                d_in[img_r * n_c + img_c] : 0.f;
             float filter_v = d_filter[(f_row+filter_size/2)*filter_size + f_col + filter_size/2];
             res += img_v * filter_v;
         }
     }
 
-    d_out[id_y * n_col + id_x] = res;
+    d_out[i_y * n_c + i_x] = res;
 }
 
 __constant__ float c_filter[MAX_FILTER_LENGTH*MAX_FILTER_LENGTH];
@@ -35,16 +35,16 @@ __global__ void conv_kernel_v2(float *d_out, float *d_in, float *d_filter, int n
     float res = 0.f;
     for (int f_row = -filter_size/2; f_row <= filter_size/2; ++f_row){
         for (int f_col = -filter_size/2; f_col <= filter_size/2; ++f_col){
-            int img_r = id_y + f_row;
-            int img_c = id_x + f_col;
-            float img_v = (img_r >= 0 && img_r < n_row && img_c >=0; img_c < n_col) ? 
-                d_in[img_row * n_col + img_c] : 0.f;
+            int img_r = i_y + f_row;
+            int img_c = i_x + f_col;
+            float img_v = (img_r >= 0 && img_r < n_r && img_c >=0 && img_c < n_c) ? 
+                d_in[img_r * n_c + img_c] : 0.f;
             float filter_v = c_filter[(f_row+filter_size/2)*filter_size + f_col + filter_size/2];
             res += img_v * filter_v;
         }
     }
 
-    d_out[id_y * n_col + id_x] = res;
+    d_out[i_y * n_c + i_x] = res;
 }
 
 int main(){
