@@ -26,7 +26,8 @@ bool value_test(float *a, float *b, int length){
 void generate_data(float *h_buffer, int num_row, int num_col){
     for (int row = 0; row < num_row; row ++){
         for (int col = 0; col < num_col; col++){
-            h_buffer[row*num_col+col] = 1.f;
+            h_buffer[row*num_col+col] = (rand() & 0xFFFF) / (float)RAND_MAX;
+            //h_buffer[row*num_col+col] = 1.f;
         }
     }
 }

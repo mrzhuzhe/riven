@@ -47,6 +47,7 @@ __global__ void conv_kernel_v2(float *d_out, float *d_in, float *d_filter, int n
     d_out[i_y * n_c + i_x] = res;
 }
 
+
 __global__ void conv_kernel_v3(float *d_out, float *d_in, float *d_filter, int n_r, int n_c, int filter_size)
 {
     int i_x = blockDim.x * blockIdx.x + threadIdx.x;
@@ -57,6 +58,7 @@ __global__ void conv_kernel_v3(float *d_out, float *d_in, float *d_filter, int n
 
     extern __shared__ float s_input[];
 
+    
     for (int row  = 0 ; row <= tile_size / BLOCK_DIM; row++){
         for (int col = 0; col <= tile_size/ BLOCK_DIM; col++){
             int idx_row = i_y + BLOCK_DIM * row - pad_size;
@@ -66,14 +68,16 @@ __global__ void conv_kernel_v3(float *d_out, float *d_in, float *d_filter, int n
 
             if ( fid_row >= tile_size || fid_col >= tile_size) continue;
 
-            s_input[tile_size*fid_row + fid_col] = (idx_row >=0 &&idx_row <= n_r && idx_col >= 0 && idx_col <= n_c) ? d_in[n_c * idx_row + idx_col] : 0.f;
+            s_input[tile_size*fid_row + fid_col] = \
+            //(idx_row >=0 &&idx_row <= n_r && idx_col >= 0 && idx_col <= n_c) ?   // wrong
+            (idx_row >=0 &&idx_row < n_r && idx_col >= 0 && idx_col < n_c) ? 
+            d_in[n_c * idx_row + idx_col] : 0.f;
 
         }
-    }
+    }    
 
     __syncthreads();
-
-    //
+    /*
     if (i_x == BLOCK_DIM && i_y == BLOCK_DIM){
         for (int row = 0; row < 2 * pad_size + BLOCK_DIM; row++){
             for (int col = 0; col < 2 * pad_size + BLOCK_DIM; col++){
@@ -82,15 +86,15 @@ __global__ void conv_kernel_v3(float *d_out, float *d_in, float *d_filter, int n
             printf("\n");
         }
     }
+    */
 
-
+    
     float res = 0.f;
     for (int f_row = -filter_size/2; f_row <= filter_size/2; ++f_row){
         for (int f_col = -filter_size/2; f_col <= filter_size/2; ++f_col){
             int img_r = threadIdx.y + pad_size + f_row;
             int img_c = threadIdx.x + pad_size + f_col;
-            float img_v = (img_r >= 0 && img_r < n_r && img_c >=0 && img_c < n_c) ? 
-                d_in[img_r * n_c + img_c] : 0.f;
+            float img_v = s_input[img_r * tile_size + img_c];
             float filter_v = c_filter[(f_row+filter_size/2)*filter_size + f_col + filter_size/2];
             res += img_v * filter_v;
         }
@@ -98,6 +102,7 @@ __global__ void conv_kernel_v3(float *d_out, float *d_in, float *d_filter, int n
 
     d_out[i_y * n_c + i_x] = res;
 }
+
 
 void conv_gpu(int version, float *d_out, float *d_in, float *d_filter, int num_row, int num_col, int filter_size){
     dim3 dimBlock(BLOCK_DIM, BLOCK_DIM);
@@ -107,8 +112,8 @@ void conv_gpu(int version, float *d_out, float *d_in, float *d_filter, int num_r
     } else if (version == 2){
         conv_kernel_v2<<< dimGrid, dimBlock >>>(d_out, d_in, d_filter, num_row, num_col, filter_size);
     } else if (version == 3 ){
-        int shared_mem_size = (2*filter_size + BLOCK_DIM) * (2*filter_size + BLOCK_DIM*sizeof(float));
-        conv_kernel_v1<<< dimGrid, dimBlock, shared_mem_size, 0 >>>(d_out, d_in, d_filter, num_row, num_col, filter_size);
+        int shared_mem_size = (2*filter_size + BLOCK_DIM) * (2*filter_size + BLOCK_DIM) * sizeof(float);
+        conv_kernel_v3<<< dimGrid, dimBlock, shared_mem_size, 0 >>>(d_out, d_in, d_filter, num_row, num_col, filter_size);
     }
 
 
