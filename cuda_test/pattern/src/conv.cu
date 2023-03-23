@@ -57,7 +57,6 @@ __global__ void conv_kernel_v3(float *d_out, float *d_in, float *d_filter, int n
 
     extern __shared__ float s_input[];
 
-    float res = 0.f;
     for (int row  = 0 ; row <= tile_size / BLOCK_DIM; row++){
         for (int col = 0; col <= tile_size/ BLOCK_DIM; col++){
             int idx_row = i_y + BLOCK_DIM * row - pad_size;
@@ -67,7 +66,7 @@ __global__ void conv_kernel_v3(float *d_out, float *d_in, float *d_filter, int n
 
             if ( fid_row >= tile_size || fid_col >= tile_size) continue;
 
-            s_input[tile_size*fid_row + fid_col] = (idx_row >=0 &&idx_row <= n_r && idx_col >= 0 && idx_col <= n_c) ? d_input[n_c * idx_row + idx_col] : 0.f;
+            s_input[tile_size*fid_row + fid_col] = (idx_row >=0 &&idx_row <= n_r && idx_col >= 0 && idx_col <= n_c) ? d_in[n_c * idx_row + idx_col] : 0.f;
 
         }
     }
@@ -109,7 +108,7 @@ void conv_gpu(int version, float *d_out, float *d_in, float *d_filter, int num_r
         conv_kernel_v2<<< dimGrid, dimBlock >>>(d_out, d_in, d_filter, num_row, num_col, filter_size);
     } else if (version == 3 ){
         int shared_mem_size = (2*filter_size + BLOCK_DIM) * (2*filter_size + BLOCK_DIM*sizeof(float));
-        conv_kernel_v1<<< dimGrid, dimBlock shared_mem_size, 0 >>>(d_out, d_in, d_filter, num_row, num_col, filter_size);
+        conv_kernel_v1<<< dimGrid, dimBlock, shared_mem_size, 0 >>>(d_out, d_in, d_filter, num_row, num_col, filter_size);
     }
 
 
@@ -126,13 +125,13 @@ void conv_host(float *h_out, float *h_in, float *h_filter, int n_r, int n_c, int
                     int img_r = row + f_row;
                     int img_c = col + f_col;
                     float img_v = (img_r >= 0 && img_r < n_r && img_c >=0 && img_c < n_c) ? 
-                        d_in[img_r * n_c + img_c] : 0.f;
-                    float filter_v = c_filter[(f_row+filter_size/2)*filter_size + f_col + filter_size/2];
+                        h_in[img_r * n_c + img_c] : 0.f;
+                    float filter_v = h_filter[(f_row+filter_size/2)*filter_size + f_col + filter_size/2];
                     res += img_v * filter_v;
                 }
             }
 
-            H_out[row * n_c + col] = res;
+            h_out[row * n_c + col] = res;
         }    
     }
 
@@ -140,7 +139,81 @@ void conv_host(float *h_out, float *h_in, float *h_filter, int n_r, int n_c, int
 }
 
 int main(){
+    int num_row = 1 << 11;
+    int num_col = 1 << 11;
+    int filter_size = 9;
+    int buf_size = num_row * num_col * sizeof(float);
+
+    float *h_input, *d_input;
+    float *h_output_host, *h_output_gpu, *d_output;
+    float *h_filter, *d_filter;
+
+    float elapsed_time_gpu;
+
+    StopWatchInterface *timer_host, *timer_gpu;
+    sdkCreateTimer(&timer_host);
+    sdkCreateTimer(&timer_gpu);
+
+    srand(2023);
+    
+    h_input = (float *)malloc(buf_size);
+    h_output_host = (float *)malloc(buf_size);
+    h_output_gpu = (float *)malloc(buf_size);
+    h_filter = (float *)malloc(filter_size * filter_size * sizeof(float));
+    
+    cudaMalloc((void **)&d_input, buf_size);
+    cudaMalloc((void **)&d_output, buf_size);
+    cudaMalloc((void **)&d_filter, filter_size * filter_size * sizeof(float));
+
+    generate_data(h_input, num_row, num_col);
+    generate_filter(h_filter, filter_size);
+
+    cudaMemcpy(d_input, h_input, buf_size, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_filter, h_filter, filter_size * filter_size * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpyToSymbol(c_filter, h_filter, filter_size * filter_size * sizeof(float));
+
+
+    sdkStartTimer(&timer_host);
+    conv_host(h_output_host, h_input, h_filter, num_row, num_col, filter_size);
+    sdkStopTimer(&timer_host);
+    float elapsed_time_host = sdkGetTimerValue(&timer_host);
+    printf("Cpu conv %f\n", elapsed_time_host);
+
+
+    sdkStartTimer(&timer_gpu);
+    cudaProfilerStart();
+    for (int i = 1; i<= 3; i++){
+        sdkResetTimer(&timer_gpu);
+        sdkStartTimer(&timer_gpu);
+        conv_gpu(i, d_output, d_input, d_filter, num_row, num_col, filter_size);
+        cudaDeviceSynchronize();
+        sdkStopTimer(&timer_gpu);
+        elapsed_time_gpu = sdkGetTimerValue(&timer_gpu);
+        printf("GPU conv %d %f \n", i, elapsed_time_gpu);
+        
+        cudaMemcpy(h_output_gpu, d_output, buf_size, cudaMemcpyDeviceToHost);
+        if (value_test(h_output_host, h_output_gpu, num_row * num_col)){
+            printf("ok\n");
+        } else {
+            printf("bad %f %f\n", h_output_host[128], h_output_gpu[128]);
+        }
+
+    }
+    cudaProfilerStop();
 
     
+
+    
+
+
+    cudaFree(d_input);
+    cudaFree(d_output);
+    cudaFree(d_filter);
+
+    free(h_input);
+    free(h_output_host);
+    free(h_output_gpu);
+    free(h_filter);
+
     return 0;
 }

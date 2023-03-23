@@ -14,9 +14,11 @@ void random_init(float *data, int length)
 bool value_test(float *a, float *b, int length){
     float e = 0.000001;
     for (int i = 0; i< length; i++){
-        if (abs(a[i]-b[i])>=e)
-            printf("valid fail");
+        if (abs(a[i]-b[i])>=e){
+            printf("valid fail %d \n", i);
             return false;
+        }
+            
     }
     return true;
 }
