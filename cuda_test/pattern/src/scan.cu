@@ -1,13 +1,17 @@
 #include <iostream>
 #include "common.h"
+#include <cuda_runtime.h>
+
+#define BLOCK_DIM 512
+#define DEBUG_OUTPUT_NUM 16
 
 __global__ void scan_v1_kernel(float *d_out, float *d_inp, int length){
 
 }
 
 void scan_v1(float *d_out, float *d_in, int length){
-    dim3 dimBlock(Block_DIM);
-    dim3 dimGrid(length + BLOCK_DIM -1) / BLOCK_DIM;
+    dim3 dimBlock(BLOCK_DIM);
+    dim3 dimGrid((length + BLOCK_DIM -1) / BLOCK_DIM);
     scan_v1_kernel<<< dimGrid, dimBlock >>>(d_out, d_in, length);
 }
 
@@ -60,12 +64,15 @@ int main(){
     cudaMalloc((void **)&d_input, sizeof(float)*length);
     cudaMalloc((void **)&d_output, sizeof(float)*length);
 
-    generate_data(h_input, length);
+    random_init(h_input, length);
     print_val(h_input, 1, "input ::");
 
     scan_host(h_output_host, h_input, length, 1);
     print_val(h_output_host, DEBUG_OUTPUT_NUM, "result[cpu]   ::");
-
+    
+    
+    
+    /*
     cudaMemcpy(d_input, h_input, sizeof(float) * length, cudaMemcpyHostToDevice);
     scan_v1(d_output, d_input, length);
     cudaDeviceSynchronize();
@@ -83,6 +90,7 @@ int main(){
     if (validation(h_output_host, h_output_gpu, length))
         printf("SUCCESS!!\n");
 
+    */
 
     // free device memory
     cudaFree(d_input);

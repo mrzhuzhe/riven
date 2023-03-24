@@ -2,6 +2,7 @@
 #define _COMMON_H_
 
 #include <stdarg.h>
+#include <iostream>
 
 void random_init(float *data, int length)
 {

@@ -7,9 +7,9 @@ set(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
 
 project(hellocuda LANGUAGES CXX CUDA)
 
+set (executes segmm conv scan)
 
-add_executable(segmm segmm.cu)
-add_executable(conv conv.cu)
-
-target_include_directories(segmm PUBLIC . ../../include)
-target_include_directories(conv PUBLIC . ../../include)
+foreach(execute ${executes})
+	add_executable(${execute} ${execute}.cu)
+	target_include_directories(${execute} PUBLIC . ../../include)
+endforeach()
