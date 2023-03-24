@@ -7,7 +7,7 @@ set(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
 
 project(hellocuda LANGUAGES CXX CUDA)
 
-set (executes segmm conv scan)
+set (executes segmm conv scan split nbody)
 
 foreach(execute ${executes})
 	add_executable(${execute} ${execute}.cu)
