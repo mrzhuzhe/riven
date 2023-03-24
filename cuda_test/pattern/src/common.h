@@ -8,8 +8,8 @@ template <typename T=float>
 void random_init(T *data, int length)
 {
     for (int i = 0; i < length; i++) {
-        //data[i] = (rand() & 0xFFFF) / (float)RAND_MAX;
-        data[i] = 1.f;
+        data[i] = (rand() & 0xFFFF) / (float)RAND_MAX;
+        //data[i] = 1.f;
     }
 }
 

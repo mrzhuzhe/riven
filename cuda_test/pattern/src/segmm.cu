@@ -2,6 +2,7 @@
 #include <helper_timer.h>
 #include <cuda_profiler_api.h>
 #include "common.h"
+#include "cuda_runtime.h"
 
 #define BLOCK_DIM 16
 
@@ -88,7 +89,7 @@ int main(){
     random_init(A, M*K);
     random_init(B, K*N);
 
-    sdkStartTimer(&timer);
+   
 
     cudaMemcpy((void **)d_A, A, M*K*sizeof(float), cudaMemcpyHostToDevice);
     cudaMemcpy((void **)d_B, B, N*K*sizeof(float), cudaMemcpyHostToDevice);
@@ -98,20 +99,29 @@ int main(){
 
     cudaProfilerStart();
 
-    /*
+    sdkStartTimer(&timer);
+    
     for (int i = 0; i < n_iter; i ++ ){
         sgemm_kernel<<< gridDim, blockDim >>>(d_A, d_B, d_C, M, N, K, alpha, beta);
     }
-    */
     
+    sdkStopTimer(&timer);
+    double elapsed_time_msed = sdkGetTimerValue(&timer);
+    printf("Time= %f msec\n", elapsed_time_msed);
+
+    sdkResetTimer(&timer);
+
     for (int i = 0; i < n_iter; i ++ ){
         sgemm_memory<<< gridDim, blockDim >>>(d_A, d_B, d_C, M, N, K, alpha, beta);
     }
     
+    sdkStopTimer(&timer);
+    elapsed_time_msed = sdkGetTimerValue(&timer);
+    printf("Time= %f msec \n", elapsed_time_msed);
+
     cudaProfilerStop();
 
     cudaDeviceSynchronize();
-    sdkStopTimer(&timer);
 
     cudaMemcpy(C_gpu, d_C, M*N*sizeof(float), cudaMemcpyDeviceToHost);
 
