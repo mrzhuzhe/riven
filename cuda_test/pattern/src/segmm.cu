@@ -24,22 +24,31 @@ __global__ void sgemm_memory(const float *A, const float *B, float *C, int M, in
     int tid_x = threadIdx.x;
     int tid_y = threadIdx.y;
     
-    float _c = 0.f;
+   
     __shared__ float s_tile_A[BLOCK_DIM][BLOCK_DIM];
     __shared__ float s_tile_B[BLOCK_DIM][BLOCK_DIM];
-    
-    for (int k = 0; k < K; k += BLOCK_DIM){
+    float _c = 0.f;
+    for (int k = 0; k < K; k += BLOCK_DIM){        
+        /*
         s_tile_A[tid_y][tid_x] = A[(bid_y + tid_y)*K + tid_x + k];
         s_tile_B[tid_y][tid_x] = B[(k*BLOCK_DIM+tid_y)*N + bid_x + tid_x];
+        */
+        s_tile_A[tid_y][tid_x] = A[(bid_y + tid_y)*K + tid_x + k];
+        s_tile_B[tid_y][tid_x] = B[(k+tid_y)*N + bid_x + tid_x];
 
+        //printf(" 1 %d %f %d %d", k, _c, (bid_y + tid_y)*K + tid_x + k, (k+tid_y)*N + bid_x + tid_x);
         __syncthreads();
-
+        
         for (int e =0; e < BLOCK_DIM; e++){
             _c += s_tile_A[tid_y][e] * s_tile_B[e][tid_x];
+            //_c[e] = s_tile_A[tid_y][e] * s_tile_B[e][tid_x];
+            //printf("111 %f ", _c);
+            //printf("%f ", _mid);
         }
         __syncthreads();
     }
-       
+    
+    //printf("%f ", _c);
     C[(bid_y + tid_y)*N + bid_x + tid_x] = alpha * _c + beta * C[(bid_y + tid_y)*N + bid_x + tid_x];
 }
 
@@ -89,14 +98,16 @@ int main(){
 
     cudaProfilerStart();
 
+    /*
     for (int i = 0; i < n_iter; i ++ ){
         sgemm_kernel<<< gridDim, blockDim >>>(d_A, d_B, d_C, M, N, K, alpha, beta);
     }
-
+    */
+    
     for (int i = 0; i < n_iter; i ++ ){
         sgemm_memory<<< gridDim, blockDim >>>(d_A, d_B, d_C, M, N, K, alpha, beta);
     }
-
+    
     cudaProfilerStop();
 
     cudaDeviceSynchronize();

@@ -4,7 +4,8 @@
 #include <stdarg.h>
 #include <iostream>
 
-void random_init(float *data, int length)
+template <typename T=float> 
+void random_init(T *data, int length)
 {
     for (int i = 0; i < length; i++) {
         //data[i] = (rand() & 0xFFFF) / (float)RAND_MAX;
@@ -16,7 +17,7 @@ bool value_test(float *a, float *b, int length){
     float e = 0.000001;
     for (int i = 0; i< length; i++){
         if (abs(a[i]-b[i])>=e){
-            printf("valid fail %d \n", i);
+            printf("valid fail %d %f %f \n", i, a[i], b[i]);
             return false;
         }
             
