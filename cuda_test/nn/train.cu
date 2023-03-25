@@ -1,4 +1,9 @@
+#include "src/mnist.h"
+#include "src/network.h"
+#include "src/layer.h"
+
 #include <iostream>
+#include <iomanip>
 //  https://zhuanlan.zhihu.com/p/526508882
 
 int main(){
@@ -58,10 +63,47 @@ int main(){
 
         if (step % monitoring_step == 0)
         {
-            
+            float loss = model.locc(train_target);
+            float accuracy = 100.f * tp_count / monitoring_step / batch_size_train;
+            std::cout << "step " << std::right << std::setw(4) << step << \
+                ", loss: " << std::left << std::setw(5) << std::fixed << std::setprecision(3) << loss << \
+                ", accuracy: " << accuracy << "%" << std::endl;
+            tp_count = 0;
         }
-
-
     }
+
+    if (file_save)
+            model.write_file();
+
+    std::cout << "[INFERENCE]" << std::endl;
+    MNIST test_data_loader = MNIST("./dataset");
+    test_data_loader.test(batch_size_test);
+
+    model.test();
+
+    Blob<float> *test_data = test_data_loader.get_data();
+    Blob<float> *test_target = test_data_loader.get_target();
+
+    test_data_loader.get_batch();
+    tp_count = 0;
+    step = 0;
+    while (step < num_step_test){
+        test_data->to(cuda);
+        test_target->to(cuda);
+
+        model.forward(test_data);
+        tp_count += model.get_accuracy(test_target);
+
+        step = model.get_accuracy(test_target);    
+    }
+
+    float loss = model.locc(test_target);
+    float accuracy = 100.f * tp_count / num_step_test / batch_size_test;
+
+    std::cout << "loss: " << std::setw(4) << loss << ", accuracy: " << accuracy << "%" << std::endl;
+
+    std::cout << "Done.  "  << std::endl;
+
+    return 0;
 
 }
