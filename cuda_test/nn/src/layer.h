@@ -1,74 +1,129 @@
-#ifndef _MNIST_H_
-#define _MNIST_H_
+#ifndef _LAYER_H_
+#define _LAYER_H_
 
 #include <string>
-#include <fstream>
-#include <array>
-#include <vector>
-#include <algorithm>
-#include <random>
-#include <iostream>
+
+#include <cublas_v2.h>
+#include <cudnn.h>
 
 #include "blob.h"
+#include "loss.h"
+#include "helper.h"
 
-#define MNIST_CLASS 10
-
-class MNIST
+class Layer
 {
     public:
-    MNIST(): dataset_dir_("./") {}
-    MNIST(std::string dataset_dir): dataset_dir(dataset_dir){}
-    ~MNIST();
+        Layer();
+        virtual ~Layer();
+        virtual Blob<float> *forward(Blob<float> *input) = 0;
+        virtual Blob<float> *backward(Blob<float> *grad_input) = 0;
 
-    void train(int batch_size = 1, bool shuffle = false );
+        std::string get_name() { return name_; }
 
-    void test(int batch_size = 1);
-    
-    void get_batch();
+        vitual float get_loss(Blob<float> *target);
+        vitual int get_accuracy(Blob<float> *target);
 
-    int next();
+        void set_cuda_context(CudaConText *context) { cuda_ = context; };
 
-    Blob<float>* get_batch() { return data_; }
-    Blob<float>* get_target() { return target_; }
+        void set_load_pretrain() { load_pretrain = true; };
+        void set_gradient_stop() { gradient_stop_ = true };
+
+        void freeze() { freeze_ = true; };
+        void unfreeze() { freeze_ = false; };
+
+    protected:
+        virtual void fwd_initialize(Blob<float> *input) = 0;
+        virtual void bwd_initialize(Blob<float> *grad_output) = 0;
+
+        std::string name_;
+
+        cudnnTensorDescriptor_t input_desc_;
+        cudnnTensorDescriptor_t output_desc_;
+
+        cudnnFilterDescriptor_t filter_desc_;
+        cudnnTensorDescriptor_t bias_desc_;
+
+        Blob<float> *input_ = nullptr;
+        Blob<float> *output_ = nullptr;
+        Blob<float> *grad_input_ = nullptr;
+        Blob<float> *grad_output_ = nullptr;
+
+        bool freeze_;
+        Blob<float> *weights = nullptr;
+        Blob<float> *biases_ = nullptr;
+        Blob<float> *grad_weight_ = nullptr;
+        Blob<float> *grad_biases_ = nullptr;
+
+        int batch_size = 0;
+
+        void init_weight_bias(unsigned int seed = 0);
+        void update_weight_biases(float learning_rate);
+
+        CudaContext *cuda_ = nullptr;
+
+        bool load_pretrain_ = false;
+
+        int load_parameter();
+        int save_parameter();
+
+        bool greadient_stop_ = false;
+        friend class Network;
+}       
+
+class Dense: public Layer
+{
+    public::
+        Dense(std::string name, int out_size);
+        virtual ~Dense();
+
+        virtual Blob<float> *forwar(Blob<float> *input);
+        virtual Blob<float> *backward(Blob<float> *grad_input);
 
     private:
+        void fwd_intialize(Blob<float> *input);
+        void bwd_initalize(Blob<float> *grad_output);
 
-    std::string dataset_dir_;
-#ifdef __linux__
-    std::string train_dataset_file_ = "train-images-idx3-ubyte";
-    std::string train_label_file_   = "train-labels-idx1-ubyte";
-    std::string test_dataset_file_  = "t10k-images-idx3-ubyte";
-    std::string test_label_file_    = "t10k-labels-idx1-ubyte";
-#elif _WIN32
-    std::string train_dataset_file_ = "train-images.idx3-ubyte";
-    std::string train_label_file_ 	= "train-labels.idx1-ubyte";
-    std::string test_dataset_file_ 	= "t10k-images.idx3-ubyte";
-    std::string test_label_file_ 	= "t10k-labels.idx1-ubyte";
-#endif
+        int input_size = 0;
+        int output_size = 0;
 
-    std::vector<std::vector<float>> data_pool;
-    std::vector<std::array<float, MNIST_CLASS>> target_pool_;
-    Blob<float>* data_ = nullptr;
-    Blob<float>* target_ = nullptr;
+        float *d_one_vec = nullptr;
+};
 
-    void load_data(std::string &image_file_path);
-    void load_target(std::string &image_file_path);
+class Activation: public Layer
+{
+    public:
+        Activation(std::string name, cudnnActivationMode_t mode, float coef = 0.f);
+        virtual ~Activation();
 
-    void normalize_data();
-    int to_int(uint8_t *ptr);
+        virtual Blob<float> *forward(Blob<float> *input);
+        virtual Blob<float> *backward(Blob<float> *grad_input);
+    
+    private:
+        void fwd_intialize(Blob<float> *input);
+        void bwd_initalize(Blob<float> *grad_output);
 
-    int step_ = -1;
-    bool shuffle_;
-    int batch_size_ = 1;
-    int channels_ = 1;
-    int height_ = 1;
-    int width_ = 1;
-    int num_classes = 10;
-    int num_steps_ = 0;
+        cudnnActivationDescriptor_t act_desc_;
+        cudnnActivationMode_t   act_mode_;
+        float act_coef_;
+};
 
-    void create_shared_space();
-    void shuffle_dataset();
 
+class Softmax: public Layer
+{
+    public:
+        Softmax(std::string name);
+        virtual ~Softmax();
+
+        virtual Blob<float> *forward(Blob<float> *input);
+        virtual Blob<float> *backward(Blob<float> *grad_input);
+
+        float get_loss(Blob<float> *target);
+        int get_accuracy(Blob<float> *target);
+    
+    protected:
+        void fwd_intialize(Blob<float> *input);
+        void bwd_initalize(Blob<float> *grad_output);
+        CrossEntropyLoss loss_;
 }
 
 

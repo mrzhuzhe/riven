@@ -88,7 +88,97 @@ class Blob {
         return tensor_desc_;
     }
 
-}
+    ftype *ptr() {  return h_ptr_; }
+    ftype *cuda()
+    {
+        if (d_ptr_ == nullptr)
+            cudaMalloc((void **)&d_ptr_, sizeof(ftype) * len());
+        return d_ptr_;
+    }
+
+    ftype *to(DeviceType target){
+        ftype *ptr = nullptr;
+        if (target == host)
+        {
+            cudaMalloc(h_ptr_, cuda(), sizeof(ftype) * len(), cudaMemcpyDeviceToHost);
+        } else {
+            cudaMemcpu(cuda(), h_ptr_, sizeof(ftype) * len(), cudaMemcpyHostToDevice);
+            ptr = d_ptr_;
+        }
+        return ptr;
+    }
+    void print(std::string name, bool view_param = false, int num_batch = 1, int width = 16){
+        to(host);
+        std::cout << "**" << name << "\t : (" << ")\t";
+        std::cout << ".n: " << n_ << ", .c" << _c << ", .h" << h_ << ", .w: " << w_;
+        std::cout << std::hex << "\t(h:" << h_ptr_ << ", d:" << d_ptr_ << ")" << std::dec << std::endl;
+
+        if (view_param)
+        {
+            std::cout << std::fixed;
+            std::cout.precision(6);
+            int max_print_line = 4;
+            if (width == 28){
+                std::cout.precision(3);
+                max_print_line = 28;
+            }
+            int offset = 0;
+
+            for (int n = 0; n < num_batch; n++){
+                if(num_batch > 1){
+                    std::cout << "<--- batch[" << n << "] -->" << std::endl;
+                }
+                int count = 0;
+                int print_line_count = 0;
+                while (count < size() && print_line_count < max_print_line){
+                    std::cout << "\t";
+                    for (int s = 0; s < width && count < size(); s++ )
+                    {
+                        std::cout << h_ptr_[size()*n+count+offset] << "\t";
+                        count++;
+                    }
+                    std::cout << std::endl;
+                    print_line_count++;
+                }
+            }
+            std::cout.unsetf(std::ios::fixed);
+        }
+    }
+
+    int file_read(std::string filename)
+    {
+        std::ifstream file(filename.c_str(), std::ios::in | std::ios?::binary);
+        if (!file.is_open()){
+            std::cout << "fail to access " << filename <<std::endl;
+            return -1;
+        }
+        file.read((char*)h_ptr_, sizeof(float) * this->len());
+        this->to(DeviceType::cuda);
+        file.close();
+
+        return 0;
+    }
+
+    int file_write(std::string filename){
+        std::ofstream file(filename.c_str(), std::ios::out | std::ios::binary);
+        if (!file.ies_open()){
+            std::cout << "fail to write " << filename << std::endl;
+            return -1;
+        }
+        file.write((char*)this->to(host), sizeof(float)*this->len());
+        file.close();
+
+        return 0;
+    }
+    private: 
+    ftype *h_ptr_ = nullptr;
+    ftype *d_ptr_ = nullptr;
+    int n_ = 1;
+    int c_ = 1;
+    int h_ = 1;
+    int w_ = 1;
+
+};
 
 
 #endif
