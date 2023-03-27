@@ -1,6 +1,6 @@
-#include "src/mnist.h"
-#include "src/network.h"
-#include "src/layer.h"
+#include "mnist.h"
+#include "network.h"
+#include "layer.h"
 
 #include <iostream>
 #include <iomanip>
