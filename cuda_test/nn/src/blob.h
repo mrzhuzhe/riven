@@ -71,7 +71,7 @@ class Blob {
         }
 
         std::array<int, 4> shape() { 
-            return std::array<int, 4>(n_, c_, h_, w_);
+            return std::array<int, 4>({ n_, c_, h_, w_ });
         }
 
         int size() { return c_ * h_ * w_; }

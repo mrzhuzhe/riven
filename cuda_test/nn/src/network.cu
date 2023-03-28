@@ -14,13 +14,13 @@ Network::~Network(){
     for (auto layer : layers_)
         delete layer;
     
-    for (cuda_ != nullptr)
+    if (cuda_ != nullptr)
         delete cuda_;
 }
 
 void Network::add_layer(Layer *layer)
 {
-    layer_.push_back(layer);
+    layers_.push_back(layer);
     if (layers_.size() == 1)
         layers_.at(0)->set_gradient_stop();
 }
@@ -56,30 +56,30 @@ void Network::update(float learning_rate){
     
     for (auto layer : layers_)
     {
-        if ( layer->weights_ == nullptr || layer->grad_weight_ == nullptr || 
+        if ( layer->weights_ == nullptr || layer->grad_weights_ == nullptr || 
         layer->biases_ == nullptr || layer->grad_biases_ == nullptr)
             continue;
-        layer->update_weight_biases(learning_rate);
+        layer->update_weights_biases(learning_rate);
     }
 }
 
 int Network::write_file()
 {
-    std:::cout << ".. store weights to the storage .." << std::endl;
+    std::cout << ".. store weights to the storage .." << std::endl;
     for (auto layer : layers_)
     {
         int err = layer->save_parameter();
 
-        for (err != 0)
+        if (err != 0)
         {
             std::cout << "-> error code: " << err << std::endl;
-            exit(-1);
+            exit(err);
         }
         return 0;
     }
 }
 
-int Network::cuda()
+void Network::cuda()
 {
     cuda_ = new CudaContext();
     std::cout << ".. model Configuration .. " << std::endl;

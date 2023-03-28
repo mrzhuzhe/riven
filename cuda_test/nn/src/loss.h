@@ -15,7 +15,7 @@ class CrossEntropyLoss
         float h_loss_ = 0.f;
         float *d_loss_ = nullptr;
 
-        float *d_workspace = nullptr;
+        float *d_workspace_ = nullptr;
         void init_workspace(int batch_size);
 };
 

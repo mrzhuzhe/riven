@@ -46,7 +46,7 @@ class MNIST
     std::string test_label_file_ 	= "t10k-labels.idx1-ubyte";
 #endif
 
-    std::vector<std::vector<float>> data_pool;
+    std::vector<std::vector<float>> data_pool_;
     std::vector<std::array<float, MNIST_CLASS>> target_pool_;
     Blob<float>* data_ = nullptr;
     Blob<float>* target_ = nullptr;

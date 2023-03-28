@@ -9,7 +9,7 @@ MNIST::~MNIST()
 
 void MNIST::create_shared_space(){
     data_ = new Blob<float>(batch_size_, channels_, height_, width_);
-    data->tensor();
+    data_->tensor();
     target_ = new Blob<float>(batch_size_, num_classes_);
 }
 
@@ -50,7 +50,7 @@ void MNIST::load_data(std::string &image_file_path){
     delete [] q;
 
     num_steps_ = num_data / batch_size_;
-    std::cout << "loaded " << data_pool.size() << " items.." << std::endl;
+    std::cout << "loaded " << data_pool_.size() << " items.." << std::endl;
     file.close();
 
 }
@@ -80,7 +80,7 @@ void MNIST::load_target(std::string &label_file_path)
         std::fill(target_batch.begin(), target_batch.end(), 0.f);
 
         file.read((char*)ptr, 1);
-        target_batch[static_cast<in>(ptr[0])] = 1.f;
+        target_batch[static_cast<int>(ptr[0])] = 1.f;
         target_pool_.push_back(target_batch);
     }
     
@@ -91,14 +91,15 @@ void MNIST::load_target(std::string &label_file_path)
 void MNIST::shuffle_dataset()
 {
     std::random_device rd;
-    std:mt19937 g_data(rd());
+    std::mt19937 g_data(rd());
     auto g_target = g_data;
-    std::shuffle(std:begin(data_pool_), std::end(data_pool_), g_data);
-    std::shuffle(std:begin(target_pool_), std::end(target_pool_), g_target);
+
+    std::shuffle(std::begin(data_pool_), std::end(data_pool_), g_data);
+    std::shuffle(std::begin(target_pool_), std::end(target_pool_), g_target);
 }
 
 int MNIST::to_int(uint8_t *ptr) {
-    return ((ptr[0] && 0xFF) << 24 | (ptr[1] && 0xFF) << 16 | (ptr[2] && 0xFF) << 8 | (ptr[3] && 0xFF) << 0)
+    return ((ptr[0] && 0xFF) << 24 | (ptr[1] && 0xFF) << 16 | (ptr[2] && 0xFF) << 8 | (ptr[3] && 0xFF) << 0);
 }
 
 void MNIST::train(int batch_size, bool shuffle)

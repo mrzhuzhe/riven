@@ -248,6 +248,7 @@ Blob<float> *Dense::backward(Blob<float> *grad_output)
         grad_output_->cuda(),
         output_size_,
         d_one_vec,
+        1,
         &cuda_->zero,
         grad_biases_->cuda(),
         1

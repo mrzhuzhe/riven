@@ -7,5 +7,14 @@ set(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
 
 project(hellocuda LANGUAGES CXX CUDA)
 
-add_executable(train train.cu layer.cu loss.cu mnist.cpp network.cu)
+#Modules
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+
+add_executable(train train.cu layer.cu loss.cu mnist.cu network.cu)
 target_include_directories(train PUBLIC . ../../include)
+
+message(STATUS "11111111111 ${CMAKE_CURRENT_SOURCE_DIR}")
+
+target_include_directories(train PUBLIC . ${CUDNN_LIBRARIES})
+#target_include_directories(train PUBLIC . ${CUDNN_LIBRARIES})

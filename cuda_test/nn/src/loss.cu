@@ -8,7 +8,7 @@ CrossEntropyLoss::CrossEntropyLoss()
     cudaMalloc((void**)&d_loss_, sizeof(float));
 }
 
-CrossEntropyLoss::~CrossEntropyLoss():
+CrossEntropyLoss::~CrossEntropyLoss()
 {
     if (d_loss_ != nullptr){
         cudaFree(d_loss_);
@@ -25,7 +25,7 @@ __device__ float clip(float prediction, float ep=1e-12){
 }
 
 __global__ void softmax_loss_kernel(float *reduced_loss, float *predict, float *target, float *workspace, int batch_size, int num_outputs){
-    int batch_idx = blockDim.x * blockDix.x + threadIdx.x;
+    int batch_idx = blockDim.x * blockDim.x + threadIdx.x;
 
     extern __shared__ float s_data[];
     float loss = 0.f;
@@ -33,7 +33,7 @@ __global__ void softmax_loss_kernel(float *reduced_loss, float *predict, float *
     for (int c = 0; c < num_outputs; c++){
         loss += target[batch_idx*num_outputs+c] * logf(predict[batch_idx*num_outputs+c]);        
     }
-    workspacce[batch_idx] = -loss;
+    workspace[batch_idx] = -loss;
     if (blockIdx.x > 0) return;
 
     s_data[threadIdx.x] = 0.f;
@@ -56,8 +56,8 @@ __global__ void softmax_loss_kernel(float *reduced_loss, float *predict, float *
 }
 
 void CrossEntropyLoss::init_workspace(int batch_size){
-    if (d_workspace == nullptr)
-        cudaMalloc((void**)&d_workspace_, sizeof(float)*batcg_size);
+    if (d_workspace_ == nullptr)
+        cudaMalloc((void**)&d_workspace_, sizeof(float)*batch_size);
 }
 
 float CrossEntropyLoss::loss(Blob<float> *predict, Blob<float> *target){
@@ -76,7 +76,7 @@ float CrossEntropyLoss::loss(Blob<float> *predict, Blob<float> *target){
     target->print("target", true);
     #endif // DEBUG_LOSS
 
-    int num_blocks = min(num_block_per_sm * num_sms, \
+    int num_blocks = min(num_blocks_per_sm * num_sms, \
         (target->size() + BLOCK_DIM_1D -1) / BLOCK_DIM_1D);
     softmax_loss_kernel<<< num_blocks , BLOCK_DIM_1D, BLOCK_DIM_1D * sizeof(float), 0 >>>
     (d_loss_, predict->cuda(), target->cuda(), d_workspace_, batch_size, num_outputs);
