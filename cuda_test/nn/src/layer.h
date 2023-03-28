@@ -4,6 +4,7 @@
 #include <string>
 
 #include <cublas_v2.h>
+//#include <cublas.h>
 #include <cudnn.h>
 
 #include "blob.h"
