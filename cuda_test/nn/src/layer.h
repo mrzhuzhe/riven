@@ -49,15 +49,15 @@ class Layer
         Blob<float> *grad_output_ = nullptr;
 
         bool freeze_;
-        Blob<float> *weights = nullptr;
+        Blob<float> *weights_ = nullptr;
         Blob<float> *biases_ = nullptr;
-        Blob<float> *grad_weight_ = nullptr;
+        Blob<float> *grad_weights_ = nullptr;
         Blob<float> *grad_biases_ = nullptr;
 
-        int batch_size = 0;
+        int batch_size_ = 0;
 
         void init_weight_bias(unsigned int seed = 0);
-        void update_weight_biases(float learning_rate);
+        void update_weights_biases(float learning_rate);
 
         CudaContext *cuda_ = nullptr;
 
@@ -83,8 +83,8 @@ class Dense: public Layer
         void fwd_initialize(Blob<float> *input);
         void bwd_initialize(Blob<float> *grad_output);
 
-        int input_size = 0;
-        int output_size = 0;
+        int input_size_ = 0;
+        int output_size_ = 0;
 
         float *d_one_vec = nullptr;
 };

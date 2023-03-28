@@ -7,6 +7,8 @@
 #include <math.h>
 #include <algorithm>
 
+
+#include <sstream>
 #include <fstream>
 #include <iostream>
 
@@ -57,7 +59,7 @@ void Layer::update_weights_biases(float learning_rate)
             cuda_->cublas(),
             weights_->len(),
             &eps,
-            grad_weights-->cuda(), 1,
+            grad_weights_->cuda(), 1,
             weights_->cuda(), 1
         );
     }
@@ -68,24 +70,24 @@ void Layer::update_weights_biases(float learning_rate)
             cuda_->cublas(),
             biases_->len(),
             &eps,
-            grad_biases-->cuda(), 1,
+            grad_biases_->cuda(), 1,
             biases_->cuda(), 1
         );
     }
 }
 
-float Layer::load_parameter()
+int Layer::load_parameter()
 {
     std::stringstream filename_weights, filename_biases;
 
     filename_weights << name_ << ".bin";
 
-    if ( weights_->file_read(filename_weight.str()))
+    if ( weights_->file_read(filename_weights.str()))
         return -1;
     
-    file_biases << name << ".bias.bin";
+    filename_biases << name_ << ".bias.bin";
 
-    if (biases-->file_read(filename_biases.str()))
+    if (biases_->file_read(filename_biases.str()))
         return -2;
 
     std::cout << ".. loaded " << name_ << "pretrain parameter.." << std::endl;
@@ -93,7 +95,7 @@ float Layer::load_parameter()
     return 0;
 }
 
-float Layer::save_parameter()
+int Layer::save_parameter()
 {
     std::stringstream filename_weights, filename_biases;
 
@@ -102,7 +104,7 @@ float Layer::save_parameter()
     if (weights_)
     {
         filename_weights << name_ << ".bin";
-        if ( weights_->write_read(filename_weight.str()))
+        if ( weights_->file_write(filename_weights.str()))
             return -1;
     }
     
@@ -110,7 +112,7 @@ float Layer::save_parameter()
     if (biases_)
     {
         filename_biases << name_ << ".bias.bin";
-        if (biases-->write_read(filename_biases.str()))
+        if (biases_->file_write(filename_biases.str()))
             return -2;
     }
 
@@ -119,7 +121,7 @@ float Layer::save_parameter()
     return 0;
 }
 
-Dense:Dense(std::string name, int output_size)
+Dense::Dense(std::string name, int output_size)
 {
     name_ = name;
     output_size_ = output_size;
@@ -164,7 +166,7 @@ void Dense::fwd_initialize(Blob<float> *input){
         
         cudaMalloc((void**)&d_one_vec, sizeof(float)*batch_size_);
 
-        init_one_vec<<< (batch_size + BLOCK_DIM - 1) / BLOCK_DIM_1D, BLOCK_DIM_1D >>>(d_one_vec, batch_size_);
+        init_one_vec <<< (batch_size_ + BLOCK_DIM - 1) / BLOCK_DIM_1D, BLOCK_DIM_1D >>>(d_one_vec, batch_size_);
 
         if (load_pretrain_ && !freeze_) 
         {
@@ -216,15 +218,15 @@ Blob<float> *Dense::forward(Blob<float> *input)
     return output_;
 }
 
-void Dense::bwd_initalize(Blob<float> *grad_output)
+void Dense::bwd_initialize(Blob<float> *grad_output)
 {
-    if (grad_weight_ == nullptr)
+    if (grad_weights_ == nullptr)
     {
         grad_weights_ = new Blob<float>(weights_->shape());
-        grad_biases_ = new Blob<float>(biases_->shape();)
+        grad_biases_ = new Blob<float>(biases_->shape());
     }
 
-    if (grad_input_ == nullptr || batch_size != grad_output->n())
+    if (grad_input_ == nullptr || batch_size_ != grad_output->n())
     {
         grad_output_ = grad_output;
         if (grad_input_ == nullptr)
@@ -264,13 +266,13 @@ Blob<float> *Dense::backward(Blob<float> *grad_output)
         input_size_,
         grad_output_->cuda(),
         output_size_,
-        &cuda_->zero，
-        grad_weight_->cuda(),
+        &cuda_->zero,
+        grad_weights_->cuda(),
         input_size_
     );
 
     // dx = W * dy
-    if (!greadient_stop_)
+    if (!gradient_stop_)
         cublasSgemm(
             cuda_->cublas(),
             CUBLAS_OP_N,
@@ -295,8 +297,8 @@ Blob<float> *Dense::backward(Blob<float> *grad_output)
 Activation::Activation(std::string name, cudnnActivationMode_t mode, float coef)
 {
     name_ = name;
-    act_mode = mode;
-    act_coef = coef;
+    act_mode_ = mode;
+    act_coef_ = coef;
 
     cudnnCreateActivationDescriptor(&act_desc_);
     cudnnSetActivationDescriptor(act_desc_, act_mode_, CUDNN_PROPAGATE_NAN, act_coef_);
@@ -308,7 +310,7 @@ Activation::~Activation(){
 
 void Activation::fwd_initialize(Blob<float> *input)
 {
-    if (input_ = nullptr || batch_size_ != input->n())
+    if (input_ == nullptr || batch_size_ != input->n())
     {
         input_ = input;
         input_desc_ = input->tensor();
@@ -337,7 +339,7 @@ Blob<float> *Activation::forward(Blob<float> *input)
     return output_;
 }
 
-void Activation::bwd_initalize(Blob<float> *grad_output)
+void Activation::bwd_initialize(Blob<float> *grad_output)
 {
     if (grad_input_ == nullptr || batch_size_ != grad_output_->n())
     {
@@ -380,10 +382,10 @@ Softmax::~Softmax()
 
 void Softmax::fwd_initialize(Blob<float> *input)
 {
-    if (input_ == nullptr || batch_size != input->n())
+    if (input_ == nullptr || batch_size_ != input->n())
     {
         input_ = input;
-        input-desc = input->tensor;
+        input_desc_ = input->tensor();
         batch_size_ = input->n();
 
         if (output_ == nullptr)
@@ -400,7 +402,7 @@ Blob<float> *Softmax::forward(Blob<float> *input)
     cudnnSoftmaxForward(cuda_->cudnn(),
         CUDNN_SOFTMAX_ACCURATE,
         CUDNN_SOFTMAX_MODE_CHANNEL,
-        &cuda->one,
+        &cuda_->one,
         input_desc_,
         input->cuda(),
         &cuda_->zero,
@@ -410,9 +412,9 @@ Blob<float> *Softmax::forward(Blob<float> *input)
     return output_;
 }
 
-void Softmax::bwd_initalize(Blob<float> *target)
+void Softmax::bwd_initialize(Blob<float> *target)
 {
-    if (grad_input_ == nullptr || batch_size 1= target->n())
+    if (grad_input_ == nullptr || batch_size_ != target->n())
     {
         if (grad_input_ == nullptr)
             grad_input_ = new Blob<float>(input_->shape());
@@ -423,7 +425,7 @@ void Softmax::bwd_initalize(Blob<float> *target)
 
 Blob<float> *Softmax::backward(Blob<float> *target)
 {
-    cudaMemcopyAsync(grad_input_->cuda(),
+    cudaMemcpyAsync(grad_input_->cuda(),
         output_->cuda(),
         output_->buf_size(),
         cudaMemcpyHostToDevice
@@ -464,7 +466,7 @@ int Softmax::get_accuracy(Blob<float> *target)
     int hit_count = 0;
 
     h_output = output_->to(host);
-    h_target = target_->to(host);
+    h_target = target->to(host);
 
     for (int b =0 ; b < batch_size; b++){
         idx_output = 0;
@@ -484,7 +486,7 @@ int Softmax::get_accuracy(Blob<float> *target)
     return hit_count;    
 }
 
-
+/*
 Conv2D::Conv2D(std::string name,
     int out_channels,
     int kernel_size,
@@ -719,7 +721,9 @@ Blob<float> *Conv2D::backward(Blob<float> *grad_output)
     }
     return grad_input_;
 }
+*/
 
+/*
 Pooling:Pooling(std::string name,
     int kernel_size,
     int padding,
@@ -788,3 +792,4 @@ Blob<float> *Pooling::backward(Blob<float> *grad_output){
     );
     return grad_input_;
 }
+*/
