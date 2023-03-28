@@ -76,12 +76,12 @@ class Dense: public Layer
         Dense(std::string name, int out_size);
         virtual ~Dense();
 
-        virtual Blob<float> *forwar(Blob<float> *input);
+        virtual Blob<float> *forward(Blob<float> *input);
         virtual Blob<float> *backward(Blob<float> *grad_input);
 
     private:
-        void fwd_intialize(Blob<float> *input);
-        void bwd_initalize(Blob<float> *grad_output);
+        void fwd_initialize(Blob<float> *input);
+        void bwd_initialize(Blob<float> *grad_output);
 
         int input_size = 0;
         int output_size = 0;
@@ -99,8 +99,8 @@ class Activation: public Layer
         virtual Blob<float> *backward(Blob<float> *grad_input);
     
     private:
-        void fwd_intialize(Blob<float> *input);
-        void bwd_initalize(Blob<float> *grad_output);
+        void fwd_initialize(Blob<float> *input);
+        void bwd_initialize(Blob<float> *grad_output);
 
         cudnnActivationDescriptor_t act_desc_;
         cudnnActivationMode_t   act_mode_;
@@ -121,10 +121,10 @@ class Softmax: public Layer
         int get_accuracy(Blob<float> *target);
     
     protected:
-        void fwd_intialize(Blob<float> *input);
-        void bwd_initalize(Blob<float> *grad_output);
+        void fwd_initialize(Blob<float> *input);
+        void bwd_initialize(Blob<float> *grad_output);
         CrossEntropyLoss loss_;
-}
+};
 
 
 

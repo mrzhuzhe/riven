@@ -7,8 +7,6 @@
 // #include <helper_cuda.h>
 #include <curand.h>
 
-namespace cudl
-{
 #define BLOCK_DIM_1D    512
 #define BLOCK_DIM       16
 
@@ -181,6 +179,5 @@ class CudaContext
     cudnnHandle_t  _cudnn_handle;
 };
 
-} // namespace cudl
 
 #endif // _HELPER_H_

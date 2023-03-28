@@ -1,4 +1,4 @@
-#ifndef __BLOB_H_
+#ifndef _BLOB_H_
 #define _BLOB_H_
 
 #include <array>
@@ -111,9 +111,9 @@ class Blob {
             ftype *ptr = nullptr;
             if (target == host)
             {
-                cudaMalloc(h_ptr_, cuda(), sizeof(ftype) * len(), cudaMemcpyDeviceToHost);
+                cudaMemcpy(h_ptr_, cuda(), sizeof(ftype) * len(), cudaMemcpyDeviceToHost);
             } else {
-                cudaMemcpu(cuda(), h_ptr_, sizeof(ftype) * len(), cudaMemcpyHostToDevice);
+                cudaMemcpy(cuda(), h_ptr_, sizeof(ftype) * len(), cudaMemcpyHostToDevice);
                 ptr = d_ptr_;
             }
             return ptr;
