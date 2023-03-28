@@ -20,13 +20,13 @@ class Layer
 
         std::string get_name() { return name_; }
 
-        vitual float get_loss(Blob<float> *target);
-        vitual int get_accuracy(Blob<float> *target);
+        virtual float get_loss(Blob<float> *target);
+        virtual int get_accuracy(Blob<float> *target);
 
-        void set_cuda_context(CudaConText *context) { cuda_ = context; };
+        void set_cuda_context(CudaContext *context) { cuda_ = context; };
 
-        void set_load_pretrain() { load_pretrain = true; };
-        void set_gradient_stop() { gradient_stop_ = true };
+        void set_load_pretrain() { load_pretrain_ = true; };
+        void set_gradient_stop() { gradient_stop_ = true; };
 
         void freeze() { freeze_ = true; };
         void unfreeze() { freeze_ = false; };
@@ -66,13 +66,13 @@ class Layer
         int load_parameter();
         int save_parameter();
 
-        bool greadient_stop_ = false;
+        bool gradient_stop_ = false;
         friend class Network;
-}       
+};       
 
 class Dense: public Layer
 {
-    public::
+    public:
         Dense(std::string name, int out_size);
         virtual ~Dense();
 

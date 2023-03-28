@@ -31,7 +31,7 @@ int main(){
     model.add_layer(new Dense("densel", 500));
     model.add_layer(new Activation("relu", CUDNN_ACTIVATION_RELU));
     model.add_layer(new Dense("dense2", 10));
-    model.add_layer(new SOftmax("softmax"));
+    model.add_layer(new Softmax("softmax"));
     model.cuda();
 
     if (load_pretrain)
@@ -63,7 +63,7 @@ int main(){
 
         if (step % monitoring_step == 0)
         {
-            float loss = model.locc(train_target);
+            float loss = model.loss(train_target);
             float accuracy = 100.f * tp_count / monitoring_step / batch_size_train;
             std::cout << "step " << std::right << std::setw(4) << step << \
                 ", loss: " << std::left << std::setw(5) << std::fixed << std::setprecision(3) << loss << \
@@ -95,9 +95,12 @@ int main(){
         tp_count += model.get_accuracy(test_target);
 
         step = model.get_accuracy(test_target);    
+
+        step = test_data_loader.next();
+        
     }
 
-    float loss = model.locc(test_target);
+    float loss = model.loss(test_target);
     float accuracy = 100.f * tp_count / num_step_test / batch_size_test;
 
     std::cout << "loss: " << std::setw(4) << loss << ", accuracy: " << accuracy << "%" << std::endl;

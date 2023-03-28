@@ -7,176 +7,187 @@
 #include <fstream>
 
 #include <cuda_runtime.h>
+#include <cudnn.h>
 
+
+//  seems has been declared
 typedef enum {
     host,
     cuda
 } DeviceType;
 
+
+
 template <typename ftype>
 class Blob {
     public:
-    Blob(int n = 1, int c = 1, int h = 1, int w = 1): n_(n), c_(c), h_(h), w_(w)
-    {
-        h_ptr_ = new float[n_c * c_ + h_ * w_];
-    }
-    Blob(std::array<int, 4>): n_(size[0]), c_(size[1]), h_(size[2]), w_(size[3])
-    {
-        h_ptr_ = new float[n_*c_*h_*w_];
-    }
-    ~Blob()
-    {
-        if (h_ptr_ != nullptr)
-            delete [] h_ptr_;
-        if (d_ptr_ != nullptr)
-            cudaFree(d_ptr_);
-        if (is_tensor_)
-            cudnnDestroyTensorDescriptor(tensor_desc_);
-    }
-
-    void reset(int n = 1, int c = 1, int h = 1, int w = 1): n_(n), c_(c), h_(h), w_(w)
-    {
-        if (h_ptr != nullptr)
+        Blob(int n = 1, int c = 1, int h = 1, int w = 1): n_(n), c_(c), h_(h), w_(w)
         {
-            delete [] h_ptr_;
-            h_ptr_ = nullptr;
+            h_ptr_ = new float[n_ * c_ + h_ * w_];
         }
-        if (d_ptr_ != nullptr)
+        Blob(std::array<int, 4> size): n_(size[0]), c_(size[1]), h_(size[2]), w_(size[3])
         {
-            cudaFree(d_ptr_);
-            d_ptr_ = nullptr;
+            h_ptr_ = new float[n_*c_*h_*w_];
         }
-        h_ptr_ = new float[n_*c_*h_*w_];
-        cuda();
-        if (is_tensor_)
+        ~Blob()
         {
-            cudnnDestroyTensorDescriptor(tensor_desc_);
-            is_tensor = false;
+            if (h_ptr_ != nullptr)
+                delete [] h_ptr_;
+            if (d_ptr_ != nullptr)
+                cudaFree(d_ptr_);
+            if (is_tensor_)
+                cudnnDestroyTensorDescriptor(tensor_desc_);
         }
 
-    }
-    void reset(std::array<int, 4> size){
-        reset(size[0], size[1], size[2], size[3]);
-    }
+        void reset(int n = 1, int c = 1, int h = 1, int w = 1)//: n_(n), c_(c), h_(h), w_(w)
+        {
+            // update size information
+            n_ = n;
+            c_ = c;
+            h_ = h;
+            w_ = w;
 
-    std::array<int, 4> shape() { 
-        return std::array<int, 4>(n_, c_, h_, w_);
-    }
+            if (h_ptr_ != nullptr)
+            {
+                delete [] h_ptr_;
+                h_ptr_ = nullptr;
+            }
+            if (d_ptr_ != nullptr)
+            {
+                cudaFree(d_ptr_);
+                d_ptr_ = nullptr;
+            }
+            h_ptr_ = new float[n_*c_*h_*w_];
+            cuda();
+            if (is_tensor_)
+            {
+                cudnnDestroyTensorDescriptor(tensor_desc_);
+                is_tensor_ = false;
+            }
 
-    int size() { return c_ * h_ * w_; }
+        }
+        void reset(std::array<int, 4> size){
+            reset(size[0], size[1], size[2], size[3]);
+        }
 
-    int len() { return n_ * c_ * h_ * w_; }
+        std::array<int, 4> shape() { 
+            return std::array<int, 4>(n_, c_, h_, w_);
+        }
 
-    int buf_size() { return sizeof(ftype) * len(); }
+        int size() { return c_ * h_ * w_; }
 
-    int n() const { return n_; }
-    int c() const { return c_; }
-    int h() const { return h_; }
-    int w() const { return w_; }
+        int len() { return n_ * c_ * h_ * w_; }
 
-    bool is_tensor = false;
-    cudnnTensorDescriptor_t tensor_desc_;
-    cudnnTensorDescriptor_t tensor(){
-        if (is_tensor_)
+        int buf_size() { return sizeof(ftype) * len(); }
+
+        int n() const { return n_; }
+        int c() const { return c_; }
+        int h() const { return h_; }
+        int w() const { return w_; }
+
+        bool is_tensor_ = false;
+        cudnnTensorDescriptor_t tensor_desc_;
+        cudnnTensorDescriptor_t tensor(){
+            if (is_tensor_)
+                return tensor_desc_;
+            cudnnCreateTensorDescriptor(&tensor_desc_);
+            cudnnSetTensor4dDescriptor(tensor_desc_,
+            CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
+            n_, c_, h_, w_);
+
+            is_tensor_ = true;
             return tensor_desc_;
-        cudnnCreateTensorDescriptor(&tensor_desc_);
-        cudnnSetTensor4Descriptot(tensor_desc_,
-        CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT,
-        n_, c_, h_, w_);
-
-        is_tensor_ = true;
-        return tensor_desc_;
-    }
-
-    ftype *ptr() {  return h_ptr_; }
-    ftype *cuda()
-    {
-        if (d_ptr_ == nullptr)
-            cudaMalloc((void **)&d_ptr_, sizeof(ftype) * len());
-        return d_ptr_;
-    }
-
-    ftype *to(DeviceType target){
-        ftype *ptr = nullptr;
-        if (target == host)
-        {
-            cudaMalloc(h_ptr_, cuda(), sizeof(ftype) * len(), cudaMemcpyDeviceToHost);
-        } else {
-            cudaMemcpu(cuda(), h_ptr_, sizeof(ftype) * len(), cudaMemcpyHostToDevice);
-            ptr = d_ptr_;
         }
-        return ptr;
-    }
-    void print(std::string name, bool view_param = false, int num_batch = 1, int width = 16){
-        to(host);
-        std::cout << "**" << name << "\t : (" << ")\t";
-        std::cout << ".n: " << n_ << ", .c" << _c << ", .h" << h_ << ", .w: " << w_;
-        std::cout << std::hex << "\t(h:" << h_ptr_ << ", d:" << d_ptr_ << ")" << std::dec << std::endl;
 
-        if (view_param)
+        ftype *ptr() {  return h_ptr_; }
+        ftype *cuda()
         {
-            std::cout << std::fixed;
-            std::cout.precision(6);
-            int max_print_line = 4;
-            if (width == 28){
-                std::cout.precision(3);
-                max_print_line = 28;
-            }
-            int offset = 0;
+            if (d_ptr_ == nullptr)
+                cudaMalloc((void **)&d_ptr_, sizeof(ftype) * len());
+            return d_ptr_;
+        }
 
-            for (int n = 0; n < num_batch; n++){
-                if(num_batch > 1){
-                    std::cout << "<--- batch[" << n << "] -->" << std::endl;
+        ftype *to(DeviceType target){
+            ftype *ptr = nullptr;
+            if (target == host)
+            {
+                cudaMalloc(h_ptr_, cuda(), sizeof(ftype) * len(), cudaMemcpyDeviceToHost);
+            } else {
+                cudaMemcpu(cuda(), h_ptr_, sizeof(ftype) * len(), cudaMemcpyHostToDevice);
+                ptr = d_ptr_;
+            }
+            return ptr;
+        }
+        void print(std::string name, bool view_param = false, int num_batch = 1, int width = 16){
+            to(host);
+            std::cout << "**" << name << "\t : (" << ")\t";
+            std::cout << ".n: " << n_ << ", .c" << c_ << ", .h" << h_ << ", .w: " << w_;
+            std::cout << std::hex << "\t(h:" << h_ptr_ << ", d:" << d_ptr_ << ")" << std::dec << std::endl;
+
+            if (view_param)
+            {
+                std::cout << std::fixed;
+                std::cout.precision(6);
+                int max_print_line = 4;
+                if (width == 28){
+                    std::cout.precision(3);
+                    max_print_line = 28;
                 }
-                int count = 0;
-                int print_line_count = 0;
-                while (count < size() && print_line_count < max_print_line){
-                    std::cout << "\t";
-                    for (int s = 0; s < width && count < size(); s++ )
-                    {
-                        std::cout << h_ptr_[size()*n+count+offset] << "\t";
-                        count++;
+                int offset = 0;
+
+                for (int n = 0; n < num_batch; n++){
+                    if(num_batch > 1){
+                        std::cout << "<--- batch[" << n << "] -->" << std::endl;
                     }
-                    std::cout << std::endl;
-                    print_line_count++;
+                    int count = 0;
+                    int print_line_count = 0;
+                    while (count < size() && print_line_count < max_print_line){
+                        std::cout << "\t";
+                        for (int s = 0; s < width && count < size(); s++ )
+                        {
+                            std::cout << h_ptr_[size()*n+count+offset] << "\t";
+                            count++;
+                        }
+                        std::cout << std::endl;
+                        print_line_count++;
+                    }
                 }
+                std::cout.unsetf(std::ios::fixed);
             }
-            std::cout.unsetf(std::ios::fixed);
         }
-    }
 
-    int file_read(std::string filename)
-    {
-        std::ifstream file(filename.c_str(), std::ios::in | std::ios?::binary);
-        if (!file.is_open()){
-            std::cout << "fail to access " << filename <<std::endl;
-            return -1;
+        int file_read(std::string filename)
+        {
+            std::ifstream file(filename.c_str(), std::ios::in | std::ios::binary);
+            if (!file.is_open()){
+                std::cout << "fail to access " << filename <<std::endl;
+                return -1;
+            }
+            file.read((char*)h_ptr_, sizeof(float) * this->len());
+            this->to(DeviceType::cuda);
+            file.close();
+
+            return 0;
         }
-        file.read((char*)h_ptr_, sizeof(float) * this->len());
-        this->to(DeviceType::cuda);
-        file.close();
 
-        return 0;
-    }
+        int file_write(std::string filename){
+            std::ofstream file(filename.c_str(), std::ios::out | std::ios::binary);
+            if (!file.is_open()){
+                std::cout << "fail to write " << filename << std::endl;
+                return -1;
+            }
+            file.write((char*)this->to(host), sizeof(float)*this->len());
+            file.close();
 
-    int file_write(std::string filename){
-        std::ofstream file(filename.c_str(), std::ios::out | std::ios::binary);
-        if (!file.ies_open()){
-            std::cout << "fail to write " << filename << std::endl;
-            return -1;
+            return 0;
         }
-        file.write((char*)this->to(host), sizeof(float)*this->len());
-        file.close();
-
-        return 0;
-    }
     private: 
-    ftype *h_ptr_ = nullptr;
-    ftype *d_ptr_ = nullptr;
-    int n_ = 1;
-    int c_ = 1;
-    int h_ = 1;
-    int w_ = 1;
+        ftype *h_ptr_ = nullptr;
+        ftype *d_ptr_ = nullptr;
+        int n_ = 1;
+        int c_ = 1;
+        int h_ = 1;
+        int w_ = 1;
 
 };
 

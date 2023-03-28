@@ -17,7 +17,7 @@ class MNIST
 {
     public:
     MNIST(): dataset_dir_("./") {}
-    MNIST(std::string dataset_dir): dataset_dir(dataset_dir){}
+    MNIST(std::string dataset_dir): dataset_dir_(dataset_dir){}
     ~MNIST();
 
     void train(int batch_size = 1, bool shuffle = false );
@@ -28,7 +28,7 @@ class MNIST
 
     int next();
 
-    Blob<float>* get_batch() { return data_; }
+    Blob<float>* get_data() { return data_; }
     Blob<float>* get_target() { return target_; }
 
     private:
@@ -69,7 +69,7 @@ class MNIST
     void create_shared_space();
     void shuffle_dataset();
 
-}
+};
 
 
 
