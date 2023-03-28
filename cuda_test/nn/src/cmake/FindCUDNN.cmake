@@ -12,6 +12,7 @@
 include(FindPackageHandleStandardArgs)
 include(CMakeDependentOption)
 
+
 set(CUDNN_ROOT_DIR "" CACHE PATH "Folder contains NVIDIA cuDNN")
 
 if(CUDA_VERSION VERSION_LESS "11.0")
