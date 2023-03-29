@@ -12,6 +12,7 @@
 #include <fstream>
 #include <iostream>
 
+// TODO virtual function like get_accuracy seems to need bo be used 
 Layer::Layer(){
 
 }
