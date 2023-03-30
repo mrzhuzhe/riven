@@ -3,7 +3,7 @@
 #include "TikTok.h"
 #include <arm_neon.h>   //  https://developer.arm.com/documentation/dht0002/a/Introducing-NEON/Developing-for-NEON/Intrinsics?lang=en
 
-const int n = 8 << 2;
+const uint8_t n = 255;
 
 //int a[3*n];
 //int b[n];
