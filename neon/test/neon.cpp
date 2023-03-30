@@ -1,5 +1,3 @@
-//  bad case on mac m1 neon cannot be build with cmake but canbe build with clang++ 
-
 #include "iostream"
 #include <vector>
 #include "TikTok.h"
