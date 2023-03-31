@@ -3,7 +3,7 @@
 #include "TikTok.h"
 #include <arm_neon.h>   //  https://developer.arm.com/documentation/dht0002/a/Introducing-NEON/Developing-for-NEON/Intrinsics?lang=en
 
-const uint8_t n = 32;
+const int n = 32;
 
 //int a[3*n];
 //int b[n];
@@ -12,7 +12,7 @@ std::vector<uint8_t> a(n*3);
 std::vector<uint8_t> b(n);
 
 template <typename T>
-void fillArray(T n, T *src, T *dest){
+void fillArray(int n, T *src, T *dest){
     for (int i=0; i < n; i++){
         src[i*3] = 0+3*i;
         src[i*3+1] = 1+3*i;
@@ -22,7 +22,7 @@ void fillArray(T n, T *src, T *dest){
 }
 
 template <typename T>
-void showArray(T n, T *src, T *dest){
+void showArray(int n, T *src, T *dest){
     printf("\n");
     for (int i=0; i < n; i++){
         int r = *src++;
