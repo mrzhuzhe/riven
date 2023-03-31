@@ -11,7 +11,8 @@ const uint8_t n = 32;
 std::vector<uint8_t> a(n*3);
 std::vector<uint8_t> b(n);
 
-void fillArray(uint8_t n, uint8_t *src, uint8_t *dest){
+template <typename T>
+void fillArray(T n, T *src, T *dest){
     for (int i=0; i < n; i++){
         src[i*3] = 0+3*i;
         src[i*3+1] = 1+3*i;
@@ -20,7 +21,8 @@ void fillArray(uint8_t n, uint8_t *src, uint8_t *dest){
     }
 }
 
-void showArray(uint8_t n, uint8_t *src, uint8_t *dest){
+template <typename T>
+void showArray(T n, T *src, T *dest){
     printf("\n");
     for (int i=0; i < n; i++){
         int r = *src++;
@@ -30,7 +32,8 @@ void showArray(uint8_t n, uint8_t *src, uint8_t *dest){
     }
 }
 
-void gray_native(int n, uint8_t *src, uint8_t *dest){
+template <typename T>
+void gray_native(int n, T *src, T *dest){
     for (int i=0; i < n; i++){
         int r = *src++;
         int g = *src++;
@@ -48,7 +51,8 @@ void gray_native(int n, uint8_t *src, uint8_t *dest){
     }
 }
 
-void gray_uint8(int n, uint8_t *src, uint8_t *dest){
+template <typename T>
+void gray_uint8(int n, T *src, T *dest){
     for (int i=0; i < n; i++){
         uint8_t r = *src++;
         uint8_t g = *src++;
@@ -68,7 +72,8 @@ void gray_uint8(int n, uint8_t *src, uint8_t *dest){
 
 
 //void gray_mla(int n, int *src, int *dest){
-void gray_mla(uint8_t *src, uint8_t *dest, int n){
+template <typename T>
+void gray_mla(T *src, T *dest, int n){
 
     //uint8x8_t _src = *src;
 
