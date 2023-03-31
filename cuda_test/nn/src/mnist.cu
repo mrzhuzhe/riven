@@ -151,3 +151,21 @@ int MNIST::next()
 
     return step_;
 }
+
+
+void MNIST::test(int batch_size) {
+    if (batch_size < 1)
+    {
+        std::cout << "batch size should be greater than or equal to 1." << std::endl;
+        return;
+    }
+
+    batch_size_ = batch_size;
+    
+    load_data(test_dataset_file_);
+    load_target(test_label_file_);
+
+    create_shared_space();
+
+    step_ = 0;
+}

@@ -122,6 +122,17 @@ int Layer::save_parameter()
     return 0;
 }
 
+//  https://zh.wikipedia.org/wiki/%E8%99%9A%E5%87%BD%E6%95%B0
+float Layer::get_loss(Blob<float> *target)
+{
+	return 1;
+}
+
+int Layer::get_accuracy(Blob<float> *target)
+{
+	return 1;
+}
+
 Dense::Dense(std::string name, int output_size)
 {
     name_ = name;
