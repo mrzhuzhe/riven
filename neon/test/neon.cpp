@@ -8,6 +8,8 @@ const int n = 32;
 //int a[3*n];
 //int b[n];
 
+typedef uint8x8_t vec_t;
+
 std::vector<uint8_t> a(n*3);
 std::vector<uint8_t> b(n);
 
@@ -77,24 +79,23 @@ void gray_mla(T *src, T *dest, int n){
 
     //uint8x8_t _src = *src;
 
-
     n /= 8;
-    uint8x8_t r_ratio = vdup_n_u8(77);
-    uint8x8_t g_ratio = vdup_n_u8(151);
-    uint8x8_t b_ratio = vdup_n_u8(28);
+    vec_t r_ratio = vdup_n_u8(77);
+    vec_t g_ratio = vdup_n_u8(151);
+    vec_t b_ratio = vdup_n_u8(28);
 
     //printf("12123123 %d", *src);
     ///*
     for (int i=0; i < n; i++){
         uint8x8x3_t rgb = vld3_u8(src);        
-        uint8x8_t r = rgb.val[0];
-        uint8x8_t g = rgb.val[1];
-        uint8x8_t b = rgb.val[2];
+        vec_t r = rgb.val[0];
+        vec_t g = rgb.val[1];
+        vec_t b = rgb.val[2];
 
         uint16x8_t y = vmull_u8(r, r_ratio);
         y = vmlal_u8(y, g, g_ratio);
         y = vmlal_u8(y, b, b_ratio);
-        uint8x8_t ret = vshrn_n_u16(y, 8);
+        vec_t ret = vshrn_n_u16(y, 8);
 
         vst1_u8(dest, ret);
         src += 3*8;
