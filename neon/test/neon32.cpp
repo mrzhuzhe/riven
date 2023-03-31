@@ -3,15 +3,18 @@
 #include "TikTok.h"
 #include <arm_neon.h>   //  https://developer.arm.com/documentation/dht0002/a/Introducing-NEON/Developing-for-NEON/Intrinsics?lang=en
 
-const uint32_t n = 65536;
+const int n = 256;
 
 //int a[3*n];
 //int b[n];
 
-std::vector<uint32_t> a(n*3);
-std::vector<uint32_t> b(n);
+typedef uint16x4_t vec_t;
 
-void fillArray(uint32_t n, uint32_t *src, uint32_t *dest){
+std::vector<uint16_t> a(n*3);
+std::vector<uint16_t> b(n);
+
+template <typename T>
+void fillArray(int n, T *src, T *dest){
     for (int i=0; i < n; i++){
         src[i*3] = 0+3*i;
         src[i*3+1] = 1+3*i;
@@ -20,7 +23,8 @@ void fillArray(uint32_t n, uint32_t *src, uint32_t *dest){
     }
 }
 
-void showArray(uint32_t n, uint32_t *src, uint32_t *dest){
+template <typename T>
+void showArray(int n, T *src, T *dest){
     printf("\n");
     for (int i=0; i < n; i++){
         int r = *src++;
@@ -30,7 +34,8 @@ void showArray(uint32_t n, uint32_t *src, uint32_t *dest){
     }
 }
 
-void gray_native(int n, uint32_t *src, uint32_t *dest){
+template <typename T>
+void gray_native(int n, T *src, T *dest){
     for (int i=0; i < n; i++){
         int r = *src++;
         int g = *src++;
@@ -48,15 +53,16 @@ void gray_native(int n, uint32_t *src, uint32_t *dest){
     }
 }
 
-void gray_uint8(int n, uint32_t *src, uint32_t *dest){
+template <typename T>
+void gray_uint8(int n, T *src, T *dest){
     for (int i=0; i < n; i++){
-        uint32_t r = *src++;
-        uint32_t g = *src++;
-        uint32_t b = *src++;
+        uint8_t r = *src++;
+        uint8_t g = *src++;
+        uint8_t b = *src++;
 
-        uint32_t r_ratio = 77;
-        uint32_t g_ratio = 151;
-        uint32_t b_ratio = 28;
+        uint8_t r_ratio = 77;
+        uint8_t g_ratio = 151;
+        uint8_t b_ratio = 28;
 
         int temp = r * r_ratio;
         temp += g * g_ratio;
@@ -68,32 +74,32 @@ void gray_uint8(int n, uint32_t *src, uint32_t *dest){
 
 
 //void gray_mla(int n, int *src, int *dest){
-void gray_mla(uint32_t *src, uint32_t *dest, int n){
+template <typename T>
+void gray_mla(T *src, T *dest, int n){
 
-    //uint32x2_t _src = *src;
-
-
-    n /= 8;
-    uint32x2_t r_ratio = vdup_n_u32(77);
-    uint32x2_t g_ratio = vdup_n_u32(151);
-    uint32x2_t b_ratio = vdup_n_u32(28);
+    //uint8x8_t _src = *src;
+    const int stirde = 2;
+    n /= stirde;
+    vec_t r_ratio = vdup_n_u16(77);
+    vec_t g_ratio = vdup_n_u16(151);
+    vec_t b_ratio = vdup_n_u16(28);
 
     //printf("12123123 %d", *src);
     ///*
     for (int i=0; i < n; i++){
-        uint32x2x3_t rgb = vld3_u32(src);        
-        uint32x2_t r = rgb.val[0];
-        uint32x2_t g = rgb.val[1];
-        uint32x2_t b = rgb.val[2];
+        uint16x4x3_t rgb = vld3_u16(src);        
+        vec_t r = rgb.val[0];
+        vec_t g = rgb.val[1];
+        vec_t b = rgb.val[2];
 
-        uint64x2_t y = vmull_u32(r, r_ratio);
-        y = vmlal_u32(y, g, g_ratio);
-        y = vmlal_u32(y, b, b_ratio);
-        uint32x2_t ret = vshrn_n_u64(y, 8);
+        uint32x4_t y = vmull_u16(r, r_ratio);
+        y = vmlal_u16(y, g, g_ratio);
+        y = vmlal_u16(y, b, b_ratio);
+        vec_t ret = vshrn_n_u32(y, 8);
 
-        vst1_u32(dest, ret);
-        src += 3*32;
-        dest +=32;
+        vst1_u16(dest, ret);
+        src += 3 * stirde;
+        dest += stirde;
     }
     //*/
 }
@@ -101,8 +107,8 @@ void gray_mla(uint32_t *src, uint32_t *dest, int n){
 int main(){
     //int *pa = a;
     //int *pb = b;
-    uint32_t *pa = a.data();
-    uint32_t *pb = b.data();
+    uint16_t *pa = a.data();
+    uint16_t *pb = b.data();
     fillArray(n, pa, pb);
     showArray(n, pa, pb);
    
