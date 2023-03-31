@@ -23,7 +23,7 @@ class Blob {
     public:
         Blob(int n = 1, int c = 1, int h = 1, int w = 1): n_(n), c_(c), h_(h), w_(w)
         {
-            h_ptr_ = new float[n_ * c_ + h_ * w_];
+            h_ptr_ = new float[n_ * c_ * h_ * w_];
         }
         Blob(std::array<int, 4> size): n_(size[0]), c_(size[1]), h_(size[2]), w_(size[3])
         {
@@ -112,6 +112,7 @@ class Blob {
             if (target == host)
             {
                 cudaMemcpy(h_ptr_, cuda(), sizeof(ftype) * len(), cudaMemcpyDeviceToHost);
+                ptr = h_ptr_;
             } else {
                 cudaMemcpy(cuda(), h_ptr_, sizeof(ftype) * len(), cudaMemcpyHostToDevice);
                 ptr = d_ptr_;

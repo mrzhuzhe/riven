@@ -34,7 +34,7 @@ class MNIST
     private:
 
     std::string dataset_dir_;
-#ifdef __linux__
+#ifdef __linux__    
     std::string train_dataset_file_ = "train-images-idx3-ubyte";
     std::string train_label_file_   = "train-labels-idx1-ubyte";
     std::string test_dataset_file_  = "t10k-images-idx3-ubyte";

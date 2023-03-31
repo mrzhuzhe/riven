@@ -178,7 +178,7 @@ void Dense::fwd_initialize(Blob<float> *input){
         
         cudaMalloc((void**)&d_one_vec, sizeof(float)*batch_size_);
 
-        init_one_vec <<< (batch_size_ + BLOCK_DIM - 1) / BLOCK_DIM_1D, BLOCK_DIM_1D >>>(d_one_vec, batch_size_);
+        init_one_vec<<< (batch_size_ + BLOCK_DIM_1D - 1) / BLOCK_DIM_1D, BLOCK_DIM_1D >>>(d_one_vec, batch_size_);
 
         if (load_pretrain_ && !freeze_) 
         {
@@ -441,7 +441,7 @@ Blob<float> *Softmax::backward(Blob<float> *target)
     cudaMemcpyAsync(grad_input_->cuda(),
         output_->cuda(),
         output_->buf_size(),
-        cudaMemcpyHostToDevice
+        cudaMemcpyDeviceToDevice
     );
 
     cublasSaxpy(cuda_->cublas(),

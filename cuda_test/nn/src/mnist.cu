@@ -1,5 +1,7 @@
 #include "mnist.h"
 #include <iostream>
+#include <assert.h>
+//#include <string.h>
 
 MNIST::~MNIST()
 {
@@ -15,6 +17,9 @@ void MNIST::create_shared_space(){
 
 void MNIST::load_data(std::string &image_file_path){
     uint8_t ptr[4];
+
+    //std::cout << sizeof(ptr[0]) << std::endl;
+
     std::string file_path_ = dataset_dir_ + "/" + image_file_path;
     std::cout << "loading " << file_path_ << std::endl;
     std::ifstream file(file_path_.c_str(), std::ios::in | std::ios::binary);
@@ -25,14 +30,18 @@ void MNIST::load_data(std::string &image_file_path){
     }
     file.read((char*)ptr, 4);
     int magic_number = to_int(ptr);
+    
+    //std::cout << ((magic_number)) << std::endl;
+    
+    assert((magic_number & 0xFFF) == 0x803);
 
     int num_data;
     file.read((char*)ptr, 4);
     num_data = to_int(ptr);
     file.read((char*)ptr, 4);
-    num_data = to_int(ptr);
+    height_ = to_int(ptr);
     file.read((char*)ptr, 4);
-    num_data = to_int(ptr);
+    width_ = to_int(ptr);
 
     uint8_t* q = new uint8_t[channels_ * height_ * width_];
 
@@ -98,9 +107,20 @@ void MNIST::shuffle_dataset()
     std::shuffle(std::begin(target_pool_), std::end(target_pool_), g_target);
 }
 
+/*
 int MNIST::to_int(uint8_t *ptr) {
-    return ((ptr[0] && 0xFF) << 24 | (ptr[1] && 0xFF) << 16 | (ptr[2] && 0xFF) << 8 | (ptr[3] && 0xFF) << 0);
+    return ((ptr[0] && 0xFF) << 24 | (ptr[1] && 0xFF) << 16 | 
+            (ptr[2] && 0xFF) << 8 | (ptr[3] && 0xFF) << 0);
+    // 0 | 0 | 256 | 1
 }
+*/
+
+int MNIST::to_int(uint8_t *ptr)
+{
+    return ((ptr[0] & 0xFF) << 24 | (ptr[1] & 0xFF) << 16 |
+            (ptr[2] & 0xFF) << 8 | (ptr[3] & 0xFF) << 0);
+}
+
 
 void MNIST::train(int batch_size, bool shuffle)
 {

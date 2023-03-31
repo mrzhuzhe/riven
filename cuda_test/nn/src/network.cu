@@ -77,6 +77,7 @@ int Network::write_file()
         }
         return 0;
     }
+    return 0;
 }
 
 void Network::cuda()
@@ -125,3 +126,13 @@ int Network::get_accuracy(Blob<float> *target)
     return layer->get_accuracy(target);
 }
 
+
+int Network::load_pretrain()
+{
+	for (auto layer : layers_)
+	{
+		layer->set_load_pretrain();
+	}
+
+	return 0;
+}

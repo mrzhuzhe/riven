@@ -1,3 +1,4 @@
+//  cuda debugger https://docs.nvidia.com/nsight-visual-studio-code-edition/cuda-debugger/index.html
 #include "mnist.h"
 #include "network.h"
 #include "layer.h"
@@ -6,7 +7,12 @@
 #include <iomanip>
 //  https://zhuanlan.zhihu.com/p/526508882
 
+#include <filesystem>   // only for cpp17
+
 int main(){
+
+    std::cout << "Current working directory: " << std::filesystem::current_path() << '\n'; 
+   
     int batch_size_train = 256;
     int num_step_train = 1600;
     int monitoring_step = 200;
@@ -42,8 +48,12 @@ int main(){
     int step = 0;
     Blob<float> *train_data = train_data_loader.get_data();
     Blob<float> *train_target = train_data_loader.get_target();
+
     train_data_loader.get_batch();
+
     int tp_count = 0;
+
+
     while (step < num_step_train){
         train_data->to(cuda);
         train_target->to(cuda);
@@ -92,9 +102,7 @@ int main(){
         test_target->to(cuda);
 
         model.forward(test_data);
-        tp_count += model.get_accuracy(test_target);
-
-        step = model.get_accuracy(test_target);    
+        tp_count += model.get_accuracy(test_target);  
 
         step = test_data_loader.next();
         

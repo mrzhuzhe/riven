@@ -32,3 +32,6 @@ add_executable(templateTest.o templateTest.cpp)
 
 
 #add_executable(vectortest_withlib2.o sales_data.cpp vectortest.cpp)
+
+
+add_executable(vfn_test.o vfn_test.cpp)
