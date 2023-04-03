@@ -3,7 +3,7 @@
 #include <cuda_profiler_api.h>
 #include "common.h"
 #include "cuda_runtime.h"
-
+#include "helper_cuda.h"
 #define BLOCK_DIM 16
 
 
@@ -93,6 +93,8 @@ int main(){
 
     cudaMemcpy((void **)d_A, A, M*K*sizeof(float), cudaMemcpyHostToDevice);
     cudaMemcpy((void **)d_B, B, N*K*sizeof(float), cudaMemcpyHostToDevice);
+
+    checkCudaErrors(cudaGetLastError());
 
     dim3 blockDim(BLOCK_DIM, BLOCK_DIM);
     dim3 gridDim((N + BLOCK_DIM -1)/BLOCK_DIM, (M + BLOCK_DIM -1)/BLOCK_DIM);

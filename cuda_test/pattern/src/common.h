@@ -7,9 +7,10 @@
 template <typename T=float> 
 void random_init(T *data, int length)
 {
+    T _val = 1;
     for (int i = 0; i < length; i++) {
         data[i] = (rand() & 0xFFFF) / (float)RAND_MAX;
-        //data[i] = 1.f;
+        //data[i] = _val;
     }
 }
 

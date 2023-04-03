@@ -1,3 +1,7 @@
+/*
+Time= 0.524270 msec, bandwidth= 128.004395 GB/s
+host 16777216.000000, device 16777216.00000
+*/
 #include <iostream>
 #include <helper_timer.h>
 #include "utils.h"

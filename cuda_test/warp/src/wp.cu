@@ -69,8 +69,9 @@ int reduction(float *d_out, float *d_in, int size, int n_threads){
     int num_blocks_per_sm;
     cudaDeviceGetAttribute(&num_sms, cudaDevAttrMultiProcessorCount, 0);
     cudaOccupancyMaxActiveBlocksPerMultiprocessor(&num_blocks_per_sm, reduction_kernel, n_threads, n_threads*sizeof(float));
+    //printf("num_blocks_per_sm %d \n", num_blocks_per_sm);
     int n_blocks = min(num_blocks_per_sm * num_sms, (size + n_threads - 1)/ n_threads);
-    
+    //printf("n_blocks %d \n", n_blocks);
     //reduction_kernel<<<n_blocks, n_threads, n_threads*sizeof(float), 0>>>(d_out, d_in, size);
     //reduction_kernel<<<1, n_threads, n_threads*sizeof(float), 0>>>(d_out, d_in, n_blocks);
     reduction_kernel<<<n_blocks, n_threads>>>(d_out, d_in, size);
