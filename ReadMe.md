@@ -2,6 +2,10 @@
 
 > Parallel programing with Cuda
 
+## Notice
+
+1. all application is compiler with cuda Arch 80 (RTX 3090) you can change it on CMakeLists
+
 ## Applications
 
 ### CUDA
