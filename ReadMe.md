@@ -1,53 +1,43 @@
 # Riven 
 
-> CPU Memory Compiler and Parallel programing 
+> Parallel programing with Cuda
 
-This is a CPP test project playgroud
+## Applications
 
-with LLVM vulkan cuda and morden Cpp basic   
+### CUDA
+```
+cd /cuda_test/
 
-## Folders List
+// subfolders with corrosponding apps
 
-### clang 
+/mm  // shared and texture memory
 
-clang test project
+/nn  // a neural network like caffe
 
-### cmake_test 
+/warp   // cuda concept about grid block warp and cooperate group
 
-cmake test project
+/pipline    // cuda stream events 
 
-### cpp_test
-
-cpp basic test
-
-### cuda_test 
-
-a beginner guide to cuda project 
-
-[TODO] need test with nvdia-profiler  
-
-[TODO] play with memory
+/pattern    // application like convulition
 
 
-### eigen_test
+# build
+cmake -S src -B build
+cmake --build build
 
-libary Eigen test
 
-### llvm
+```
 
-llvm project 
+### Arm Neon
 
-[TODO] so we shall play with real jit https://llvm.org/docs/tutorial/BuildingAJIT1.html
+Arm neon  intrinsi on Mac M1
 
-### RayTracing
+There is a bug that this cannot be build with cmake.
 
-learn RayTracing in one week test Project
 
-[TODO] need next week
+### Legacy
 
-### vulkan 
-
-vulkan tortoial test project
-
-[Q] why vulkan can be seen as computing backend as same as cuda ? 
-
+1. /RayTracing learn ray tracing in one week
+2. /openmp_test 
+3. /llvm llvm totorial
+3. /cuda_fluid 
