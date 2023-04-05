@@ -17,6 +17,7 @@ add_executable(unimem unimem.cu)
 add_executable(unimem_64 unimem_64.cu)
 add_executable(unimem_init unimem_init.cu)
 add_executable(unimem_pre unimem_pre.cu)
+add_executable(warp_scan warp_scan.cu)
 
 target_include_directories(mul PUBLIC . ../../include)
 target_include_directories(image_scaling PUBLIC . ../../include)

@@ -37,6 +37,7 @@ __global__ void shared_reduction_kernel_without_divergence(float *data_out, floa
     __syncthreads();
 
     // interleaved addressing
+    // 这个并不是线程分歧 是增加存储数据的局部性
     for (unsigned int stride = blockDim.x / 2; stride > 0; stride >>= 1){
         if (threadIdx.x < stride) 
             s_data[threadIdx.x] += s_data[threadIdx.x + stride];

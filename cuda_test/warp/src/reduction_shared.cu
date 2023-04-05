@@ -10,6 +10,7 @@ __global__ void shared_reduction_kernel(float *data_out, float *data_in, int siz
     unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
     extern __shared__ float s_data[];
+    //__shared__ float s_data[256];
 
     s_data[threadIdx.x] = (idx < size) ? data_in[idx] : 0.f;
 
@@ -30,8 +31,9 @@ void shared_reduction(float *d_out, float *d_in, int n_threads, int size){
 
     while (size > 1){
         int n_blocks =(size + n_threads -1) / n_threads;
-        //shared_reduction_kernel<<<n_blocks, n_threads, n_threads*sizeof(float), 0>>>(d_out, d_in, size);
+        //shared_reduction_kernel<<<n_blocks, n_threads, n_threads*sizeof(float), 0>>>(d_out, d_in, size);  // wrong
         shared_reduction_kernel<<<n_blocks, n_threads, n_threads*sizeof(float), 0>>>(d_out, d_out, size);
+        //shared_reduction_kernel<<<n_blocks, n_threads>>>(d_out, d_out, size);
         size = n_blocks;
     }
 }

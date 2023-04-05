@@ -16,6 +16,7 @@ __global__ void reduction_kernel_sm(float *data_out, float *data_in, int size){
     extern __shared__ float s_data[];
 
     float input = 0.f;
+    //  跨步循环获取所有block的结果 这样就只需要一个block就行了
     for (int i = idx; i < size; i+= blockDim.x * gridDim.x){
         input += data_in[i];
     }
@@ -44,7 +45,7 @@ int reduction(float *d_out, float *d_in, int size, int n_threads){
     int num_blocks_per_sm;
     cudaDeviceGetAttribute(&num_sms, cudaDevAttrMultiProcessorCount, 0);
     cudaOccupancyMaxActiveBlocksPerMultiprocessor(&num_blocks_per_sm, reduction_kernel_sm, n_threads, n_threads*sizeof(float));
-    
+    printf("num_blocks_per_sm  num_sms %d %d \n", num_blocks_per_sm , num_sms);
     int n_blocks = min(num_blocks_per_sm * num_sms, (size + n_threads - 1)/ n_threads);
     
     reduction_kernel_sm<<<n_blocks, n_threads, n_threads*sizeof(float), 0>>>(d_out, d_in, size);
