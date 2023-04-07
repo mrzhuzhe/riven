@@ -4,7 +4,8 @@
 #include <cutlass/core_io.h>
 
 #include <cute/layout.hpp>
-#include <cute/util/debug.hpp>
+#include <cute/tensor.hpp>
+//  #include <cute/util/debug.hpp>
 
 template <class Shape, class Stride>
 void print2D(cute::Layout<Shape,Stride> const& layout)
@@ -52,6 +53,26 @@ int main() {
   cute::print("\n");
   cute::print(layout(1, 1));
   cute::print("\n");
+
+  cute::Layout layout2 = cute::Layout<cute::Shape <cute::Shape <cute::_4, cute::_3>, cute::_1>,
+    cute::Stride<cute::Stride<cute::_3, cute::_1>, cute::_0>>{};  
+  print2D(layout2);
+
+  cute::Layout flat_layout = cute::flatten(layout2);
+  //cute::print_layout(flat_layout);
+
+  cute::Layout tile = cute::Layout<cute::Shape <cute::_2, cute::_2>, cute::Stride<cute::_1, cute::_2>>{};
+  cute::Layout matrix_of_tiles = cute::Layout<cute::Shape <cute::_3, cute::_4>, cute::Stride<cute::_4, cute::_1>>{};
+
+  cute::print_layout(cute::blocked_product(tile, matrix_of_tiles));
+
+  cute::print_layout(cute::logical_product(tile, matrix_of_tiles));
+
+  cute::print_layout(cute::raked_product(tile, matrix_of_tiles));
+
+  //cute::Tensor gmem_8s = make_tensor(make_gmem_ptr(A), Int<8>{});
+
+  cute::Tensor rmem_4x8_col = cute::make_tensor<float>(cute::make_shape(cute::Int<4>{},cute::Int<8>{}));
 
   return 0;
 }
