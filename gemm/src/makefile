@@ -1,5 +1,5 @@
-OLD  := MMult15
-NEW  := MMult16
+OLD  := MMult19
+NEW  := MMult21
 #
 # sample makefile
 #
