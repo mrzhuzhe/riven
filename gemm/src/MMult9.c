@@ -1,4 +1,5 @@
 /* Create macros so that the matrices are stored in column-major order */
+// indirect addressing
 
 #define A(i,j) a[ (j)*lda + (i) ]
 #define B(i,j) b[ (j)*ldb + (i) ]
@@ -23,32 +24,63 @@ void AddDot1x4( int k, double *a, int lda, double *b, int ldb, double *c, int ld
     *bp0_pntr, *bp1_pntr, *bp2_pntr, *bp3_pntr; 
 
    
-   for (int p = 0; p < k ; p++){
-      reg_a = A(0, p);
+   for (int p = 0; p < k ; p+=4){
       bp0_pntr = &B(p , 0);
       bp1_pntr = &B(p , 1);
       bp2_pntr = &B(p , 2);
       bp3_pntr = &B(p , 3);
-      /*
-      C(0, 0) += reg_a * *bp0_pntr++;
-      C(0, 1) += reg_a * *bp1_pntr++;
-      C(0, 2) += reg_a * *bp2_pntr++;
-      C(0, 3) += reg_a * *bp3_pntr++;  
-      */
-          
+
+      reg_a = A(0, p);      
+      ///*
+      C(0, 0) += reg_a * *(bp0_pntr);
+      C(0, 1) += reg_a * *(bp1_pntr);
+      C(0, 2) += reg_a * *(bp2_pntr);
+      C(0, 3) += reg_a * *(bp3_pntr);  
+      //*/
+      
+      reg_a = A(0, p+1);      
+      ///*
+      C(0, 0) += reg_a * *(bp0_pntr+1);
+      C(0, 1) += reg_a * *(bp1_pntr+1);
+      C(0, 2) += reg_a * *(bp2_pntr+1);
+      C(0, 3) += reg_a * *(bp3_pntr+1);  
+      //*/
+
+      reg_a = A(0, p+2);      
+      ///*
+      C(0, 0) += reg_a * *(bp0_pntr+2);
+      C(0, 1) += reg_a * *(bp1_pntr+2);
+      C(0, 2) += reg_a * *(bp2_pntr+2);
+      C(0, 3) += reg_a * *(bp3_pntr+2);  
+      //*/
+
+      reg_a = A(0, p+3);      
+      ///*
+      C(0, 0) += reg_a * *(bp0_pntr+3);
+      C(0, 1) += reg_a * *(bp1_pntr+3);
+      C(0, 2) += reg_a * *(bp2_pntr+3);
+      C(0, 3) += reg_a * *(bp3_pntr+3);  
+      //*/
+
+      bp0_pntr += 4;
+      bp1_pntr += 4;
+      bp2_pntr += 4;
+      bp3_pntr += 4;
+
+     /*     
      // faster multi ？
      reg_a_0 += reg_a * B(p , 0);
      reg_a_1 += reg_a * B(p , 1);
      reg_a_2 += reg_a * B(p , 2);
      reg_a_3 += reg_a * B(p , 3);  
-     
+     */
    }
-   
+  /*  
   C(0, 0) += reg_a_0;
   C(0, 1) += reg_a_1;
   C(0, 2) += reg_a_2;
   C(0, 3) += reg_a_3; 
-  
+  */
 }
 
 void MY_MMult( int m, int n, int k, double *a, int lda, 
