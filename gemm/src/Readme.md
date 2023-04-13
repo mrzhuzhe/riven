@@ -12,7 +12,11 @@
 
 ## perf
 1. perf 工具 https://zhuanlan.zhihu.com/p/471379451 
+2. objdump -d ./outputs/MMult7.o >> ./outputs/asm/MMult7_2.S
+3. openblas lab https://www.bilibili.com/video/BV1BY411N72y/?spm_id_from=333.788&vd_source=357616f412db6079b853b68278dc03db
 
+## Bug
+1. e-14 error https://github.com/mrzhuzhe/riven/issues/3
 
 ## CUDA
 1. https://zhuanlan.zhihu.com/p/326999014
