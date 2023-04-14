@@ -31,7 +31,7 @@ int main() {
   }
   printf("#GPU Device %d: \"%s\" with compute capability %d.%d\n\n", devID,
          deviceProp.name, deviceProp.major, deviceProp.minor);
-
+  printf("# maxGridSize: %n maxBlocksPerMultiProcessor: %d maxThreadsPerBlock: %d \n", deviceProp.maxGridSize, deviceProp.maxBlocksPerMultiProcessor, deviceProp.maxThreadsPerBlock);
   int p, m, n, k, rep;
 
   double dtime, dtime_best, gflops, diff;

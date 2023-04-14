@@ -1,5 +1,5 @@
 OLD := MMult_cuda_1
-NEW := MMult_cuda_1
+NEW := MMult_cuda_2
 SMS ?= 80
 
 outpath = ./outputs/
@@ -47,7 +47,7 @@ run:
 	echo "version = '$(NEW)';" > ${outpath}output_$(NEW).m
 	${outpath}test_MMult.x >> ${outpath}output_$(NEW).m
 	cp ${outpath}output_$(OLD).m ${outpath}output_old.m
-	cp ${outpath}output_$(NEW).m ${outpath}output_new.ms
+	cp ${outpath}output_$(NEW).m ${outpath}output_new.m
 	make cpPlot
 
 clean:
