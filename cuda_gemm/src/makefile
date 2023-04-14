@@ -2,6 +2,7 @@ OLD := MMult_cuda_1
 NEW := MMult_cuda_1
 SMS ?= 80
 
+outpath = ./outputs/
 #
 # sample makefile
 #
@@ -14,19 +15,19 @@ $(foreach sm,$(SMS),$(eval GENCODE_FLAGS += -gencode arch=compute_$(sm),code=sm_
 CFLAGS     := -std=c++17 -O2
 LDFLAGS    := -lm  -lcublas  -lopenblas
 
-UTIL       := copy_matrix.o \
-              compare_matrices.o \
-              random_matrix.o \
-              dclock.o \
-              REF_MMult.o \
-              print_matrix.o
+UTIL       := ${outpath}copy_matrix.o \
+              ${outpath}compare_matrices.o \
+              ${outpath}random_matrix.o \
+              ${outpath}dclock.o \
+              ${outpath}REF_MMult.o \
+              ${outpath}print_matrix.o
 
-TEST_OBJS  := test_MMult.o $(NEW).o 
+TEST_OBJS  := ${outpath}test_MMult.o ${outpath}$(NEW).o 
 
-%.o: %.cpp
+${outpath}%.o: %.cpp
 	$(CC) $(CFLAGS) $(GENCODE_FLAGS)  -c $< -o $@
 
-%.o: %.cu
+${outpath}%.o: %.cu
 	$(CC) $(CFLAGS) $(GENCODE_FLAGS)  -c $< -o $@
 
 all: 
@@ -35,17 +36,22 @@ all:
 
 test_MMult.x: $(TEST_OBJS) $(UTIL) parameters.h
 	$(LINKER) $(TEST_OBJS) $(UTIL) $(LDFLAGS) \
-        $(BLAS_LIB) -o $(TEST_BIN) $@ 
+        $(BLAS_LIB) -o $(TEST_BIN) ${outpath}$@ 
+
+cpPlot:
+	cp PlotAll.m ${outpath}PlotAll.m
+	cp proc_parameters.m ${outpath}proc_parameters.m
 
 run:	
 	make all
-	echo "version = '$(NEW)';" > output_$(NEW).m
-	./test_MMult.x >> output_$(NEW).m
-	cp output_$(OLD).m output_old.m
-	cp output_$(NEW).m output_new.m
+	echo "version = '$(NEW)';" > ${outpath}output_$(NEW).m
+	${outpath}test_MMult.x >> ${outpath}output_$(NEW).m
+	cp ${outpath}output_$(OLD).m ${outpath}output_old.m
+	cp ${outpath}output_$(NEW).m ${outpath}output_new.ms
+	make cpPlot
 
 clean:
-	rm -f *.o *~ core *.x
+	rm -f ${outpath}*.o ${outpath}*~ core ${outpath}*.x
 
 cleanall:
-	rm -f *.o *~ core *.x output*.m *.eps *.png
+	rm -f ${outpath}*.o ${outpath}*~ core ${outpath}*.x output*.m ${outpath}*.eps ${outpath}*.png

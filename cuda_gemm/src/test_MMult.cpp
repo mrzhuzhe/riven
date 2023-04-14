@@ -29,7 +29,7 @@ int main() {
            __LINE__);
     exit(EXIT_FAILURE);
   }
-  printf("GPU Device %d: \"%s\" with compute capability %d.%d\n\n", devID,
+  printf("#GPU Device %d: \"%s\" with compute capability %d.%d\n\n", devID,
          deviceProp.name, deviceProp.major, deviceProp.minor);
 
   int p, m, n, k, rep;
