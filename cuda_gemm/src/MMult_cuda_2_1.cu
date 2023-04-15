@@ -44,7 +44,7 @@ __global__ void sgemm(int m, int n, int k, float *a, int lda, float *b, int ldb,
     //}
     __syncthreads();
 
-    for (int kk = 0; kk < BLOCK; ++kk){
+    for (int kk = 0; kk < BLOCK; kk++){
       sum += ashare[ty][kk] * bshare[kk][tx];
     }
     __syncthreads();
