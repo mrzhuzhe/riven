@@ -1,4 +1,4 @@
-OLD := MMult_cuda_2_1
+OLD := MMult_cuda_2
 NEW := MMult_cuda_2_1
 SMS ?= 80
 

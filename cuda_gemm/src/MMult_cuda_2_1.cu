@@ -31,11 +31,12 @@ __global__ void sgemm(int m, int n, int k, float *a, int lda, float *b, int ldb,
     __shared__ float bshare[BLOCK][BLOCK];
 
     //printf("%d %d %d %d\n", _m, _n, m, n);
-    ashare[ty][tx] = (_m <= k && _n <= m) ? a_ptr[ty*k + tx] : 0.0;  // this should be 
-    bshare[ty][tx] = (_m <= n && _n <= k) ? b_ptr[ty*n + tx] : 0.0;
+    //  [TODO] seems something went wrong
+    //ashare[ty][tx] = (_m < k && _n < m) ? a_ptr[ty*k + tx] : 0.0;  // this should be 
+    //bshare[ty][tx] = (_m < n && _n < k) ? b_ptr[ty*n + tx] : 0.0;
 
-    //ashare[ty][tx] = a_ptr[ty*k + tx];  // this should be 
-    //bshare[ty][tx] = b_ptr[ty*n + tx];
+    ashare[ty][tx] = a_ptr[ty*k + tx];  // this should be 
+    bshare[ty][tx] = b_ptr[ty*n + tx];
 
     __syncthreads();
 
@@ -44,7 +45,7 @@ __global__ void sgemm(int m, int n, int k, float *a, int lda, float *b, int ldb,
     }
     __syncthreads();
   }
-  if (_n <= n && _m <= m){
+  if (_n < n && _m < m){
     c[_n * n + _m] = sum; 
   } 
   //else {
@@ -59,6 +60,6 @@ void MY_MMult(cublasHandle_t handle, int m, int n, int k, float *d_A, int lda,
   // subm, subn, subk
   dim3 block(BLOCK, BLOCK);
   dim3 grid((m + BLOCK - 1) / BLOCK, (n + BLOCK - 1) / BLOCK);
-
+  //printf("# m, n grid %d %d \n", (m + BLOCK - 1) / BLOCK, (n + BLOCK - 1) / BLOCK);
   sgemm<BLOCK><<<grid, block>>>(m, n, k, d_A, lda, d_B, ldb, d_C, ldc);
 }
