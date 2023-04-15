@@ -35,9 +35,13 @@ __global__ void sgemm(int m, int n, int k, float *a, int lda, float *b, int ldb,
     //ashare[ty][tx] = (_m < k && _n < m) ? a_ptr[ty*k + tx] : 0.0;  // this should be 
     //bshare[ty][tx] = (_m < n && _n < k) ? b_ptr[ty*n + tx] : 0.0;
 
-    ashare[ty][tx] = a_ptr[ty*k + tx];  // this should be 
+    ashare[ty][tx] = a_ptr[ty*k + tx];  // this should be wrong 
     bshare[ty][tx] = b_ptr[ty*n + tx];
-
+    //if (ty == 15 ){
+    //if (_n == m && _m == m) {
+      //printf("%f %f %d %d %d \n", a_ptr[ty*k + tx], b_ptr[ty*n + tx], m, n, k);
+    //printf("%f %f %d %d \n", a_ptr[ty*k + tx], b_ptr[ty*n + tx], tx, ty);
+    //}
     __syncthreads();
 
     for (int kk = 0; kk < BLOCK; ++kk){

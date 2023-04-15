@@ -79,6 +79,8 @@ int main() {
     random_matrix(m, n, cold, n);
     memset(cold, 0, mem_size_C);
     memset(cref, 0, mem_size_C);
+    
+    //printf("%d %d %d \n", m, n, k);
 
     /* Init device matrix*/
     float *d_A, *d_B, *d_C;
