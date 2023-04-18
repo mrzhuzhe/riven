@@ -20,3 +20,4 @@ code https://github.com/tpoisonooo/how-to-optimize-gemm/tree/master/cuda
 3. mega conv https://zhuanlan.zhihu.com/p/372973726
 4. more deeper https://zhuanlan.zhihu.com/p/372973726
 5. quat canbe ncnn
+6. nchw https://mp.weixin.qq.com/s/1CToXRgyO0F8x0By31dneg

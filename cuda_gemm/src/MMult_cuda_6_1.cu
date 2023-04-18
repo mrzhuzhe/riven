@@ -48,14 +48,14 @@ __global__ __launch_bounds__(256, 2) void sgemm_128x128x8(int m, int n, int k,
     // load gmem to smem for ashare
     int to_a = (threadIdx.x % 8) * SMEM_LDA +
                (threadIdx.x / 8) * 4; // 连续的地址不能给同一个 thread 用
-#pragma unroll
+
     for (int i = 0; i < 4; ++i) {
       ashare[to_a + i] = a[from_a + i * k];
     }
 
     // load gmem to smem for bshare
     int to_b = (threadIdx.x / 32) * SMEM_LDB + (threadIdx.x % 32);
-#pragma unroll
+
     for (int i = 0; i < 4; ++i) {
       bshare[to_b + i * 32] =
           b[from_b + i * 32]; // 32 thread 合并访问。 thread i 访问  [i, i+32,
@@ -70,26 +70,26 @@ __global__ __launch_bounds__(256, 2) void sgemm_128x128x8(int m, int n, int k,
     // 计算 2x2 个 4x4
     int aidx0 = (threadIdx.x / 16) * 4;
     int bidx0 = (threadIdx.x % 16) * 4;
-#pragma unroll
+
     for (int subk = 0; subk < 8; ++subk) {
       float *ptrA = ashare + aidx0 + subk * SMEM_LDA;
 
-#pragma unroll
+
       for (int i = 0; i < 4; ++i) {
         panelA[i] = ptrA[i];
         panelA[i + 4] = ptrA[i + 64];
       }
 
       const float *ptrB = bshare + bidx0 + subk * SMEM_LDB;
-#pragma unroll
+
       for (int i = 0; i < 4; ++i) {
         panelB[i] = ptrB[i];
         panelB[i + 4] = ptrB[i + 64];
       }
 
-#pragma unroll
+
       for (int i = 0; i < 8; ++i) {
-#pragma unroll
+
         for (int j = 0; j < 8; ++j) {
           sum[i][j] += panelA[i] * panelB[j];
         }
@@ -101,7 +101,7 @@ __global__ __launch_bounds__(256, 2) void sgemm_128x128x8(int m, int n, int k,
   // part3: save to C
   int write_offset = (blockIdx.y * 128 + (threadIdx.x / 16) * 4) * n +
                      blockIdx.x * 128 + (threadIdx.x % 16) * 4;
-#pragma unroll
+
   for (int i = 0; i < 4; ++i) {
     for (int j = 0; j < 4; ++j) {
       c[write_offset + i * n + j] = sum[i][j];
