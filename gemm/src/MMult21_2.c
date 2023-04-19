@@ -164,11 +164,8 @@ void MY_MMult( int m, int n, int k, double *a, int lda,
       /* Update the C( i,j ) with the inner product of the ith row of A
 	 and the jth column of B */
       ib = min(m-i, mc);
-      Innerkernel(ib, n, jb, &A(i, j), lda, &B(j,0), ldb, &C(i, 0), ldc, i==0, &packedB[j * nb]);
-            
-    }
-
-    
+      Innerkernel(ib, n, jb, &A(i, j), lda, &B(j,0), ldb, &C(i, 0), ldc, i==0, &packedB[j * nb]);            
+    }    
   }
 
   free(packedB);
