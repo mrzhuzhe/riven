@@ -77,14 +77,14 @@ __global__ __launch_bounds__(256, 2) void sgemm_128x128x8(int m, int n, int k,
 
       for (int i = 0; i < 4; ++i) {
         panelA[i] = ptrA[i];
-        panelA[i + 4] = ptrA[i + 64];
+        panelA[i + 4] = ptrA[i + 16 * 4];
       }
 
       const float *ptrB = bshare + bidx0 + subk * SMEM_LDB;
 
       for (int i = 0; i < 4; ++i) {
         panelB[i] = ptrB[i];
-        panelB[i + 4] = ptrB[i + 64];
+        panelB[i + 4] = ptrB[i + 16 * 4];
       }
 
 
