@@ -3,31 +3,13 @@
 
 // CUDA runtime
 #include "helper.h"
-#include <cublas_v2.h>
 #include <cuda_runtime.h>
 
-#define SMEM_LDA (32)
-#define SMEM_LDB (32)
+#define BLOCKSIZE 32
+#define SMEM_LDA (BLOCKSIZE)
+#define SMEM_LDB (BLOCKSIZE)
 
-// GPU Device 0: "NVIDIA GeForce RTX 3080" with compute capability 8.6
-// MY_MMult = [
-// 1024 10968.46 7.247925e-05
-// 2048 15003.43 1.525879e-04
-// 3072 15738.94 2.288818e-04
-// 4096 15814.25 4.425049e-04
-// ];
-
-/**
- * version 9 的特点是 gmem->smem 过程中用了 GPU 喜欢 interleave 的特性。
- *
- * 标准的 GEMM 里 matrixA 是要 transpose 的，thread 加载 gmem 的 4行1列
- * 个数据，放到 smem 里是 1x4，32x8 个线程加载 256x8 大小的 subA，变成  8x256
- *
- * matrixB 不 tranpose，就是单纯的加载。32 thread 合并访问。 thread i 访问  [i,
- * i+32, i+64, i+96]
- *
- */
-__global__ __launch_bounds__(256, 2) void sgemm_128x128x8(int m, int n, int k,
+__global__ __launch_bounds__(256, 2) void sgemm_32x32x8(int m, int n, int k,
                                                           const float *a,
                                                           const float *b,
                                                           float *c) {
@@ -145,8 +127,8 @@ __global__ __launch_bounds__(256, 2) void sgemm_128x128x8(int m, int n, int k,
 void MY_MMult(cublasHandle_t handle, int m, int n, int k, float *d_A, int lda,
               float *d_B, int ldb, float *d_C, int ldc) {
 
-  constexpr int BLOCK = 32;
+  constexpr int BLOCK = BLOCKSIZE;
   dim3 grid((m + BLOCK - 1) / BLOCK, (n + BLOCK - 1) / BLOCK);
 
-  sgemm_128x128x8<<<grid, 256>>>(m, n, k, d_A, d_B, d_C);
+  sgemm_32x32x8<<<grid, 256>>>(m, n, k, d_A, d_B, d_C);
 }

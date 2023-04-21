@@ -27,6 +27,10 @@
  * i+32, i+64, i+96]
  *
  */
+/*
+  其实这个版本memory layout 还有很多可以优化的地方
+*/
+
 __global__ __launch_bounds__(256, 2) void sgemm_128x128x8(int m, int n, int k,
                                                           const float *a,
                                                           const float *b,

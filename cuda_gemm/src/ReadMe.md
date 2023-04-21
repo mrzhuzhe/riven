@@ -15,7 +15,7 @@
 
 ## CUDA
 1. bbuf https://zhuanlan.zhihu.com/p/326999014
-2. https://zhuanlan.zhihu.com/p/478846788
+2. bainiu https://zhuanlan.zhihu.com/p/478846788
 code https://github.com/tpoisonooo/how-to-optimize-gemm/tree/master/cuda
 3. mega conv https://zhuanlan.zhihu.com/p/372973726
 4. more deeper https://zhuanlan.zhihu.com/p/372973726
