@@ -22,3 +22,29 @@ code https://github.com/tpoisonooo/how-to-optimize-gemm/tree/master/cuda
 5. quat canbe ncnn
 6. nchw https://mp.weixin.qq.com/s/1CToXRgyO0F8x0By31dneg
 7. cuda ref2 https://zhuanlan.zhihu.com/p/518857175
+
+
+## some question
+CPP
+1. 单例模式和工厂模式
+2. 指针和引用的区别
+3. extern C 的作用
+4. cast 
+5. union 和 struct
+6. std::move
+7. 并行的命令和方法
+8. shared_ptr weak_ptr uni_ptr
+9. cuda 结构
+10. shared_mm 
+11. gemm 优化思路
+12. 如果不遵守3/5法则会如何
+
+1. SM SP
+2. 32核心 ACE 矩阵 L-cache 线程排布 
+3. 缓存 续位延迟额比例
+4. shared memory
+5. cuda stream
+6. 广播机制
+7. 硬件开发做算子
+8. 自研 SIMD指令集/汇编指令/DMA/RMA/同步广播ACE/汇编指令集/IO/驱动使用/深度优化SIMD  浮点运算性能 核间通信
+十几年超算 指令集 对硬件有了解
