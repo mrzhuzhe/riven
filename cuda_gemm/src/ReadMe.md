@@ -22,7 +22,9 @@ code https://github.com/tpoisonooo/how-to-optimize-gemm/tree/master/cuda
 5. quat canbe ncnn
 6. nchw https://mp.weixin.qq.com/s/1CToXRgyO0F8x0By31dneg
 7. cuda ref2 https://zhuanlan.zhihu.com/p/518857175
-
+8. ncnn https://zhuanlan.zhihu.com/p/457443433
+9. 基础（优先） https://zhuanlan.zhihu.com/p/393636855
+10. 量化 https://zhuanlan.zhihu.com/p/66958390
 
 ## some question
 CPP
