@@ -5,7 +5,7 @@
 #include "parameters.h"
 
 void REF_MMult(int, int, double *, int, int, int, double*, double *, int );
-//void MY_MMult(int, int, double *, int, double *, int);
+void MY_MMult(int, int, double *, int, int, int, double*, double *, int );
 void copy_matrix(int, int, double *, int, double *, int );
 void random_matrix(int, int, double *, int);
 double compare_matrices( int, int, double *, int, double *, int );
@@ -34,8 +34,8 @@ int main()
   kw = 3;
   kh = 3;
 
-  //for ( p=PFIRST; p<=PLAST; p+=PINC ){
-  for ( p=PFIRST; p<=PFIRST; p+=PINC ){
+  for ( p=PFIRST; p<=PLAST; p+=PINC ){
+  //for ( p=PFIRST; p<=PFIRST; p+=PINC ){
     m = ( M == -1 ? p : M );
     k = ( K == -1 ? p : K );
 
@@ -59,23 +59,23 @@ int main()
 
     random_matrix( m, k, cold, ldc );
 
-    //copy_matrix( m, cold, ldc, cref, ldc );
+    copy_matrix( m, k, cold, ldc, cref, ldc );
 
     /* Run the reference implementation so the answers can be compared */
 
     REF_MMult( m, k, a, lda, kw, kh, kernel, cref, ldc );
-    print_matrix(m, k, a, lda);
-    print_matrix(kw, kh, kernel, kw);
-    print_matrix(m, k, cref, ldc);
+    //print_matrix(m, k, a, lda);
+    //print_matrix(kw, kh, kernel, kw);
+    //print_matrix(m, k, cref, ldc);
     
-    /* 
+    
     for ( rep=0; rep<NREPEATS; rep++ ){
-      copy_matrix( m, n, cold, ldc, c, ldc );
+      copy_matrix( m, k, cold, ldc, c, ldc );
 
       
       dtime = dclock();
 
-      MY_MMult( m, n, k, a, lda, b, ldb, c, ldc );
+      MY_MMult( m, k, a, lda, kw, kh, kernel, c, ldc );
       
       dtime = dclock() - dtime;
 
@@ -85,11 +85,11 @@ int main()
 	dtime_best = ( dtime < dtime_best ? dtime : dtime_best );
     }
 
-    diff = compare_matrices( m, n, c, ldc, cref, ldc );
+    diff = compare_matrices( m, k, c, ldc, cref, ldc );
     
     printf( "%d %le %le \n", p, gflops / dtime_best, diff );
     fflush( stdout );
-    */
+    
     free( a );
     free( c );
     free( cold );

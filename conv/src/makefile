@@ -1,5 +1,5 @@
-OLD  := MMult0
-NEW  := MMult0
+OLD  := ConvTest00
+NEW  := ConvTest00
 #
 # sample makefile
 #
