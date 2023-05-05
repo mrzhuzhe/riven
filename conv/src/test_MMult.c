@@ -4,11 +4,12 @@
 
 #include "parameters.h"
 
-void REF_MMult(int, int, double *, int, int, int, double*, double *, int );
-void MY_MMult(int, int, double *, int, int, int, double*, double *, int );
+void REF_MMult(int, int, double *, int, int, int, double*, double *, int, int );
+void MY_MMult(int, int, double *, int, int, int, double*, double *, int, int );
 void copy_matrix(int, int, double *, int, double *, int );
-void random_matrix(int, int, double *, int);
+void random_matrix(int, int, double *, int, int);
 double compare_matrices( int, int, double *, int, double *, int );
+void print_matrix( int, int, double *, int );
 
 double dclock();
 
@@ -58,13 +59,16 @@ int main()
     cold = ( double * ) malloc( lda * (k+1) * sizeof( double ) );
     cref = ( double * ) malloc( lda * (k+1) * sizeof( double ) );
 
+    const int padding = 1;
+    const int stride = 2;
+
     /* Generate random matrices A, B, Cold */
-    random_matrix( m, k, a, lda );
-    random_matrix( kw, kh, kernel, kw );
+    random_matrix( m, k, a, lda, padding);
+    random_matrix( kw, kh, kernel, kw, 0);
 
     /* Run the reference implementation so the answers can be compared */     
     if (debug){
-      MY_MMult( m, k, a, lda, kw, kh, kernel, cref, lda );
+      MY_MMult( m, k, a, lda, kw, kh, kernel, cref, lda, stride);
       print_matrix(m, k, a, lda);
       print_matrix(kw, kh, kernel, kw);
       print_matrix(m, k, cref, lda);
@@ -74,10 +78,10 @@ int main()
       free( cold );
       free( cref );
 
-      return;
+      return 0;
     }    
 
-    REF_MMult( m, k, a, lda, kw, kh, kernel, cref, lda );
+    REF_MMult( m, k, a, lda, kw, kh, kernel, cref, lda, stride );
 
     for ( rep=0; rep<NREPEATS; rep++ ){
       copy_matrix( m, k, cold, lda, c, lda );
@@ -85,7 +89,7 @@ int main()
       
       dtime = dclock();
 
-      MY_MMult( m, k, a, lda, kw, kh, kernel, c, lda );
+      MY_MMult( m, k, a, lda, kw, kh, kernel, c, lda, stride );
       
       dtime = dclock() - dtime;
 

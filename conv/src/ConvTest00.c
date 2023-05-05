@@ -40,7 +40,7 @@
 
 void MY_MMult( int m,  int k,  double *a, int lda, 
                                     int kw, int kh, double *kernel,                                    
-                                    double *c, int ldc )
+                                    double *c, int ldc, int stride  )
 {
   int i, j, w, h;
   int Wo = m - kw + 1;
