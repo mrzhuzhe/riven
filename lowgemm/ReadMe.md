@@ -35,3 +35,12 @@ caffe conv addition https://www.zhihu.com/question/28385679/answer/44297845
 https://zhuanlan.zhihu.com/p/572820783
 3. 如何利用 l1 l2
 https://zhuanlan.zhihu.com/p/488531131
+
+## tecorigin 
+
+1. 自动优化
+2. 双缓冲
+3. SIMD 的排布/执行流 前后顺序/读写冲突/依赖关系/发射到不同流水单元
+4. 底层逻辑 异构重核
+5. 核心段手排布
+6. loop transform / halide 建议学习 tvm的历史 llvm
