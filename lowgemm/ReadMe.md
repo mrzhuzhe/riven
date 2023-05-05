@@ -28,8 +28,10 @@ caffe conv addition https://www.zhihu.com/question/28385679/answer/44297845
 5. std::vector 用法和注意
 6. 函数构造和析构的生命周期
 7. struct 和 class 默认的访问权限
-8. 结构体内存大小
+8. 结构体内存大小 内存对齐
 
 1. host global device 的访问权限
 2. shlf 的访问 mask的作用
+https://zhuanlan.zhihu.com/p/572820783
 3. 如何利用 l1 l2
+https://zhuanlan.zhihu.com/p/488531131
