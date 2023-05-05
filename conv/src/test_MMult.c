@@ -15,7 +15,7 @@ double dclock();
 int main()
 {
 
-  const int debug = 1;
+  const int debug = 0;
   int 
     p, 
     m, k,

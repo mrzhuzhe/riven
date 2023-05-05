@@ -7,7 +7,7 @@ void MY_MMult( int m,  int k,  double *a, int lda,
                                     double *c, int ldc )
 {
   int padding = 1;
-  int stride = 2;
+  int stride = 1;
   int i, j, w, h;
   int Wo = m - kw + 1;
   int Ho = k - kh + 1;
