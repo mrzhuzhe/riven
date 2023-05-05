@@ -14,6 +14,8 @@ double dclock();
 
 int main()
 {
+
+  const int debug = 1;
   int 
     p, 
     m, k,
@@ -35,7 +37,11 @@ int main()
   kh = 3;
 
   for ( p=PFIRST; p<=PLAST; p+=PINC ){
-  
+    
+    if (debug){
+      p = 5;
+    }
+
     m = ( M == -1 ? p : M );
     k = ( K == -1 ? p : K );
 
@@ -55,21 +61,24 @@ int main()
     /* Generate random matrices A, B, Cold */
     random_matrix( m, k, a, lda );
     random_matrix( kw, kh, kernel, kw );
-    //random_matrix( m, k, cold, lda );
 
-    //copy_matrix( m, k, cold, lda, cref, lda );
+    /* Run the reference implementation so the answers can be compared */     
+    if (debug){
+      MY_MMult( m, k, a, lda, kw, kh, kernel, cref, lda );
+      print_matrix(m, k, a, lda);
+      print_matrix(kw, kh, kernel, kw);
+      print_matrix(m, k, cref, lda);
 
-    /* Run the reference implementation so the answers can be compared */
+      free( a );
+      free( c );
+      free( cold );
+      free( cref );
+
+      return;
+    }    
 
     REF_MMult( m, k, a, lda, kw, kh, kernel, cref, lda );
-    
-    /*
-    print_matrix(m, k, a, lda);
-    print_matrix(kw, kh, kernel, kw);
-    print_matrix(m, k, cref, lda);
-    */
 
-    
     for ( rep=0; rep<NREPEATS; rep++ ){
       copy_matrix( m, k, cold, lda, c, lda );
 
