@@ -40,7 +40,7 @@ int main()
   for ( p=PFIRST; p<=PLAST; p+=PINC ){
     
     if (debug){
-      p = 5;
+      p = 7;
     }
 
     m = ( M == -1 ? p : M );
