@@ -39,3 +39,6 @@ target_include_directories(atomic_blk PUBLIC . ../../include)
 target_include_directories(mix PUBLIC . ../../include)
 target_include_directories(dp4a PUBLIC . ../../include)
 target_include_directories(mix_half PUBLIC . ../../include)
+
+
+add_executable(test test.cu)
