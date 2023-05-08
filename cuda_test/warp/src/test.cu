@@ -10,8 +10,27 @@ __global__ void test_kernel(float *a, float *b, int n){
     if (tid > n)
         return;
     float temp = a[tid];
-    printf(" %d-%f ", tid, temp);
-    b[tid] = __all_sync(0xffffffff, temp > 48); 
+    //printf(" %d-%f ", tid, temp);
+    b[tid] = __all_sync(0xffffffff, temp > 31); 
+}
+
+void init_data(float *data, int size){
+    for (int i=0; i < size; i++ ){
+        data[i] = i;
+    }
+}
+
+void print_warp(float *data, int size){
+    // print by warp
+    int count = 0;
+    for (int i=0; i < size; i++ ){        
+        if (i % 32 == 0){            
+            printf("\n warp %d \n", count);
+            count++;
+        } 
+        printf(" %f ", data[i]);
+    }
+    printf("\n");
 }
 
 int main(){
@@ -28,9 +47,7 @@ int main(){
     h_a = (float *)malloc(m_size);
     h_b = (float *)malloc(m_size);
 
-    for (int i=0; i < size; i++ ){
-        h_a[i] = i;
-    }
+    init_data(h_a, size);
 
     cudaMalloc((void **)&d_a, m_size);
     cudaMalloc((void **)&d_b, m_size);
@@ -38,16 +55,11 @@ int main(){
 
     test_kernel<<<n_blocks, n_threads>>>(d_a, d_b, n);
     cudaMemcpy(h_b, d_b, m_size, cudaMemcpyDeviceToHost);
-    printf("\n");
-
-    for (int i=0; i < size; i++ ){
-        printf(" %f ", h_b[i]);
-        if ((i+1) % 10 == 0){
-            printf("\n");
-        } 
-    }
-    printf("\n");
+        
     cudaDeviceSynchronize();
-
+    
+    print_warp(h_b, size);
+    
+    
     return 0;
 }
