@@ -17,7 +17,7 @@ void print_matrix( int, int, float *, int );
 double dclock();
 
 int main() {
-  const int debug = 0;
+  const int debug = 1;
   // print gpu info
   cudaDeviceProp deviceProp;
   int devID = 0;
@@ -62,7 +62,7 @@ int main() {
 
   for (p = PFIRST; p <= PLAST; p += PINC) {
     if (debug){
-      p = 258;
+      p = 1026;
     }
 
     m = (M == -1 ? p : M);
@@ -107,17 +107,17 @@ int main() {
     // printf( "init\n");
     if (debug){
 
-      //REF_MMult( m, k, a, lda, kw, kh, kernel, cref, lda, stride );
+      REF_MMult( m, k, a, lda, kw, kh, kernel, cref, lda, stride );
 
       MY_MMult( m, k, d_A, lda, kw, kh, d_kernel, d_C, lda, stride);
       
       checkCudaErrors(cudaMemcpy(cold, d_C, mem_size_C, cudaMemcpyDeviceToHost));
 
-      print_matrix(m, k, a, lda);
-      print_matrix(kw, kh, kernel, kw);
+      //print_matrix(m, k, a, lda);
+      //print_matrix(kw, kh, kernel, kw);
       print_matrix(m, k, cref, lda);
-      //printf("\n");
-      //print_matrix(m, k, cold, lda);
+      printf("\n");
+      print_matrix(m, k, cold, lda);
 
       free( a );
       free( c );
@@ -125,6 +125,7 @@ int main() {
       free( cref );
 
       checkCudaErrors(cudaFree(d_A));
+      checkCudaErrors(cudaFree(d_kernel));
       checkCudaErrors(cudaFree(d_C));
 
       return 0;
@@ -172,6 +173,7 @@ int main() {
     free(cref);
 
     checkCudaErrors(cudaFree(d_A));
+    checkCudaErrors(cudaFree(d_kernel));
     checkCudaErrors(cudaFree(d_C));
   }
 
