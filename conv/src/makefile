@@ -1,5 +1,5 @@
-OLD  := ConvTest00_2_openmp
-NEW  := ConvTest00_1
+OLD  := ConvTest00_1
+NEW  := ConvTest00_2_openmp
 #
 # sample makefile
 #
