@@ -11,7 +11,8 @@
 #define KERNEL(i,j) kernel[ (j)*kw + (i) ]
 
 #define BLOCK 16
-__inline__ __global__ void  Conv_kernel(int m,  int k,  float *a, int lda, 
+// TODO __inline__ 
+__global__ void  REF_Conv_kernel(int m,  int k,  float *a, int lda, 
                                     int kw, int kh, float *kernel,                                    
                                     float *c, int ldc, int stride){
         int i, j, w, h;
@@ -36,5 +37,5 @@ void REF_MMult_GPU( int m,  int k,  float *a, int lda,
   int Ho = (k - kh) / stride + 1;
   dim3 block(BLOCK, BLOCK);
   dim3 grid((Wo + BLOCK - 1) / BLOCK, (Ho + BLOCK - 1)/ BLOCK);
-  Conv_kernel<<<grid, block>>>(Wo, Ho, a, lda, kw, kh, kernel, c, lda, stride);  
+  REF_Conv_kernel<<<grid, block>>>(Wo, Ho, a, lda, kw, kh, kernel, c, lda, stride);  
 }

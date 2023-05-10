@@ -115,12 +115,14 @@ int main() {
       checkCudaErrors(cudaMemcpy(cold, d_C, mem_size_C, cudaMemcpyDeviceToHost));
 
       //print_matrix(m, k, a, lda);
-      //print_matrix(kw, kh, kernel, kw);
+      print_matrix(kw, kh, kernel, kw);
       
-      print_matrix(m, k, cref, lda);
+      //print_matrix(m, k, cref, lda);
       printf("\n");
-      print_matrix(m, k, cold, lda);
-                
+      //print_matrix(m, k, cold, lda);
+      
+      diff = compare_matrices(m, k, cold, lda, cref, lda);
+
       free( a );
       free( c );
       free( cold );
@@ -133,10 +135,10 @@ int main() {
       return 0;
     }    
 
-    //REF_MMult_CPU( m, k, a, lda, kw, kh, kernel, cref, lda, stride );
+    REF_MMult_CPU( m, k, a, lda, kw, kh, kernel, cref, lda, stride );
     
-    REF_MMult_GPU( m, k, d_A, lda, kw, kh, d_kernel, d_C, lda, stride);
-    checkCudaErrors(cudaMemcpy(cref, d_C, mem_size_C, cudaMemcpyDeviceToHost));
+    //REF_MMult_GPU( m, k, d_A, lda, kw, kh, d_kernel, d_C, lda, stride);
+    //checkCudaErrors(cudaMemcpy(cref, d_C, mem_size_C, cudaMemcpyDeviceToHost));
     // printf( "benchmark\n");
 
     // Record the start event
@@ -158,20 +160,21 @@ int main() {
 
     // Compute and print the performance
     float msecPerMatrixMul = msecTotal / NREPEATS;
-    double flopsPerMatrixMul = 2.0 * m * k;
+    double flopsPerMatrixMul = 5.0 * m * k;
     double gflops =
-        (flopsPerMatrixMul * 1.0e-9f) / (msecPerMatrixMul / 1000.0f);
+        (flopsPerMatrixMul * 1.0e-9f) / (msecPerMatrixMul / 1e4f);
 
     // copy result from device to host
     checkCudaErrors(cudaMemcpy(cold, d_C, mem_size_C, cudaMemcpyDeviceToHost));
 
     diff = compare_matrices(m, k, cold, lda, cref, lda);
-  
+    //printf("\n %f \n ", diff);
+
     if (diff > 0.5f || diff < -0.5f) {
       printf("diff too big !\n");
       exit(-1);
     }
-    printf("%d %.2f %le \n", p, gflops, diff);
+    printf("%d %.2f %le %f \n", p, gflops, diff, msecPerMatrixMul);
 
     free(a);
     free(c);
