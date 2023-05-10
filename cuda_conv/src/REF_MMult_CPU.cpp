@@ -4,13 +4,16 @@
 #define C(i,j) c[ (j)*lda + (i) ]
 #define KERNEL(i,j) kernel[ (j)*kw + (i) ]
 
-void REF_MMult( int m,  int k,  float *a, int lda, 
+#include <omp.h>
+
+void REF_MMult_CPU( int m,  int k,  float *a, int lda, 
                                     int kw, int kh, float *kernel,                                    
                                     float *c, int ldc, int stride )
 {  
   int i, j, w, h;
   int Wo = (m - kw) / stride + 1;
   int Ho = (k - kh) / stride + 1;
+#pragma omp parallel for 
   for ( i=0; i< Wo; i+=1 ){
       for ( j=0; j< Ho; j+=1 ){
         for (w = 0; w < kw; w++ ){

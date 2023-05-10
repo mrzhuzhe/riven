@@ -7,9 +7,10 @@
 #include "helper.h"
 #include <cuda_runtime.h>
 
-void REF_MMult(int, int, float *, int, int, int, float *, float *, int, int );
+void REF_MMult_CPU(int, int, float *, int, int, int, float *, float *, int, int );
+void REF_MMult_GPU(int, int, float *, int, int, int, float *, float *, int, int );
 void MY_MMult(int, int, float *, int, int, int, float *, float *, int, int );
-void copy_matrix(int, int, float *, int, float *, int );
+//void copy_matrix(int, int, float *, int, float *, int );
 void random_matrix(int, int, float *, int, int);
 double compare_matrices( int, int, float *, int, float *, int );
 void print_matrix( int, int, float *, int );
@@ -17,7 +18,7 @@ void print_matrix( int, int, float *, int );
 double dclock();
 
 int main() {
-  const int debug = 1;
+  const int debug = 0;
   // print gpu info
   cudaDeviceProp deviceProp;
   int devID = 0;
@@ -62,7 +63,7 @@ int main() {
 
   for (p = PFIRST; p <= PLAST; p += PINC) {
     if (debug){
-      p = 1026;
+      p = 1024;
     }
 
     m = (M == -1 ? p : M);
@@ -107,7 +108,7 @@ int main() {
     // printf( "init\n");
     if (debug){
 
-      REF_MMult( m, k, a, lda, kw, kh, kernel, cref, lda, stride );
+      REF_MMult_CPU( m, k, a, lda, kw, kh, kernel, cref, lda, stride );
 
       MY_MMult( m, k, d_A, lda, kw, kh, d_kernel, d_C, lda, stride);
       
@@ -115,10 +116,11 @@ int main() {
 
       //print_matrix(m, k, a, lda);
       //print_matrix(kw, kh, kernel, kw);
+      
       print_matrix(m, k, cref, lda);
       printf("\n");
       print_matrix(m, k, cold, lda);
-
+                
       free( a );
       free( c );
       free( cold );
@@ -131,13 +133,16 @@ int main() {
       return 0;
     }    
 
-    REF_MMult( m, k, a, lda, kw, kh, kernel, cref, lda, stride );
+    //REF_MMult_CPU( m, k, a, lda, kw, kh, kernel, cref, lda, stride );
+    
+    REF_MMult_GPU( m, k, d_A, lda, kw, kh, d_kernel, d_C, lda, stride);
+    checkCudaErrors(cudaMemcpy(cref, d_C, mem_size_C, cudaMemcpyDeviceToHost));
     // printf( "benchmark\n");
 
     // Record the start event
     checkCudaErrors(cudaEventRecord(start, NULL));
 
-    for (rep = 0; rep < NREPEATS; rep++) {
+    for (rep = 0; rep < NREPEATS; rep++) {      
       /* Time your implementation */
       MY_MMult( m, k, d_A, lda, kw, kh, d_kernel, d_C, lda, stride);
     }
@@ -161,6 +166,7 @@ int main() {
     checkCudaErrors(cudaMemcpy(cold, d_C, mem_size_C, cudaMemcpyDeviceToHost));
 
     diff = compare_matrices(m, k, cold, lda, cref, lda);
+  
     if (diff > 0.5f || diff < -0.5f) {
       printf("diff too big !\n");
       exit(-1);

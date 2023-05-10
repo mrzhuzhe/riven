@@ -6,6 +6,7 @@ double drand48();
 void random_matrix( int m, int n, float *a, int lda, int pad )
 {
   int i,j;
+#pragma omp parallel for 
   for ( j=0; j<n; j++ )
     for ( i=0; i<m; i++ )
       if (i < pad || j < pad || i > m - pad - 1 || j > n - pad - 1 ){
