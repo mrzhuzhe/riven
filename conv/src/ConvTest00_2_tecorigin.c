@@ -15,6 +15,7 @@ void MY_MMult( int m,  int k,  double *a, int lda,
 
         // 在 block 内部循环 这里的话 要把 a 矩阵 截取出 a[BLOCK][dim] pack  
         // 此处处理数据缩小到L1
+        float 
         for (w = 0; w < kw; w += 4 ){
           for (h = 0; h < kh; h +=4 ){
 
