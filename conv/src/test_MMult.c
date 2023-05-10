@@ -2,6 +2,7 @@
 // #include <malloc.h>
 #include <stdlib.h>
 
+#include <omp.h>
 #include "parameters.h"
 
 void REF_MMult(int, int, double *, int, int, int, double*, double *, int, int );

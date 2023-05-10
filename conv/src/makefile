@@ -1,4 +1,4 @@
-OLD  := ConvTest00_1
+OLD  := ConvTest00_2_openmp
 NEW  := ConvTest00_1
 #
 # sample makefile
@@ -6,8 +6,8 @@ NEW  := ConvTest00_1
 
 CC         := gcc
 LINKER     := $(CC)
-CFLAGS     := -O2 -Wall -msse3
-LDFLAGS    := -lm
+CFLAGS     := -O2 -Wall -msse3 -fopenmp
+LDFLAGS    := -lm 
 
 output_path = outputs/
 
@@ -33,7 +33,7 @@ all:
 
 test_MMult.x: $(TEST_OBJS) $(UTIL) parameters.h
 	$(LINKER) $(TEST_OBJS) $(UTIL) $(LDFLAGS) \
-        $(BLAS_LIB) -o $(TEST_BIN) ${output_path}$@ 
+        $(BLAS_LIB) -fopenmp -o $(TEST_BIN) ${output_path}$@ 
 
 run:	
 	make all
