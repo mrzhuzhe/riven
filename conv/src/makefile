@@ -1,5 +1,5 @@
 OLD  := ConvTest00_1
-NEW  := ConvTest00_2
+NEW  := ConvTest00_2_openmp
 #
 # sample makefile
 #
@@ -37,8 +37,8 @@ test_MMult.x: $(TEST_OBJS) $(UTIL) parameters.h
 
 run:	
 	make all
-	export OMP_NUM_THREADS=1
-	export GOTO_NUM_THREADS=1
+#	export OMP_NUM_THREADS=1
+#	export GOTO_NUM_THREADS=1
 	echo "version = '$(NEW)';" > ${output_path}output_$(NEW).m
 	${output_path}test_MMult.x >> ${output_path}output_$(NEW).m
 	cp ${output_path}output_$(OLD).m ${output_path}output_old.m

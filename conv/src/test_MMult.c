@@ -78,7 +78,7 @@ int main()
       free( c );
       free( cold );
       free( cref );
-
+      free( kernel );
       return 0;
     }    
 
@@ -109,6 +109,7 @@ int main()
     free( c );
     free( cold );
     free( cref );
+    free( kernel );
   }
 
   printf( "];\n" );
