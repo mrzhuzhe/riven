@@ -115,7 +115,8 @@ int main() {
       checkCudaErrors(cudaMemcpy(cold, d_C, mem_size_C, cudaMemcpyDeviceToHost));
 
       //print_matrix(m, k, a, lda);
-      print_matrix(kw, kh, kernel, kw);
+      //print_matrix(m, k, a, lda);
+      //print_matrix(kw, kh, kernel, kw);
       
       print_matrix(m, k, cref, lda);
       printf("\n");

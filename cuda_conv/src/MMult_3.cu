@@ -16,18 +16,28 @@ __constant__ float c_kernel[3][3];
 #define BLOCK 16
 __global__ void Conv_kernel(int m,  int k,  cudaTextureObject_t texObj_a, int lda, 
                                     int kw, int kh, float *kernel,                                    
-                                    float *c, int ldc, int stride){    
+                                    float *c, int ldc, int stride){      
     int i, j, w, h;
     i = blockIdx.x * BLOCK + threadIdx.x;
     j = blockIdx.y * BLOCK + threadIdx.y;
-  
+    /*
+    if (i == 0 && j == 0){
+      for (h = 0; h < kh; h++){ 
+        for (w = 0; w < kw; w++ ){
+            printf(" %f ", tex2D<float>(texObj_a, (i * stride + w), (j * stride + h)));                   
+        }
+        printf("\n");
+      }       
+    }
+    */
     float sum = 0;
     if ( i < m && j < k){     
       // column major  
       for (h = 0; h < kh; h++){ 
         for (w = 0; w < kw; w++ ){
-            //sum += A( i * stride + w, j * stride + h) * c_kernel[h][w];          
-            sum += tex2D<float>(texObj_a, (j * stride + h)/ (float)k, (i * stride + w)/ (float)m) * c_kernel[h][w];
+            //sum += A( i * stride + w, j * stride + h) * c_kernel[h][w];     
+            // TODO col major ?     
+            sum += tex2D<float>(texObj_a, (i * stride + w), (j * stride + h)) * c_kernel[h][w];
         }
       } 
       C( i,j ) = sum; 
@@ -68,11 +78,11 @@ void MY_MMult( int m,  int k,  float *a, int lda,
   // Specify texture object parameters
   struct cudaTextureDesc texDesc;
   memset(&texDesc, 0, sizeof(texDesc));
-  texDesc.addressMode[0] = cudaAddressModeWrap;
-  texDesc.addressMode[1] = cudaAddressModeWrap;
-  texDesc.filterMode = cudaFilterModeLinear;
+  texDesc.addressMode[0] = cudaAddressModeClamp;
+  texDesc.addressMode[1] = cudaAddressModeClamp;
+  texDesc.filterMode = cudaFilterModePoint;
   texDesc.readMode = cudaReadModeElementType;
-  texDesc.normalizedCoords = 1;
+  texDesc.normalizedCoords = 0;
   
   // Create texture object
   cudaTextureObject_t texObj = 0;
@@ -81,12 +91,14 @@ void MY_MMult( int m,  int k,  float *a, int lda,
   // copy A to texture memory e
 
   dim3 block(BLOCK, BLOCK);
+  //dim3 grid((Wo + BLOCK - 1) / BLOCK, (Ho + BLOCK - 1)/ BLOCK);
   dim3 grid((Wo + BLOCK - 1) / BLOCK, (Ho + BLOCK - 1)/ BLOCK);
 
   
   // constant memory
   cudaMemcpyToSymbol(c_kernel, kernel, kw * kh * sizeof(float));
   
+  //Conv_kernel<<<grid, block>>>(Wo, Ho, texObj, lda, kw, kh, kernel, c, lda, stride);  
   Conv_kernel<<<grid, block>>>(Wo, Ho, texObj, lda, kw, kh, kernel, c, lda, stride);  
 
 
