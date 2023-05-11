@@ -24,16 +24,16 @@ __global__ void Conv_kernel(int m,  int k,  float *a, int lda,
     //const int sw = BLOCK + kw - 1;
     //const int sh = BLOCK + kh - 1;
     __shared__ float smm[18][18]; // todo static and dynamic memory allowcate
-    smm[tidx][tidy] = A(i * stride , j * stride);   
+    smm[tidy][tidx] = A(i * stride , j * stride);   
     // border of kernel  
     if ((tidx == BLOCK -1) && i < m){
       for (int idx = 1; idx < kw; idx++){
-        smm[tidx + idx][tidy] = A(i * stride + idx, j * stride);
+        smm[tidy][tidx + idx] = A(i * stride + idx, j * stride);
       }
     }
     if ((tidy == BLOCK - 1) && j < k ){
       for (int idx = 1; idx < kh; idx++){
-        smm[tidx][tidy + idx] = A(i * stride, j * stride + idx);
+        smm[tidy + idx][tidx] = A(i * stride, j * stride + idx);
       }
     }
     __syncthreads(); 
@@ -43,7 +43,7 @@ __global__ void Conv_kernel(int m,  int k,  float *a, int lda,
       for (w = 0; w < kw; w++ ){
         for (h = 0; h < kh; h++){              
             //sum += A( i * stride + w, j * stride + h) * KERNEL(w, h);          
-            sum += smm[tidx + w][tidy + h] * KERNEL(w, h);
+            sum += smm[tidy + h][tidx + w] * KERNEL(w, h);
         }
       } 
       C( i,j ) = sum; 

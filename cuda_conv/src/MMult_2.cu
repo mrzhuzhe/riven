@@ -20,11 +20,22 @@ __global__ void Conv_kernel(int m,  int k,  float *a, int lda,
     int i, j, w, h;
     i = blockIdx.x * BLOCK + threadIdx.x;
     j = blockIdx.y * BLOCK + threadIdx.y;
+
+    //printf("\n");
+    /*
+    if (i == 0 && j ==0){
+      printf("--- 1 %f %f %f \n", c_kernel[0][0], c_kernel[0][1], c_kernel[0][2]);
+      printf("--- 2 %f %f %f \n", c_kernel[1][0], c_kernel[1][1], c_kernel[1][2]);
+      printf("--- 3 %f %f %f \n", c_kernel[2][0], c_kernel[2][1], c_kernel[2][2]);
+    }
+    */
+
     float sum = 0;
-    if ( i < m && j < k){
-      for (w = 0; w < kw; w++ ){
-        for (h = 0; h < kh; h++){  
-            sum += A( i * stride + w, j * stride + h) * c_kernel[w][h];          
+    if ( i < m && j < k){     
+      // column major  
+      for (h = 0; h < kh; h++){ 
+        for (w = 0; w < kw; w++ ){
+            sum += A( i * stride + w, j * stride + h) * c_kernel[h][w];          
         }
       } 
       C( i,j ) = sum; 

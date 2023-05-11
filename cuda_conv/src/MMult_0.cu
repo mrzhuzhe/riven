@@ -22,8 +22,8 @@ __global__ void Conv_kernel(int m,  int k,  float *a, int lda,
         j = blockIdx.y * BLOCK + threadIdx.y;
         float sum = 0;
         if ( i < m && j < k){
-          for (w = 0; w < kw; w++ ){
-            for (h = 0; h < kh; h++){              
+          for (h = 0; h < kh; h++){   
+            for (w = 0; w < kw; w++ ){                       
                sum += A( i * stride + w, j * stride + h) * KERNEL(w, h);          
             }
           } 
@@ -45,8 +45,5 @@ void MY_MMult( int m,  int k,  float *a, int lda,
   dim3 block(BLOCK, BLOCK);
   dim3 grid((Wo + BLOCK - 1) / BLOCK, (Ho + BLOCK - 1)/ BLOCK);
   //printf(" %d ", (Wo + BLOCK - 1) / BLOCK);
-  Conv_kernel<<<grid, block>>>(Wo, Ho, a, lda, kw, kh, kernel, c, lda, stride);
-
-
-  
+  Conv_kernel<<<grid, block>>>(Wo, Ho, a, lda, kw, kh, kernel, c, lda, stride);  
 }

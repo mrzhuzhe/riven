@@ -20,8 +20,8 @@ __global__ void  REF_Conv_kernel(int m,  int k,  float *a, int lda,
         j = blockIdx.y * BLOCK + threadIdx.y;
         float sum = 0;
         if ( i < m && j < k){
-          for (w = 0; w < kw; w++ ){
-            for (h = 0; h < kh; h++){              
+          for (h = 0; h < kh; h++){   
+            for (w = 0; w < kw; w++ ){               
                sum += A( i * stride + w, j * stride + h) * KERNEL(w, h);          
             }
           } 

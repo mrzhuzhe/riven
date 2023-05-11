@@ -13,11 +13,11 @@ void REF_MMult_CPU( int m,  int k,  float *a, int lda,
   int i, j, w, h;
   int Wo = (m - kw) / stride + 1;
   int Ho = (k - kh) / stride + 1;
-#pragma omp parallel for 
-  for ( i=0; i< Wo; i+=1 ){
-      for ( j=0; j< Ho; j+=1 ){
-        for (w = 0; w < kw; w++ ){
-          for (h = 0; h < kh; h++){
+#pragma omp parallel for   
+    for ( j=0; j< Ho; j+=1 ){
+      for ( i=0; i< Wo; i+=1 ){
+        for (h = 0; h < kh; h++){   
+            for (w = 0; w < kw; w++ ){     
             C( i,j ) = C( i,j ) + A( i * stride + w, j * stride + h) * KERNEL(w, h);          
           }
         }  

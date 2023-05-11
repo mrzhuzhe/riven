@@ -1,5 +1,5 @@
-OLD := MMult_2
-NEW := MMult_0
+OLD := MMult_0
+NEW := MMult_1
 SMS ?= 80
 
 outpath = ./outputs/
@@ -15,8 +15,7 @@ $(foreach sm,$(SMS),$(eval GENCODE_FLAGS += -gencode arch=compute_$(sm),code=sm_
 CFLAGS     := -std=c++17 -O2 -Xcompiler -fopenmp
 LDFLAGS    := -lm  -lcublas  -lopenblas -lgomp
 
-UTIL       := ${outpath}copy_matrix.o \
-              ${outpath}compare_matrices.o \
+UTIL       := ${outpath}compare_matrices.o \
               ${outpath}random_matrix.o \
               ${outpath}dclock.o \
               ${outpath}REF_MMult_CPU.o \

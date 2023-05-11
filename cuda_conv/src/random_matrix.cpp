@@ -13,6 +13,5 @@ void random_matrix( int m, int n, float *a, int lda, int pad )
         A( i,j ) = 0;
       } else {
         A( i,j ) = 2.0 * drand48( ) - 1.0;
- 
       }
 }
