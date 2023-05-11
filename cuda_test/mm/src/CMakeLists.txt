@@ -19,6 +19,9 @@ add_executable(unimem_init unimem_init.cu)
 add_executable(unimem_pre unimem_pre.cu)
 add_executable(warp_scan warp_scan.cu)
 
+add_executable(texture texture.cu)
+add_executable(surface surface.cu)
+
 target_include_directories(mul PUBLIC . ../../include)
 target_include_directories(image_scaling PUBLIC . ../../include)
 
