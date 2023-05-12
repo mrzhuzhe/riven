@@ -1,5 +1,5 @@
 OLD := MMult_0
-NEW := MMult_4_interval
+NEW := MMult_4
 SMS ?= 80
 
 outpath = ./outputs/
