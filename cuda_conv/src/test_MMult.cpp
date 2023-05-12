@@ -1,3 +1,8 @@
+/*
+cuobjdump -ptx test_MMult.x > test_MMult.ptx
+cuobjdump -sass test_MMult.x > test_MMult.sass
+*/
+
 #include <stdio.h>
 #include "parameters.h"
 #include <stdlib.h>
