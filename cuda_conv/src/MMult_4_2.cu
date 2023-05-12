@@ -14,36 +14,37 @@
 __constant__ float c_kernel[3][3];
 
 #define BLOCK 16
-#define STRIDESX 2
-#define STRIDESY 2
+#define STRIDES 2
 
 __global__ void Conv_kernel(int m,  int k,  float *a, int lda, 
                                     int kw, int kh, float *kernel,                                    
                                     float *c, int ldc, int stride){    
     int i, j, w, h;
     int s_i, s_j;
-    i = (blockIdx.x * BLOCK + threadIdx.x) * STRIDESX;
-    j = (blockIdx.y * BLOCK + threadIdx.y) * STRIDESY;
-#pragma unroll
-    for (int idy = 0; idy < STRIDESY; idy++){
-#pragma unroll
-      for (int idx = 0; idx < STRIDESX; idx++){
+    i = (blockIdx.x * BLOCK + threadIdx.x) * STRIDES;
+    j = (blockIdx.y * BLOCK + threadIdx.y) * STRIDES;
+    float *a_ptr = &A( i * stride, j * stride);
+    float *c_ptr = &C( i * stride, j * stride);
+    
+    for (int idy = 0; idy < STRIDES; idy++){
+      a_ptr += idy * lda;
+      c_ptr += idy * lda;
+      for (int idx = 0; idx < STRIDES; idx++){
         float sum = 0;
         s_i = i + idx;
-        s_j = j + idy;
+        s_j = j + idy;    
         if ( s_i < m && s_j < k){     
           // column major  
-#pragma unroll
           for (h = 0; h < kh; h++){ 
-#pragma unroll
-            for (w = 0; w < kw; w++ ){
-                sum += A( s_i * stride + w, s_j * stride + h) * c_kernel[h][w];          
+            for (w = 0; w < kw; w++ ){                
+                sum += *(a_ptr + idx + h * lda + w ) * c_kernel[h][w];          
             }
           } 
-          C( s_i,s_j ) = sum; 
+          *(c_ptr + idx) = sum; 
         }
+      
       }   
-    } 
+    }     
 }
 
 void MY_MMult( int m,  int k,  float *a, int lda, 
@@ -56,7 +57,7 @@ void MY_MMult( int m,  int k,  float *a, int lda,
   int Wo = (m - kw) / stride + 1;
   int Ho = (k - kh) / stride + 1;
   dim3 block(BLOCK, BLOCK);
-  dim3 grid((Wo + BLOCK - 1) / BLOCK / STRIDESX, (Ho + BLOCK - 1)/ BLOCK / STRIDESY);
+  dim3 grid((Wo + BLOCK - 1) / BLOCK / STRIDES, (Ho + BLOCK - 1)/ BLOCK / STRIDES);
 
   // constant memory
   cudaMemcpyToSymbol(c_kernel, kernel, kw * kh * sizeof(float));
