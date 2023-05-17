@@ -1,12 +1,13 @@
 OLD  := MMult21
-NEW  := MMult21_2
+NEW  := MMult22_avx
 #
 # sample makefile
 #
 
 CC         := gcc
 LINKER     := $(CC)
-CFLAGS     := -O2 -Wall -msse3
+#CFLAGS     := -O2 -Wall -msse3 
+CFLAGS     := -O2 -Wall -mavx
 LDFLAGS    := -lm
 
 output_path = outputs/
