@@ -139,19 +139,24 @@ void PackMatrixB(int k, double *b, int ldb, double *b_to){
   int i;
   double 
     *b0p = &B(0, 0), *b1p = &B(0,1),
-    *b2p = &B(0, 2), *b3p = &B(0,3),
+    *b2p = &B(0, 2), *b3p = &B(0,3)
+    /*,
     *b4p = &B(0, 4), *b5p = &B(0,5),
-    *b6p = &B(0, 6), *b7p = &B(0,7); 
+    *b6p = &B(0, 6), *b7p = &B(0,7)
+    */
+   ; 
 
   for (i=0; i < k ; i++){    
     *b_to++ = *(b0p++);
     *b_to++ = *(b1p++);
     *b_to++ = *(b2p++);
     *b_to++ = *(b3p++);
+    /*
     *b_to++ = *(b4p++);
     *b_to++ = *(b5p++);
     *b_to++ = *(b6p++);
     *b_to++ = *(b7p++);
+    */
   }
 }
 

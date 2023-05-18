@@ -6,7 +6,7 @@
 
 /* Create macros so that the matrices are stored in column-major order */
 
-#include <mmintrin.h>
+#include <mmintrin.h>   // sse2
 #include <emmintrin.h>  // sse3
 #include <xmmintrin.h>  // sse
 #include <pmmintrin.h>  // sse2
