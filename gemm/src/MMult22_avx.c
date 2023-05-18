@@ -56,11 +56,11 @@ void AddDot8x4(int k, double *a, int lda, double *b, int ldb, double *c, int ldc
       //  数据需要对其
       //  https://stackoverflow.com/questions/33373318/avx-segmentation-fault-on-linux
       // unalign will suddenly fail but align will be a little slower
-      va0123.v = _mm256_loadu_pd((double *) a);      
-      va4567.v = _mm256_loadu_pd((double *) a+4);
+      va0123.v = _mm256_load_pd((double *) a);      
+      va4567.v = _mm256_load_pd((double *) a+4);
 
-      //va0123.v = _mm256_load_pd((double *) a);      
-      //va4567.v = _mm256_load_pd((double *) a+4);
+      //va0123.v = _mm256_loadu_pd((double *) a);      
+      //va4567.v = _mm256_loadu_pd((double *) a+4);
       
       a += 8;
 
@@ -69,16 +69,17 @@ void AddDot8x4(int k, double *a, int lda, double *b, int ldb, double *c, int ldc
       vb2p.v = _mm256_broadcast_sd((double *) (b + 2));
       vb3p.v = _mm256_broadcast_sd((double *) (b + 3));
 
-      vc00102030.v += va0123.v * vb0p.v;                    
-      vc01112131.v += va0123.v * vb1p.v;          
-      vc02122232.v += va0123.v * vb2p.v; 
-      vc03132333.v += va0123.v * vb3p.v;   
+      //vc00102030.v += va0123.v * vb0p.v;                    
+      vc00102030.v += _mm256_mul_pd(va0123.v, vb0p.v);     
+      vc01112131.v += _mm256_mul_pd(va0123.v, vb1p.v);          
+      vc02122232.v += _mm256_mul_pd(va0123.v, vb2p.v); 
+      vc03132333.v += _mm256_mul_pd(va0123.v, vb3p.v);   
       //  _mm256_mul_pd _mm256_add_pd
       vc40506070.v += va4567.v * vb0p.v;   
       vc41516171.v += va4567.v * vb1p.v;   
       vc42526272.v += va4567.v * vb2p.v;   
-      vc43536373.v += va4567.v * vb3p.v;        
-      
+      vc43536373.v += va4567.v * vb3p.v;      
+
       b += 4;
 
     }
@@ -173,8 +174,8 @@ void Innerkernel(int m, int n, int k, double *a, int lda, double *b, int ldb, do
 {
   int i, j;
   // todo this part need align and malloc
-  double packedA[m*k];
-  static double packedB[kc*nb];
+  double packedA[m*k] __attribute__ ((aligned (64)));
+  static double packedB[kc*nb] __attribute__ ((aligned (64)));
   for (j = 0; j < n; j+=4){
     if ( first_time ) {
       PackMatrixB(k, &B(0, j), ldb, &packedB[j*k]);

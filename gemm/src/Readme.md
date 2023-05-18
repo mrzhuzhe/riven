@@ -9,6 +9,7 @@
 2. blis https://github.com/flame/how-to-optimize-gemm/wiki#step-by-step-optimizations
 3. cuda for compare https://zhuanlan.zhihu.com/p/478846788
 4. Infer engine https://github.com/zjhellofss/KuiperInfer
+5. a more detail [CORE] https://www.mathematik.uni-ulm.de/~lehn/apfel/sghpc/gemm/
 
 ## perf
 1. perf 工具 https://zhuanlan.zhihu.com/p/471379451 
