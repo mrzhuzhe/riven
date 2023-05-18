@@ -70,62 +70,34 @@ void AddDot8x4(int k, double *a, int lda, double *b, int ldb, double *c, int ldc
       vb3p.v = _mm256_broadcast_sd((double *) (b + 3));
 
       //vc00102030.v += va0123.v * vb0p.v;                    
-      vc00102030.v += (va0123.v * vb0p.v);     
-      vc01112131.v += (va0123.v * vb1p.v);          
-      vc02122232.v += (va0123.v * vb2p.v); 
-      vc03132333.v += (va0123.v * vb3p.v);   
+      vc00102030.v += _mm256_mul_pd(va0123.v, vb0p.v);     
+      vc01112131.v += _mm256_mul_pd(va0123.v, vb1p.v);          
+      vc02122232.v += _mm256_mul_pd(va0123.v, vb2p.v); 
+      vc03132333.v += _mm256_mul_pd(va0123.v, vb3p.v);   
       //  _mm256_mul_pd _mm256_add_pd
-      vc40506070.v += va4567.v * vb0p.v;   
-      vc41516171.v += va4567.v * vb1p.v;   
-      vc42526272.v += va4567.v * vb2p.v;   
-      vc43536373.v += va4567.v * vb3p.v;      
+      vc40506070.v += _mm256_mul_pd(va4567.v, vb0p.v);  
+      vc41516171.v += _mm256_mul_pd(va4567.v, vb1p.v);  
+      vc42526272.v += _mm256_mul_pd(va4567.v, vb2p.v);  
+      vc43536373.v += _mm256_mul_pd(va4567.v, vb3p.v);     
 
       b += 4;
 
     }
 
-    C(0, 0) += vc00102030.d[0];
-    C(0, 1) += vc01112131.d[0];
-    C(0, 2) += vc02122232.d[0];
-    C(0, 3) += vc03132333.d[0];
-
-    C(1, 0) += vc00102030.d[1];
-    C(1, 1) += vc01112131.d[1];
-    C(1, 2) += vc02122232.d[1];
-    C(1, 3) += vc03132333.d[1];
-
-    C(2, 0) += vc00102030.d[2];
-    C(2, 1) += vc01112131.d[2];
-    C(2, 2) += vc02122232.d[2];
-    C(2, 3) += vc03132333.d[2];
-
-    C(3, 0) += vc00102030.d[3];
-    C(3, 1) += vc01112131.d[3];
-    C(3, 2) += vc02122232.d[3];
-    C(3, 3) += vc03132333.d[3];
-
-////
-
-    C(4, 0) += vc40506070.d[0];
-    C(4, 1) += vc41516171.d[0];
-    C(4, 2) += vc42526272.d[0];
-    C(4, 3) += vc43536373.d[0];
-
-    C(5, 0) += vc40506070.d[1];
-    C(5, 1) += vc41516171.d[1];
-    C(5, 2) += vc42526272.d[1];
-    C(5, 3) += vc43536373.d[1];  
-
-    C(6, 0) += vc40506070.d[2];
-    C(6, 1) += vc41516171.d[2];
-    C(6, 2) += vc42526272.d[2];
-    C(6, 3) += vc43536373.d[2];
-
-    C(7, 0) += vc40506070.d[3];
-    C(7, 1) += vc41516171.d[3];
-    C(7, 2) += vc42526272.d[3];
-    C(7, 3) += vc43536373.d[3];
+    _mm256_store_pd(c, _mm256_add_pd(_mm256_load_pd(c), vc00102030.v));
+    _mm256_store_pd((c + ldc), _mm256_add_pd(_mm256_load_pd((c + ldc)), vc01112131.v));
+    _mm256_store_pd((c + ldc * 2), _mm256_add_pd(_mm256_load_pd((c + ldc * 2)), vc02122232.v));
+    _mm256_store_pd((c + ldc * 3), _mm256_add_pd(_mm256_load_pd((c + ldc * 3)), vc03132333.v));
     
+
+    
+    _mm256_store_pd((c + 4), _mm256_add_pd(_mm256_load_pd((c + 4)), vc40506070.v));
+    _mm256_store_pd((c + ldc + 4), _mm256_add_pd(_mm256_load_pd((c + ldc + 4)), vc41516171.v));
+    _mm256_store_pd((c + ldc * 2 + 4), _mm256_add_pd(_mm256_load_pd((c + ldc * 2 + 4)), vc42526272.v));
+    _mm256_store_pd((c + ldc * 3 + 4), _mm256_add_pd(_mm256_load_pd((c + ldc * 3 + 4)), vc43536373.v));
+
+         
+
 };
 
 

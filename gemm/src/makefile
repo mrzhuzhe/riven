@@ -1,5 +1,5 @@
-OLD  := MMult21
-NEW  := MMult22_avx
+OLD  := MMult22_avx
+NEW  := MMult22_avx2
 #
 # sample makefile
 #

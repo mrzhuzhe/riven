@@ -46,9 +46,12 @@ int main()
        prefetching beyond the matrix does not cause a segfault */
     a = ( double * ) malloc( lda * (k+1) * sizeof( double ) );  
     b = ( double * ) malloc( ldb * n * sizeof( double ) );
-    c = ( double * ) malloc( ldc * n * sizeof( double ) );
+    //c = ( double * ) malloc( ldc * n * sizeof( double ) );
+    c = ( double * ) aligned_alloc(64, ldc * n * sizeof( double ) );
     cold = ( double * ) malloc( ldc * n * sizeof( double ) );
+    //cold = ( double * ) aligned_alloc(64, ldc * n * sizeof( double ) );
     cref = ( double * ) malloc( ldc * n * sizeof( double ) );
+    //cref = ( double * ) aligned_alloc(64, ldc * n * sizeof( double ) );
 
     /* Generate random matrices A, B, Cold */
     random_matrix( m, k, a, lda );
