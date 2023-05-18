@@ -4,6 +4,8 @@
 // add kernel pack
 //  First, we pack the block of A so that we march through it contiguously.
 
+
+
 /* Create macros so that the matrices are stored in column-major order */
 
 #include <mmintrin.h>
@@ -50,8 +52,15 @@ void AddDot8x4(int k, double *a, int lda, double *b, int ldb, double *c, int ldc
     vc43536373.v = _mm256_setzero_pd();
 
     for ( p=0; p<k; p++ ){
-      va0123.v = _mm256_load_pd((double *) a);      
-      va4567.v = _mm256_load_pd((double *) a+4);
+
+      //  数据需要对其
+      //  https://stackoverflow.com/questions/33373318/avx-segmentation-fault-on-linux
+      // unalign will suddenly fail but align will be a little slower
+      va0123.v = _mm256_loadu_pd((double *) a);      
+      va4567.v = _mm256_loadu_pd((double *) a+4);
+
+      //va0123.v = _mm256_load_pd((double *) a);      
+      //va4567.v = _mm256_load_pd((double *) a+4);
       
       a += 8;
 
@@ -163,6 +172,7 @@ void PackMatrixB(int k, double *b, int ldb, double *b_to){
 void Innerkernel(int m, int n, int k, double *a, int lda, double *b, int ldb, double *c, int ldc, int first_time)
 {
   int i, j;
+  // todo this part need align and malloc
   double packedA[m*k];
   static double packedB[kc*nb];
   for (j = 0; j < n; j+=4){
