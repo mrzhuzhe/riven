@@ -1,4 +1,4 @@
-OLD  := MMult22_avx2
+OLD  := MMult22_avx3_8x6
 NEW  := MMult23_reordering
 #
 # sample makefile
