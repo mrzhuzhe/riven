@@ -7,7 +7,8 @@ NEW  := MMult22_avx2
 CC         := gcc
 LINKER     := $(CC)
 #CFLAGS     := -O2 -Wall -msse3 
-CFLAGS     := -O0 -Wall -mavx -g
+#CFLAGS     := -O0 -Wall -mavx -g	#for asm debug
+CFLAGS     := -O2 -Wall -mavx
 LDFLAGS    := -lm
 
 output_path = outputs/
