@@ -54,7 +54,7 @@ void AddDot8x4(int k, const double *a, int lda, const double *b, int ldb, double
         "                            \n\t"
         "vmovapd    (%%rax), %%ymm0   \n\t"  // va0123 = _mm256_load_pd(a)
         "vmovapd  32(%%rax), %%ymm1   \n\t"  // va4567 = _mm256_load_pd(a+4)
-        "addq      $64,     %%rax    \n\t"  // a += 8;
+        "addq      $0x40,     %%rax    \n\t"  // a += 8;
         "                            \n\t"
 
         "vbroadcastsd    (%%rbx),   %%ymm2    \n\t" // vb0p = _mm256_broadcast_sd(b);
@@ -62,10 +62,7 @@ void AddDot8x4(int k, const double *a, int lda, const double *b, int ldb, double
         "vbroadcastsd    16(%%rbx),   %%ymm4    \n\t" // vb0p = _mm256_broadcast_sd(b+2);
         "vbroadcastsd    24(%%rbx),   %%ymm5    \n\t" // vb0p = _mm256_broadcast_sd(b+3);
         "                            \n\t"
-        
-        "vxorpd    %%ymm6, %%ymm6, %%ymm6  \n\t"  // vc42526272 = _mm256_setzero_pd()
-        "vxorpd    %%ymm7, %%ymm7, %%ymm7  \n\t"  // vc43536373 = _mm256_setzero_pd()
-        
+
         // this part only use 2 regs for temp 
         "vmulpd           %%ymm0,  %%ymm2, %%ymm6  \n\t"  //  vc00102030.v += _mm256_mul_pd(va0123.v, vb0p.v);  
         "vaddpd           %%ymm8,  %%ymm6, %%ymm8  \n\t" 
@@ -87,32 +84,47 @@ void AddDot8x4(int k, const double *a, int lda, const double *b, int ldb, double
         "vaddpd           %%ymm15,  %%ymm7, %%ymm15  \n\t"
         
         "                            \n\t"
-        "addq      $32,     %%rbx    \n\t"  // b += 4;
+        "addq      $0x20,     %%rbx    \n\t"  // b += 4;
         "decl      %%esi             \n\t"  // p ++
         "jne       .DLOOP%=          \n\t"  // go back
         "                            \n\t"
         
         ".DWRITEBACK%=:              \n\t"  // Fill c with computed values
         "                            \n\t"
+        
+        "vmovapd    (%%rax), %%ymm2   \n\t"             // _mm256_store_pd(c, _mm256_add_pd(_mm256_load_pd(c), vc00102030.v));
+        "vaddpd   %%ymm8,    %%ymm6, %%ymm8 \n\t"  
+        "vmovapd           %%ymm8,   (%%rcx)         \n\t" 
 
-        "vaddpd   %%ymm8,    (%%rcx), %%ymm8 \n\t"  // _mm256_store_pd(c, _mm256_add_pd(_mm256_load_pd(c), vc00102030.v));
-        "vmovapd           %%ymm8,   0(%%rcx)         \n\t" 
-        "vaddpd   %%ymm9,    1024(%%rcx), %%ymm9 \n\t"  // _mm256_store_pd((c + ldc), _mm256_add_pd(_mm256_load_pd((c + ldc)), vc01112131.v));
-        "vmovapd           %%ymm9,   1024(%%rcx)         \n\t" 
-        "vaddpd   %%ymm10,    2048(%%rcx), %%ymm10 \n\t"  // _mm256_store_pd((c + ldc * 2), _mm256_add_pd(_mm256_load_pd((c + ldc * 2)), vc02122232.v));
-        "vmovapd           %%ymm10,   2048(%%rcx)         \n\t" 
-        "vaddpd   %%ymm11,    3072(%%rcx), %%ymm11 \n\t"  // _mm256_store_pd((c + ldc * 3), _mm256_add_pd(_mm256_load_pd((c + ldc * 3)), vc03132333.v));
-        "vmovapd           %%ymm11,   3072(%%rcx)         \n\t"        
+        "vmovapd    8*1000(%%rcx), %%ymm3   \n\t"       // _mm256_store_pd((c + ldc), _mm256_add_pd(_mm256_load_pd((c + ldc)), vc01112131.v));
+        "vaddpd   %%ymm9,  %%ymm3, %%ymm9 \n\t"  
+        "vmovapd           %%ymm9,   8*1000(%%rcx)         \n\t" 
+
+
+        "vmovapd    8*2000(%%rcx), %%ymm4   \n\t"         // _mm256_store_pd((c + ldc * 2), _mm256_add_pd(_mm256_load_pd((c + ldc * 2)), vc02122232.v));
+        "vaddpd   %%ymm10,   %%ymm4, %%ymm10 \n\t"  
+        "vmovapd           %%ymm10,  8*2000(%%rcx)         \n\t" 
+        
+        "vmovapd    8*3000(%%rcx), %%ymm5   \n\t"          // _mm256_store_pd((c + ldc * 3), _mm256_add_pd(_mm256_load_pd((c + ldc * 3)), vc03132333.v));
+        "vaddpd   %%ymm11,   %%ymm5, %%ymm11 \n\t"  
+        "vmovapd           %%ymm11,  8*3000(%%rcx)         \n\t"        
         "                            \n\t"
+        
+        "vmovapd    8*4(%%rcx), %%ymm2   \n\t"      // _mm256_store_pd((c + 4), _mm256_add_pd(_mm256_load_pd((c + 4)), vc40506070.v));
+        "vaddpd   %%ymm12,    %%ymm2, %%ymm12 \n\t"  
+        "vmovapd           %%ymm12,   8*4(%%rcx)         \n\t" 
 
-        "vaddpd   %%ymm12,    4(%%rcx), %%ymm12 \n\t"  // _mm256_store_pd((c + 4), _mm256_add_pd(_mm256_load_pd((c + 4)), vc40506070.v));
-        "vmovapd           %%ymm12,   4(%%rcx)         \n\t" 
-        "vaddpd   %%ymm13,    1028(%%rcx), %%ymm13 \n\t"  // __mm256_store_pd((c + ldc + 4), _mm256_add_pd(_mm256_load_pd((c + ldc + 4)), vc41516171.v));
-        "vmovapd           %%ymm13,   1028(%%rcx)         \n\t" 
-        "vaddpd   %%ymm14,    2052(%%rcx), %%ymm14 \n\t"  // _mm256_store_pd((c + ldc * 2 + 4), _mm256_add_pd(_mm256_load_pd((c + ldc * 2 + 4)), vc42526272.v));    
-        "vmovapd           %%ymm14,   2052(%%rcx)         \n\t" 
-        "vaddpd   %%ymm15,    3076(%%rcx), %%ymm15 \n\t"  // _mm256_store_pd((c + ldc * 3 + 4), _mm256_add_pd(_mm256_load_pd((c + ldc * 3 + 4)), vc43536373.v));
-        "vmovapd           %%ymm15,   3076(%%rcx)         \n\t" 
+        "vmovapd    8*1004(%%rcx), %%ymm3   \n\t"   // __mm256_store_pd((c + ldc + 4), _mm256_add_pd(_mm256_load_pd((c + ldc + 4)), vc41516171.v));
+        "vaddpd   %%ymm13,    %%ymm3, %%ymm13 \n\t"  
+        "vmovapd           %%ymm13,   8*1004(%%rcx)         \n\t" 
+        
+        "vmovapd    8*2004(%%rcx), %%ymm4   \n\t"   // _mm256_store_pd((c + ldc * 2 + 4), _mm256_add_pd(_mm256_load_pd((c + ldc * 2 + 4)), vc42526272.v));
+        "vaddpd   %%ymm14,    %%ymm4, %%ymm14 \n\t"      
+        "vmovapd           %%ymm14,   8*2004(%%rcx)         \n\t" 
+        
+        "vmovapd    8*3004(%%rcx), %%ymm5   \n\t"   // _mm256_store_pd((c + ldc * 3 + 4), _mm256_add_pd(_mm256_load_pd((c + ldc * 3 + 4)), vc43536373.v));
+        "vaddpd   %%ymm15,    %%ymm5, %%ymm15 \n\t"  
+        "vmovapd           %%ymm15,   8*3004(%%rcx)         \n\t" 
         
         "                                            \n\t"
 	      ".DDONE:                                     \n\t"

@@ -4,6 +4,10 @@
 1. gcc -O2 -Wall -msse3 -c MMult7.c -S -o outputs/asm/MMult7.s
 2. gcc -O2 -Wall -msse3 -c MMult7_bad.c -S -o outputs/asm/MMult7_bad.s
 
+## Debug with asm
+1. compare with -g
+2. objdump -d -S  outputs/MMult22_avx2.o > outputs/asm/MMult22_avx2_debug.S
+
 ## References
 1. https://github.com/tpoisonooo/how-to-optimize-gemm/
 2. blis https://github.com/flame/how-to-optimize-gemm/wiki#step-by-step-optimizations

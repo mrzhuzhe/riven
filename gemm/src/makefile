@@ -1,5 +1,5 @@
 OLD  := MMult22_avx3_8x6
-NEW  := MMult24_asm
+NEW  := MMult22_avx2
 #
 # sample makefile
 #
@@ -7,7 +7,7 @@ NEW  := MMult24_asm
 CC         := gcc
 LINKER     := $(CC)
 #CFLAGS     := -O2 -Wall -msse3 
-CFLAGS     := -O2 -Wall -mavx
+CFLAGS     := -O0 -Wall -mavx -g
 LDFLAGS    := -lm
 
 output_path = outputs/
