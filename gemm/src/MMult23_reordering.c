@@ -185,8 +185,8 @@ void Innerkernel(int m, int n, int k, double *a, int lda, double *b, int ldb, do
 {
   int i, j;
   // todo this part need align and malloc
-  double packedA[m*k] __attribute__ ((aligned (64)));
-  static double packedB[kc*nb] __attribute__ ((aligned (64)));
+  double packedA[m*k] __attribute__ ((aligned (32)));
+  static double packedB[kc*nb] __attribute__ ((aligned (32)));
   for (j = 0; j < n; j+=4){
     if ( first_time ) {
       PackMatrixB(k, &B(0, j), ldb, &packedB[j*k]);
