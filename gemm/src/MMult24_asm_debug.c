@@ -30,7 +30,6 @@ typedef union {
 void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, double *c, int ldc){    
     //  How to Use Inline Assembly Language in C Code
     //  https://gcc.gnu.org/onlinedocs/gcc/extensions-to-the-c-language-family/how-to-use-inline-assembly-language-in-c-code.html 
-    //  这一块 load 和 mul add 交替进行应该是跟流水线数量之类的有关
     int outputtest;
     __asm__ volatile
         (
@@ -38,10 +37,6 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "movq      %2,      %%rax    \n\t"  // Address of A stored in %rax
         "movq      %3,      %%rbx    \n\t"  // Address of B stored in %rbx
         "movq      %4,      %%rcx    \n\t"  // Address of C stored in %rcx
-
-
-        "vmovapd    0(%%rax), %%ymm0   \n\t"  // va0123 = _mm256_load_pd(a)
-        "vmovapd  32(%%rax), %%ymm1   \n\t"  // va4567 = _mm256_load_pd(a+4)
 
         "                            \n\t"
         "vxorpd    %%ymm8, %%ymm8,  %%ymm8   \n\t"  // vc00102030 = _mm256_setzero_pd()
@@ -53,32 +48,32 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "vmovapd   %%ymm8, %%ymm14  \n\t"  // vc42526272 = _mm256_setzero_pd()
         "vmovapd   %%ymm8, %%ymm15  \n\t"  // vc43536373 = _mm256_setzero_pd()
         "                            \n\t"
-        //"movl    %%esi,  %0  \n\t"  // debugger
-        //  testl https://docs.oracle.com/cd/E19455-01/806-3773/instructionset-26/index.html
+        "movl    %%esi,  %0  \n\t"  // debugger
         //  "testl     %%esi,   %%esi    \n\t"  // if k==0 start writeback to C
         //  "je        .DWRITEBACK%=     \n\t"
         "                            \n\t"
         ".DLOOP%=:                   \n\t"  // for l = k,..,1 do
         "                            \n\t"
-        
-        "vbroadcastsd    0(%%rbx),   %%ymm2    \n\t" // vb0p = _mm256_broadcast_sd(b);        
+        "vmovapd    0(%%rax), %%ymm0   \n\t"  // va0123 = _mm256_load_pd(a)
+        "vmovapd  32(%%rax), %%ymm1   \n\t"  // va4567 = _mm256_load_pd(a+4)
+        "addq      $0x40,     %%rax    \n\t"  // a += 8;
         "                            \n\t"
+
+        "vbroadcastsd    0(%%rbx),   %%ymm2    \n\t" // vb0p = _mm256_broadcast_sd(b);
+        "vbroadcastsd    8(%%rbx),   %%ymm3    \n\t" // vb0p = _mm256_broadcast_sd(b+1);
+        "vbroadcastsd    16(%%rbx),   %%ymm4    \n\t" // vb0p = _mm256_broadcast_sd(b+2);
+        "vbroadcastsd    24(%%rbx),   %%ymm5    \n\t" // vb0p = _mm256_broadcast_sd(b+3);
+        "                            \n\t"
+
         // this part only use 2 regs for temp 
         "vmulpd           %%ymm0,  %%ymm2, %%ymm6  \n\t"  //  vc00102030.v += _mm256_mul_pd(va0123.v, vb0p.v);  
         "vaddpd           %%ymm8,  %%ymm6, %%ymm8  \n\t" 
-
-        "vbroadcastsd    8(%%rbx),   %%ymm3    \n\t" // vb1p = _mm256_broadcast_sd(b+1);        
         "vmulpd           %%ymm0,  %%ymm3, %%ymm7  \n\t"  //  vc01112131.v += _mm256_mul_pd(va0123.v, vb1p.v); 
         "vaddpd           %%ymm9,  %%ymm7, %%ymm9  \n\t" 
-
-        "vbroadcastsd    16(%%rbx),   %%ymm4    \n\t" // vb2p = _mm256_broadcast_sd(b+2);
         "vmulpd           %%ymm0,  %%ymm4, %%ymm6  \n\t"  //  vc02122232.v += _mm256_mul_pd(va0123.v, vb2p.v); 
         "vaddpd           %%ymm10,  %%ymm6, %%ymm10 \n\t" 
-        
-        "vbroadcastsd    24(%%rbx),   %%ymm5    \n\t" // vb3p = _mm256_broadcast_sd(b+3);
         "vmulpd           %%ymm0,  %%ymm5, %%ymm7 \n\t"  //  vc03132333.v += _mm256_mul_pd(va0123.v, vb3p.v);  
         "vaddpd           %%ymm11,  %%ymm7, %%ymm11 \n\t" 
-        "vmovapd    64(%%rax), %%ymm0   \n\t"  // va0123 = _mm256_load_pd(a+8)
         "                            \n\t"
 
         "vmulpd           %%ymm1,  %%ymm2, %%ymm6  \n\t"  //  vc40506070.v += _mm256_mul_pd(va4567.v, vb0p.v); 
@@ -89,13 +84,9 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "vaddpd           %%ymm14,  %%ymm6, %%ymm14  \n\t" 
         "vmulpd           %%ymm1,  %%ymm5, %%ymm7  \n\t"  //  vc42526272.v += _mm256_mul_pd(va4567.v, vb2p.v);  
         "vaddpd           %%ymm15,  %%ymm7, %%ymm15  \n\t"
-        "vmovapd  96(%%rax), %%ymm1   \n\t"  // va4567 = _mm256_load_pd(a+12)
         
         "                            \n\t"        
-        "addq      $0x40,     %%rax    \n\t"  // a += 8;
         "addq      $0x20,     %%rbx    \n\t"  // b += 4;
-        "                            \n\t"  
-
         "decl      %%esi             \n\t"  // --p        
         "jne       .DLOOP%=          \n\t"  // if p>= 1 go back
         "                            \n\t"
@@ -154,7 +145,7 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
             "xmm8", "xmm9", "xmm10", "xmm11",
             "xmm12", "xmm13", "xmm14", "xmm15"
         );
-      //printf("#  ---- %d --- \n", outputtest);
+      printf("#  ---- %d --- \n", outputtest);
 };
 
 
