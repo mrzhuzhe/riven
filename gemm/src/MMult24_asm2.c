@@ -30,7 +30,7 @@ typedef union {
 void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, double *c, int ldc){    
     //  How to Use Inline Assembly Language in C Code
     //  https://gcc.gnu.org/onlinedocs/gcc/extensions-to-the-c-language-family/how-to-use-inline-assembly-language-in-c-code.html 
-    double outputtest;
+    int outputtest;
     __asm__ volatile
         (
         "movl      %1,      %%esi    \n\t"  // k (32 bit) stored in %esi
@@ -48,11 +48,11 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "vmovapd   %%ymm8, %%ymm14  \n\t"  // vc42526272 = _mm256_setzero_pd()
         "vmovapd   %%ymm8, %%ymm15  \n\t"  // vc43536373 = _mm256_setzero_pd()
         "                            \n\t"
-
-        "testl     %%esi,   %%esi    \n\t"  // if p==k start writeback to C
-        "je        .DWRITEBACK%=     \n\t"
+        "movl    %%esi,  %0  \n\t"  // debugger
+        //  "testl     %%esi,   %%esi    \n\t"  // if k==0 start writeback to C
+        //  "je        .DWRITEBACK%=     \n\t"
         "                            \n\t"
-        ".DLOOP%=:                   \n\t"  // for p = 0, k do
+        ".DLOOP%=:                   \n\t"  // for l = k,..,1 do
         "                            \n\t"
         "vmovapd    0(%%rax), %%ymm0   \n\t"  // va0123 = _mm256_load_pd(a)
         "vmovapd  32(%%rax), %%ymm1   \n\t"  // va4567 = _mm256_load_pd(a+4)
@@ -85,10 +85,10 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "vmulpd           %%ymm1,  %%ymm5, %%ymm7  \n\t"  //  vc42526272.v += _mm256_mul_pd(va4567.v, vb2p.v);  
         "vaddpd           %%ymm15,  %%ymm7, %%ymm15  \n\t"
         
-        "                            \n\t"
+        "                            \n\t"        
         "addq      $0x20,     %%rbx    \n\t"  // b += 4;
-        "decl      %%esi             \n\t"  // p ++
-        "jne       .DLOOP%=          \n\t"  // go back
+        "decl      %%esi             \n\t"  // --p        
+        "jne       .DLOOP%=          \n\t"  // if p>= 1 go back
         "                            \n\t"
         
         ".DWRITEBACK%=:              \n\t"  // Fill c with computed values
@@ -127,7 +127,8 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "vmovapd    8*3004(%%rcx), %%ymm5   \n\t"   // _mm256_store_pd((c + ldc * 3 + 4), _mm256_add_pd(_mm256_load_pd((c + ldc * 3 + 4)), vc43536373.v));
         "vaddpd   %%ymm15,    %%ymm5, %%ymm15 \n\t"  
         "vmovapd           %%ymm15,   8*3004(%%rcx)         \n\t"         
-        "                                            \n\t"
+        "                                            \n\t"           
+        //"movl    %%esi,  %0  \n\t"      //  debugger 2
         //  r for register and m for memory
         //  = (a variable overwriting an existing value) or + (when reading and writing)
         : // output
@@ -144,6 +145,7 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
             "xmm8", "xmm9", "xmm10", "xmm11",
             "xmm12", "xmm13", "xmm14", "xmm15"
         );
+      printf("#  ---- %d --- \n", outputtest);
 };
 
 
