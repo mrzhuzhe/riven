@@ -1,4 +1,11 @@
 // https://mrzhuzhe.github.io/ulmBLAS-sites/page08/index.html
+// unroll
+// finetune https://mrzhuzhe.github.io/ulmBLAS-sites/page10/index.html
+//  todo prefetch https://mrzhuzhe.github.io/ulmBLAS-sites/page13/index.html
+
+
+
+// intel intrin guide https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#ig_expand=1
 
 /* Create macros so that the matrices are stored in column-major order */
 
@@ -208,8 +215,7 @@ void Innerkernel(int m, int n, int k, double *a, int lda, double *b, int ldb, do
   for (j = 0; j < n; j+=4){
     if ( first_time ) {
       PackMatrixB(k, &B(0, j), ldb, &packedB[j*k]);
-    }
-    
+    }  
     for (i = 0; i < m; i +=8){
       if ( j == 0 ) PackMatrixA(k, &A(i, 0), lda, &packedA[i*k]);
       AddDot8x4(k, &packedA[i*k], 8, &packedB[j*k], k , &C( i,j ), ldc);
