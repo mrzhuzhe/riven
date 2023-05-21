@@ -29,13 +29,14 @@ typedef union {
 
 void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, double *c, int ldc){    
     //  How to Use Inline Assembly Language in C Code
-    //  https://gcc.gnu.org/onlinedocs/gcc/extensions-to-the-c-language-family/how-to-use-inline-assembly-language-in-c-code.html     
+    //  https://gcc.gnu.org/onlinedocs/gcc/extensions-to-the-c-language-family/how-to-use-inline-assembly-language-in-c-code.html 
+    double outputtest;
     __asm__ volatile
         (
-        "movl      %0,      %%esi    \n\t"  // k (32 bit) stored in %esi
-        "movq      %1,      %%rax    \n\t"  // Address of A stored in %rax
-        "movq      %2,      %%rbx    \n\t"  // Address of B stored in %rbx
-        "movq      %3,      %%rcx    \n\t"  // Address of C stored in %rcx
+        "movl      %1,      %%esi    \n\t"  // k (32 bit) stored in %esi
+        "movq      %2,      %%rax    \n\t"  // Address of A stored in %rax
+        "movq      %3,      %%rbx    \n\t"  // Address of B stored in %rbx
+        "movq      %4,      %%rcx    \n\t"  // Address of C stored in %rcx
 
         "                            \n\t"
         "vxorpd    %%ymm8, %%ymm8,  %%ymm8   \n\t"  // vc00102030 = _mm256_setzero_pd()
@@ -127,7 +128,10 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "vaddpd   %%ymm15,    %%ymm5, %%ymm15 \n\t"  
         "vmovapd           %%ymm15,   8*3004(%%rcx)         \n\t"         
         "                                            \n\t"
+        //  r for register and m for memory
+        //  = (a variable overwriting an existing value) or + (when reading and writing)
         : // output
+          "=r" (outputtest)
         : // input
             "m" (k),     // 0
             "m" (a),      // 1
