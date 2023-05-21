@@ -103,7 +103,7 @@ int main()
     free( cold );
     free( cref );
     if (debug){
-      //return 0;
+      return 0;
     }
   }
 

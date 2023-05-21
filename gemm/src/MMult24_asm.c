@@ -27,8 +27,7 @@ typedef union {
 
 /* Routine for computing C = A * B + C */
 
-void AddDot8x4(int k, const double *a, int lda, const double *b, int ldb, double *c, int ldc){
-  
+void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, double *c, int ldc){    
     //  https://gcc.gnu.org/onlinedocs/gcc/extensions-to-the-c-language-family/how-to-use-inline-assembly-language-in-c-code.html 
     __asm__ volatile
         (
@@ -39,13 +38,13 @@ void AddDot8x4(int k, const double *a, int lda, const double *b, int ldb, double
 
         "                            \n\t"
         "vxorpd    %%ymm8, %%ymm8,  %%ymm8   \n\t"  // vc00102030 = _mm256_setzero_pd()
-        "vxorpd    %%ymm9, %%ymm9,  %%ymm9   \n\t"  // vc01112131 = _mm256_setzero_pd()
-        "vxorpd    %%ymm10, %%ymm10, %%ymm10  \n\t"  // vc02122232 = _mm256_setzero_pd()
-        "vxorpd    %%ymm11, %%ymm11, %%ymm11  \n\t"  // vc03132333 = _mm256_setzero_pd()
-        "vxorpd    %%ymm12, %%ymm12, %%ymm12  \n\t"  // vc40506070 = _mm256_setzero_pd()
-        "vxorpd    %%ymm13, %%ymm13, %%ymm13  \n\t"  // vc41516171 = _mm256_setzero_pd()
-        "vxorpd    %%ymm14, %%ymm14, %%ymm14  \n\t"  // vc42526272 = _mm256_setzero_pd()
-        "vxorpd    %%ymm15, %%ymm15, %%ymm15  \n\t"  // vc43536373 = _mm256_setzero_pd()
+        "vmovapd   %%ymm8,  %%ymm9   \n\t"  // vc01112131 = _mm256_setzero_pd()
+        "vmovapd   %%ymm8, %%ymm10  \n\t"  // vc02122232 = _mm256_setzero_pd()
+        "vmovapd   %%ymm8, %%ymm11  \n\t"  // vc03132333 = _mm256_setzero_pd()
+        "vmovapd   %%ymm8, %%ymm12  \n\t"  // vc40506070 = _mm256_setzero_pd()
+        "vmovapd   %%ymm8, %%ymm13  \n\t"  // vc41516171 = _mm256_setzero_pd()
+        "vmovapd   %%ymm8, %%ymm14  \n\t"  // vc42526272 = _mm256_setzero_pd()
+        "vmovapd   %%ymm8, %%ymm15  \n\t"  // vc43536373 = _mm256_setzero_pd()
         "                            \n\t"
 
         "testl     %%esi,   %%esi    \n\t"  // if p==k start writeback to C
@@ -53,12 +52,12 @@ void AddDot8x4(int k, const double *a, int lda, const double *b, int ldb, double
         "                            \n\t"
         ".DLOOP%=:                   \n\t"  // for p = 0, k do
         "                            \n\t"
-        "vmovapd    (%%rax), %%ymm0   \n\t"  // va0123 = _mm256_load_pd(a)
+        "vmovapd    0(%%rax), %%ymm0   \n\t"  // va0123 = _mm256_load_pd(a)
         "vmovapd  32(%%rax), %%ymm1   \n\t"  // va4567 = _mm256_load_pd(a+4)
         "addq      $0x40,     %%rax    \n\t"  // a += 8;
         "                            \n\t"
 
-        "vbroadcastsd    (%%rbx),   %%ymm2    \n\t" // vb0p = _mm256_broadcast_sd(b);
+        "vbroadcastsd    0(%%rbx),   %%ymm2    \n\t" // vb0p = _mm256_broadcast_sd(b);
         "vbroadcastsd    8(%%rbx),   %%ymm3    \n\t" // vb0p = _mm256_broadcast_sd(b+1);
         "vbroadcastsd    16(%%rbx),   %%ymm4    \n\t" // vb0p = _mm256_broadcast_sd(b+2);
         "vbroadcastsd    24(%%rbx),   %%ymm5    \n\t" // vb0p = _mm256_broadcast_sd(b+3);
@@ -93,9 +92,9 @@ void AddDot8x4(int k, const double *a, int lda, const double *b, int ldb, double
         ".DWRITEBACK%=:              \n\t"  // Fill c with computed values
         "                            \n\t"
         
-        "vmovapd    (%%rax), %%ymm2   \n\t"             // _mm256_store_pd(c, _mm256_add_pd(_mm256_load_pd(c), vc00102030.v));
-        "vaddpd   %%ymm8,    %%ymm6, %%ymm8 \n\t"  
-        "vmovapd           %%ymm8,   (%%rcx)         \n\t" 
+        "vmovapd    0(%%rcx), %%ymm2   \n\t"             // _mm256_store_pd(c, _mm256_add_pd(_mm256_load_pd(c), vc00102030.v));
+        "vaddpd   %%ymm8,    %%ymm2, %%ymm8 \n\t"  
+        "vmovapd           %%ymm8,   0(%%rcx)         \n\t" 
 
         "vmovapd    8*1000(%%rcx), %%ymm3   \n\t"       // _mm256_store_pd((c + ldc), _mm256_add_pd(_mm256_load_pd((c + ldc)), vc01112131.v));
         "vaddpd   %%ymm9,  %%ymm3, %%ymm9 \n\t"  
@@ -219,6 +218,7 @@ void MY_MMult( int m, int n, int k, double *a, int lda,
       /* Update the C( i,j ) with the inner product of the ith row of A
 	 and the jth column of B */
       ib = min(m-i, mc);
+      //printf(" %d ", jb);
       Innerkernel(ib, n, jb, &A(i, j), lda, &B(j,0), ldb, &C(i, 0), ldc, i==0);
             
     }
