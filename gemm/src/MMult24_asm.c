@@ -28,7 +28,8 @@ typedef union {
 /* Routine for computing C = A * B + C */
 
 void AddDot8x4(int k, const double *a, int lda, const double *b, int ldb, double *c, int ldc){
-              
+  
+    //  https://gcc.gnu.org/onlinedocs/gcc/extensions-to-the-c-language-family/how-to-use-inline-assembly-language-in-c-code.html 
     __asm__ volatile
         (
         "movl      %0,      %%esi    \n\t"  // k (32 bit) stored in %esi

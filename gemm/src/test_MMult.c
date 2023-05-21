@@ -9,6 +9,7 @@ void MY_MMult(int, int, int, double *, int, double *, int, double *, int );
 void copy_matrix(int, int, double *, int, double *, int );
 void random_matrix(int, int, double *, int);
 double compare_matrices( int, int, double *, int, double *, int );
+void print_matrix( int, int, double *, int );
 
 double dclock();
 
@@ -24,6 +25,8 @@ int main()
     dtime, dtime_best,        
     gflops, 
     diff;
+
+  int debug = 0;
 
   double 
     *a, *b, *c, *cref, *cold;    
@@ -83,6 +86,11 @@ int main()
       else
 	dtime_best = ( dtime < dtime_best ? dtime : dtime_best );
     }
+    if (debug){
+      print_matrix( m,  n, c, ldc );
+      printf("------------ \n");
+      print_matrix( m,  n, cref, ldc );
+    }
 
     diff = compare_matrices( m, n, c, ldc, cref, ldc );
 
@@ -94,6 +102,9 @@ int main()
     free( c );
     free( cold );
     free( cref );
+    if (debug){
+      //return 0;
+    }
   }
 
   printf( "];\n" );
