@@ -1,4 +1,5 @@
 // use perf tools to find bottle neck
+// problem is in innerkernel 
 
 /* Create macros so that the matrices are stored in column-major order */
 

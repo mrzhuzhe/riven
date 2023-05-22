@@ -93,48 +93,58 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         ".DWRITEBACK%=:              \n\t"  // Fill c with computed values
         "                            \n\t"
         
+        "movq                   %4, %%rdi            \n\t" // load address of ldc
+	      "leaq           (,%%rdi,8), %%rdi            \n\t" // rdi = ldc * sizeof(double)
+
         "vmovapd    0(%%rcx), %%ymm2   \n\t"             // _mm256_store_pd(c, _mm256_add_pd(_mm256_load_pd(c), vc00102030.v));
         "vaddpd   %%ymm8,    %%ymm2, %%ymm8 \n\t"  
         "vmovapd           %%ymm8,   0(%%rcx)         \n\t" 
-
-        "vmovapd    8*1000(%%rcx), %%ymm3   \n\t"       // _mm256_store_pd((c + ldc), _mm256_add_pd(_mm256_load_pd((c + ldc)), vc01112131.v));
-        "vaddpd   %%ymm9,  %%ymm3, %%ymm9 \n\t"  
-        "vmovapd           %%ymm9,   8*1000(%%rcx)         \n\t" 
-
-
-        "vmovapd    8*2000(%%rcx), %%ymm4   \n\t"         // _mm256_store_pd((c + ldc * 2), _mm256_add_pd(_mm256_load_pd((c + ldc * 2)), vc02122232.v));
-        "vaddpd   %%ymm10,   %%ymm4, %%ymm10 \n\t"  
-        "vmovapd           %%ymm10,  8*2000(%%rcx)         \n\t" 
         
-        "vmovapd    8*3000(%%rcx), %%ymm5   \n\t"          // _mm256_store_pd((c + ldc * 3), _mm256_add_pd(_mm256_load_pd((c + ldc * 3)), vc03132333.v));
-        "vaddpd   %%ymm11,   %%ymm5, %%ymm11 \n\t"  
-        "vmovapd           %%ymm11,  8*3000(%%rcx)         \n\t"        
-        "                            \n\t"
-        
-        "vmovapd    8*4(%%rcx), %%ymm2   \n\t"      // _mm256_store_pd((c + 4), _mm256_add_pd(_mm256_load_pd((c + 4)), vc40506070.v));
+        "vmovapd    32(%%rcx), %%ymm2   \n\t"      // _mm256_store_pd((c + 4), _mm256_add_pd(_mm256_load_pd((c + 4)), vc40506070.v));
         "vaddpd   %%ymm12,    %%ymm2, %%ymm12 \n\t"  
-        "vmovapd           %%ymm12,   8*4(%%rcx)         \n\t" 
+        "vmovapd           %%ymm12,   32(%%rcx)         \n\t" 
 
-        "vmovapd    8*1004(%%rcx), %%ymm3   \n\t"   // __mm256_store_pd((c + ldc + 4), _mm256_add_pd(_mm256_load_pd((c + ldc + 4)), vc41516171.v));
+        "addq              %%rdi,   %%rcx   \t\n"  
+
+        "vmovapd    (%%rcx), %%ymm3   \n\t"       // _mm256_store_pd((c + ldc), _mm256_add_pd(_mm256_load_pd((c + ldc)), vc01112131.v));
+        "vaddpd   %%ymm9,  %%ymm3, %%ymm9 \n\t"  
+        "vmovapd           %%ymm9,   (%%rcx)         \n\t" 
+
+
+        "vmovapd    32(%%rcx), %%ymm3   \n\t"   // __mm256_store_pd((c + ldc + 4), _mm256_add_pd(_mm256_load_pd((c + ldc + 4)), vc41516171.v));
         "vaddpd   %%ymm13,    %%ymm3, %%ymm13 \n\t"  
-        "vmovapd           %%ymm13,   8*1004(%%rcx)         \n\t" 
-        
-        "vmovapd    8*2004(%%rcx), %%ymm4   \n\t"   // _mm256_store_pd((c + ldc * 2 + 4), _mm256_add_pd(_mm256_load_pd((c + ldc * 2 + 4)), vc42526272.v));
+        "vmovapd           %%ymm13,   32(%%rcx)         \n\t" 
+
+        "addq              %%rdi,   %%rcx   \t\n"  
+
+        "vmovapd    0(%%rcx), %%ymm4   \n\t"         // _mm256_store_pd((c + ldc * 2), _mm256_add_pd(_mm256_load_pd((c + ldc * 2)), vc02122232.v));
+        "vaddpd   %%ymm10,   %%ymm4, %%ymm10 \n\t"  
+        "vmovapd           %%ymm10,  0(%%rcx)         \n\t" 
+                
+        "vmovapd    32(%%rcx), %%ymm4   \n\t"   // _mm256_store_pd((c + ldc * 2 + 4), _mm256_add_pd(_mm256_load_pd((c + ldc * 2 + 4)), vc42526272.v));
         "vaddpd   %%ymm14,    %%ymm4, %%ymm14 \n\t"      
-        "vmovapd           %%ymm14,   8*2004(%%rcx)         \n\t" 
+        "vmovapd           %%ymm14,   32(%%rcx)         \n\t" 
         
-        "vmovapd    8*3004(%%rcx), %%ymm5   \n\t"   // _mm256_store_pd((c + ldc * 3 + 4), _mm256_add_pd(_mm256_load_pd((c + ldc * 3 + 4)), vc43536373.v));
+        "addq              %%rdi,   %%rcx   \t\n"                
+        
+        "vmovapd    (%%rcx), %%ymm5   \n\t"          // _mm256_store_pd((c + ldc * 3), _mm256_add_pd(_mm256_load_pd((c + ldc * 3)), vc03132333.v));
+        "vaddpd   %%ymm11,   %%ymm5, %%ymm11 \n\t"  
+        "vmovapd           %%ymm11,  (%%rcx)         \n\t"        
+        "                            \n\t"
+
+        "vmovapd    32(%%rcx), %%ymm5   \n\t"   // _mm256_store_pd((c + ldc * 3 + 4), _mm256_add_pd(_mm256_load_pd((c + ldc * 3 + 4)), vc43536373.v));
         "vaddpd   %%ymm15,    %%ymm5, %%ymm15 \n\t"  
-        "vmovapd           %%ymm15,   8*3004(%%rcx)         \n\t"         
+        "vmovapd           %%ymm15,   32(%%rcx)         \n\t"         
         "                                            \n\t"
         : // output
         : // input
-            "m" (k),     // 0
+            "m" (k),      // 0
             "m" (a),      // 1
             "m" (b),      // 2
-            "m" (c)      // 3
+            "m" (c),      // 3
+            "m" (ldc)     // 4
         : // register clobber list
-            "rax", "rbx", "rcx", "esi",
+            "rax", "rbx", "rcx", "esi", "rdi",
             "xmm0", "xmm1", "xmm2", "xmm3",
             "xmm4", "xmm5", "xmm6", "xmm7",
             "xmm8", "xmm9", "xmm10", "xmm11",
