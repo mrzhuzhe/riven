@@ -35,7 +35,7 @@ typedef union {
 
 /* Routine for computing C = A * B + C */
 
-void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, double *c, int ldc){    
+void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, double *c, int ldc, const double *nexta, const double *nextb){    
     //  How to Use Inline Assembly Language in C Code
     //  https://gcc.gnu.org/onlinedocs/gcc/extensions-to-the-c-language-family/how-to-use-inline-assembly-language-in-c-code.html 
     //  这一块 load 和 mul add 交替进行应该是跟流水线数量之类的有关
@@ -49,7 +49,8 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "movq      %3,      %%rax    \n\t"  // Address of A stored in %rax
         "movq      %4,      %%rbx    \n\t"  // Address of B stored in %rbx
         "movq      %5,      %%rcx    \n\t"  // Address of C stored in %rcx
-
+        "movq      %6,      %%r9     \n\t"  // Address of nextA stored in %r9
+        "movq      %7,      %%r10    \n\t"  // Address of nextB stored in %r10
 
         "vmovapd    0(%%rax), %%ymm0   \n\t"  // va0123 = _mm256_load_pd(a)
         "vmovapd  32(%%rax), %%ymm1   \n\t"  // va4567 = _mm256_load_pd(a+4)
@@ -76,7 +77,7 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         ".DLOOP%=:                   \n\t"  // for l = k,..,1 do
         "                            \n\t"
 
-        "prefetcht0 (4*39+1)*8(%%rax)\n\t"
+        "prefetcht0 (8*39+1)*8(%%rax)\n\t"
 
         // update 1
         "vbroadcastsd    0(%%rbx),   %%ymm2    \n\t" // vb0p = _mm256_broadcast_sd(b);        
@@ -140,7 +141,7 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "vaddpd           %%ymm15,  %%ymm7, %%ymm15  \n\t"
         "vmovapd  160(%%rax), %%ymm1   \n\t"  // va4567 = _mm256_load_pd(a+12)
 
-        "prefetcht0 (4*41+1)*8(%%rax)\n\t"
+        "prefetcht0 (8*41+1)*8(%%rax)\n\t"
       
         // update 3
         "vbroadcastsd    64(%%rbx),   %%ymm2    \n\t" // vb0p = _mm256_broadcast_sd(b);        
@@ -202,12 +203,18 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "vmulpd           %%ymm1,  %%ymm5, %%ymm7  \n\t"  //  vc42526272.v += _mm256_mul_pd(va4567.v, vb2p.v);  
         "vaddpd           %%ymm15,  %%ymm7, %%ymm15  \n\t"
         "vmovapd  288(%%rax), %%ymm1   \n\t"  // va4567 = _mm256_load_pd(a+12)
-              
+
+        "addq      $128,    %%r9  \n\t"
+
+
         "                            \n\t"        
         "addq      $0x100,     %%rax    \n\t"  // a += 32;
         "addq      $0x80,     %%rbx    \n\t"  // b += 16;
         "                            \n\t"  
-                
+        
+        "prefetcht2        0(%%r10)  \n\t"  // prefetch nextB[0]
+        "prefetcht2       64(%%r10)  \n\t"  // prefetch nextB[8]
+
         "decl      %%esi             \n\t"  // --p        
         "jne       .DLOOP%=          \n\t"  // if p>= 1 go back
         "                            \n\t"
@@ -313,9 +320,12 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
             "m" (kl),     // 2
             "m" (a),      // 3
             "m" (b),      // 4
-            "m" (c)      // 5
+            "m" (c),      // 5
+            "m" (nexta),  // 6
+            "m" (nextb)   // 7
         : // register clobber list
-            "rax", "rbx", "rcx", "esi", "edi",
+            "rax", "rbx", "rcx", "esi", "edi", 
+            "r8", "r9", "r10", "r11",
             "xmm0", "xmm1", "xmm2", "xmm3",
             "xmm4", "xmm5", "xmm6", "xmm7",
             "xmm8", "xmm9", "xmm10", "xmm11",
@@ -377,8 +387,8 @@ void Innerkernel(int m, int n, int k, double *a, int lda, double *b, int ldb, do
       PackMatrixB(k, &B(0, j), ldb, &packedB[j*k]);
     }  
     for (i = 0; i < m; i +=8){
-      if ( j == 0 ) PackMatrixA(k, &A(i, 0), lda, &packedA[i*k]);
-      AddDot8x4(k, &packedA[i*k], 8, &packedB[j*k], k , &C( i,j ), ldc);
+      if ( j == 0 ) PackMatrixA(k, &A(i, 0), lda, &packedA[i*k]);     
+      AddDot8x4(k, &packedA[i*k], 8, &packedB[j*k], k , &C( i,j ), ldc, &packedA[(i+8)*k], &packedB[(j+4)*k]);
     }
   }
 }
