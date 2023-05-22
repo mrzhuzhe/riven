@@ -3,7 +3,7 @@
 // finetune https://mrzhuzhe.github.io/ulmBLAS-sites/page10/index.html
 //  todo prefetch https://mrzhuzhe.github.io/ulmBLAS-sites/page13/index.html
 
-//  https://docs.oracle.com/cd/E19120-01/open.solaris/817-5477/epmpw/index.html
+//  prefetch https://docs.oracle.com/cd/E19120-01/open.solaris/817-5477/epmpw/index.html
 
 
 // intel intrin guide https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#ig_expand=1
