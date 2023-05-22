@@ -40,8 +40,8 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
     //  https://gcc.gnu.org/onlinedocs/gcc/extensions-to-the-c-language-family/how-to-use-inline-assembly-language-in-c-code.html 
     //  这一块 load 和 mul add 交替进行应该是跟流水线数量之类的有关
     int outputtest;
-    const int kp = k / 1;
-    const int kl = k % 1;  // [TODO] why in cannot be used in rsi but canbe used in 
+    const int kp = k / 4;
+    const int kl = k % 4;  // [TODO] why in cannot be used in rsi but canbe used in 
     __asm__ volatile
         (
         "movl      %1,      %%esi    \n\t"  // kp (32 bit) stored in %rsi
@@ -110,7 +110,7 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "addq      $0x40,     %%rax    \n\t"  // a += 8;
         "addq      $0x20,     %%rbx    \n\t"  // b += 4;
         "                            \n\t"  
-        /*
+        
         // update 2
         "vbroadcastsd    0(%%rbx),   %%ymm2    \n\t" // vb0p = _mm256_broadcast_sd(b);        
         "                            \n\t"
@@ -223,9 +223,7 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         //"addq      $0x100,     %%rax    \n\t"  // a += 32;
         //"addq      $0x80,     %%rbx    \n\t"  // b += 16;
         "                            \n\t"  
-        */
-
-        
+                
         "decl      %%esi             \n\t"  // --p        
         "jne       .DLOOP%=          \n\t"  // if p>= 1 go back
         "                            \n\t"
