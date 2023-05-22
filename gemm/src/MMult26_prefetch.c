@@ -3,7 +3,7 @@
 // finetune https://mrzhuzhe.github.io/ulmBLAS-sites/page10/index.html
 //  todo prefetch https://mrzhuzhe.github.io/ulmBLAS-sites/page13/index.html
 
-//  prefetch https://docs.oracle.com/cd/E19120-01/open.solaris/817-5477/epmpw/index.html
+//  https://docs.oracle.com/cd/E19120-01/open.solaris/817-5477/epmpw/index.html
 
 
 // intel intrin guide https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#ig_expand=1
@@ -40,12 +40,15 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
     //  https://gcc.gnu.org/onlinedocs/gcc/extensions-to-the-c-language-family/how-to-use-inline-assembly-language-in-c-code.html 
     //  这一块 load 和 mul add 交替进行应该是跟流水线数量之类的有关
     int outputtest;
+    const int kp = k / 4;
+    const int kl = k % 4;  // [TODO] why in cannot be used in rsi but canbe used in 
     __asm__ volatile
         (
-        "movl      %1,      %%esi    \n\t"  // k (32 bit) stored in %esi
-        "movq      %2,      %%rax    \n\t"  // Address of A stored in %rax
-        "movq      %3,      %%rbx    \n\t"  // Address of B stored in %rbx
-        "movq      %4,      %%rcx    \n\t"  // Address of C stored in %rcx
+        "movl      %1,      %%esi    \n\t"  // kp (32 bit) stored in %rsi
+        "movl      %2,      %%edi    \n\t"  // kl (32 bit) stored in %rdi
+        "movq      %3,      %%rax    \n\t"  // Address of A stored in %rax
+        "movq      %4,      %%rbx    \n\t"  // Address of B stored in %rbx
+        "movq      %5,      %%rcx    \n\t"  // Address of C stored in %rcx
 
 
         "vmovapd    0(%%rax), %%ymm0   \n\t"  // va0123 = _mm256_load_pd(a)
@@ -61,12 +64,163 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "vmovapd   %%ymm8, %%ymm14  \n\t"  // vc42526272 = _mm256_setzero_pd()
         "vmovapd   %%ymm8, %%ymm15  \n\t"  // vc43536373 = _mm256_setzero_pd()
         "                            \n\t"
-        //"movl    %%esi,  %0  \n\t"  // debugger
-        //  testl https://docs.oracle.com/cd/E19455-01/806-3773/instructionset-26/index.html
-        //  "testl     %%esi,   %%esi    \n\t"  // if k==0 start writeback to C
-        //  "je        .DWRITEBACK%=     \n\t"
+        //"movq    %%rdi,  %0  \n\t"  // debugger
+        
+        //
+        //  unroll start
+        //          
+        // rsi
+        "testl     %%esi,   %%esi    \n\t"  // if kl==0 start writeback to C
+        "je        .DREDIRECT%=     \n\t"
         "                            \n\t"
         ".DLOOP%=:                   \n\t"  // for l = k,..,1 do
+        "                            \n\t"
+
+        "prefetcht0 (4*39+1)*8(%%rax)\n\t"
+
+        // update 1
+        "vbroadcastsd    0(%%rbx),   %%ymm2    \n\t" // vb0p = _mm256_broadcast_sd(b);        
+        "                            \n\t"
+
+        "vmulpd           %%ymm0,  %%ymm2, %%ymm6  \n\t"  //  vc00102030.v += _mm256_mul_pd(va0123.v, vb0p.v);  
+        "vaddpd           %%ymm8,  %%ymm6, %%ymm8  \n\t" 
+
+        "vbroadcastsd    8(%%rbx),   %%ymm3    \n\t" // vb1p = _mm256_broadcast_sd(b+1);        
+        "vmulpd           %%ymm0,  %%ymm3, %%ymm7  \n\t"  //  vc01112131.v += _mm256_mul_pd(va0123.v, vb1p.v); 
+        "vaddpd           %%ymm9,  %%ymm7, %%ymm9  \n\t" 
+
+        "vbroadcastsd    16(%%rbx),   %%ymm4    \n\t" // vb2p = _mm256_broadcast_sd(b+2);
+        "vmulpd           %%ymm0,  %%ymm4, %%ymm6  \n\t"  //  vc02122232.v += _mm256_mul_pd(va0123.v, vb2p.v); 
+        "vaddpd           %%ymm10,  %%ymm6, %%ymm10 \n\t" 
+        
+        "vbroadcastsd    24(%%rbx),   %%ymm5    \n\t" // vb3p = _mm256_broadcast_sd(b+3);
+        "vmulpd           %%ymm0,  %%ymm5, %%ymm7 \n\t"  //  vc03132333.v += _mm256_mul_pd(va0123.v, vb3p.v);  
+        "vaddpd           %%ymm11,  %%ymm7, %%ymm11 \n\t" 
+        "vmovapd    64(%%rax), %%ymm0   \n\t"  // va0123 = _mm256_load_pd(a+8)
+        "                            \n\t"
+
+        "vmulpd           %%ymm1,  %%ymm2, %%ymm6  \n\t"  //  vc40506070.v += _mm256_mul_pd(va4567.v, vb0p.v); 
+        "vaddpd           %%ymm12,  %%ymm6, %%ymm12  \n\t" 
+        "vmulpd           %%ymm1,  %%ymm3, %%ymm7  \n\t"  //  vc41516171.v += _mm256_mul_pd(va4567.v, vb1p.v); 
+        "vaddpd           %%ymm13,  %%ymm7, %%ymm13  \n\t" 
+        "vmulpd           %%ymm1,  %%ymm4, %%ymm6  \n\t"  //  vc42526272.v += _mm256_mul_pd(va4567.v, vb2p.v); 
+        "vaddpd           %%ymm14,  %%ymm6, %%ymm14  \n\t" 
+        "vmulpd           %%ymm1,  %%ymm5, %%ymm7  \n\t"  //  vc42526272.v += _mm256_mul_pd(va4567.v, vb2p.v);  
+        "vaddpd           %%ymm15,  %%ymm7, %%ymm15  \n\t"
+        "vmovapd  96(%%rax), %%ymm1   \n\t"  // va4567 = _mm256_load_pd(a+12)
+
+        // update 2
+        "vbroadcastsd    32(%%rbx),   %%ymm2    \n\t" // vb0p = _mm256_broadcast_sd(b);        
+        "                            \n\t"
+
+        "vmulpd           %%ymm0,  %%ymm2, %%ymm6  \n\t"  //  vc00102030.v += _mm256_mul_pd(va0123.v, vb0p.v);  
+        "vaddpd           %%ymm8,  %%ymm6, %%ymm8  \n\t" 
+
+        "vbroadcastsd    40(%%rbx),   %%ymm3    \n\t" // vb1p = _mm256_broadcast_sd(b+1);        
+        "vmulpd           %%ymm0,  %%ymm3, %%ymm7  \n\t"  //  vc01112131.v += _mm256_mul_pd(va0123.v, vb1p.v); 
+        "vaddpd           %%ymm9,  %%ymm7, %%ymm9  \n\t" 
+
+        "vbroadcastsd    48(%%rbx),   %%ymm4    \n\t" // vb2p = _mm256_broadcast_sd(b+2);
+        "vmulpd           %%ymm0,  %%ymm4, %%ymm6  \n\t"  //  vc02122232.v += _mm256_mul_pd(va0123.v, vb2p.v); 
+        "vaddpd           %%ymm10,  %%ymm6, %%ymm10 \n\t" 
+        
+        "vbroadcastsd    56(%%rbx),   %%ymm5    \n\t" // vb3p = _mm256_broadcast_sd(b+3);
+        "vmulpd           %%ymm0,  %%ymm5, %%ymm7 \n\t"  //  vc03132333.v += _mm256_mul_pd(va0123.v, vb3p.v);  
+        "vaddpd           %%ymm11,  %%ymm7, %%ymm11 \n\t" 
+        "vmovapd    128(%%rax), %%ymm0   \n\t"  // va0123 = _mm256_load_pd(a+8)
+        "                            \n\t"
+
+        "vmulpd           %%ymm1,  %%ymm2, %%ymm6  \n\t"  //  vc40506070.v += _mm256_mul_pd(va4567.v, vb0p.v); 
+        "vaddpd           %%ymm12,  %%ymm6, %%ymm12  \n\t" 
+        "vmulpd           %%ymm1,  %%ymm3, %%ymm7  \n\t"  //  vc41516171.v += _mm256_mul_pd(va4567.v, vb1p.v); 
+        "vaddpd           %%ymm13,  %%ymm7, %%ymm13  \n\t" 
+        "vmulpd           %%ymm1,  %%ymm4, %%ymm6  \n\t"  //  vc42526272.v += _mm256_mul_pd(va4567.v, vb2p.v); 
+        "vaddpd           %%ymm14,  %%ymm6, %%ymm14  \n\t" 
+        "vmulpd           %%ymm1,  %%ymm5, %%ymm7  \n\t"  //  vc42526272.v += _mm256_mul_pd(va4567.v, vb2p.v);  
+        "vaddpd           %%ymm15,  %%ymm7, %%ymm15  \n\t"
+        "vmovapd  160(%%rax), %%ymm1   \n\t"  // va4567 = _mm256_load_pd(a+12)
+
+        "prefetcht0 (4*41+1)*8(%%rax)\n\t"
+      
+        // update 3
+        "vbroadcastsd    64(%%rbx),   %%ymm2    \n\t" // vb0p = _mm256_broadcast_sd(b);        
+        "                            \n\t"
+        "vmulpd           %%ymm0,  %%ymm2, %%ymm6  \n\t"  //  vc00102030.v += _mm256_mul_pd(va0123.v, vb0p.v);  
+        "vaddpd           %%ymm8,  %%ymm6, %%ymm8  \n\t" 
+
+        "vbroadcastsd    72(%%rbx),   %%ymm3    \n\t" // vb1p = _mm256_broadcast_sd(b+1);        
+        "vmulpd           %%ymm0,  %%ymm3, %%ymm7  \n\t"  //  vc01112131.v += _mm256_mul_pd(va0123.v, vb1p.v); 
+        "vaddpd           %%ymm9,  %%ymm7, %%ymm9  \n\t" 
+
+        "vbroadcastsd    80(%%rbx),   %%ymm4    \n\t" // vb2p = _mm256_broadcast_sd(b+2);
+        "vmulpd           %%ymm0,  %%ymm4, %%ymm6  \n\t"  //  vc02122232.v += _mm256_mul_pd(va0123.v, vb2p.v); 
+        "vaddpd           %%ymm10,  %%ymm6, %%ymm10 \n\t" 
+        
+        "vbroadcastsd    88(%%rbx),   %%ymm5    \n\t" // vb3p = _mm256_broadcast_sd(b+3);
+        "vmulpd           %%ymm0,  %%ymm5, %%ymm7 \n\t"  //  vc03132333.v += _mm256_mul_pd(va0123.v, vb3p.v);  
+        "vaddpd           %%ymm11,  %%ymm7, %%ymm11 \n\t" 
+        "vmovapd    192(%%rax), %%ymm0   \n\t"  // va0123 = _mm256_load_pd(a+8)
+        "                            \n\t"
+
+        "vmulpd           %%ymm1,  %%ymm2, %%ymm6  \n\t"  //  vc40506070.v += _mm256_mul_pd(va4567.v, vb0p.v); 
+        "vaddpd           %%ymm12,  %%ymm6, %%ymm12  \n\t" 
+        "vmulpd           %%ymm1,  %%ymm3, %%ymm7  \n\t"  //  vc41516171.v += _mm256_mul_pd(va4567.v, vb1p.v); 
+        "vaddpd           %%ymm13,  %%ymm7, %%ymm13  \n\t" 
+        "vmulpd           %%ymm1,  %%ymm4, %%ymm6  \n\t"  //  vc42526272.v += _mm256_mul_pd(va4567.v, vb2p.v); 
+        "vaddpd           %%ymm14,  %%ymm6, %%ymm14  \n\t" 
+        "vmulpd           %%ymm1,  %%ymm5, %%ymm7  \n\t"  //  vc42526272.v += _mm256_mul_pd(va4567.v, vb2p.v);  
+        "vaddpd           %%ymm15,  %%ymm7, %%ymm15  \n\t"
+        "vmovapd  224(%%rax), %%ymm1   \n\t"  // va4567 = _mm256_load_pd(a+12)
+        
+        // update 4
+        "vbroadcastsd    96(%%rbx),   %%ymm2    \n\t" // vb0p = _mm256_broadcast_sd(b);        
+        "                            \n\t"
+
+        "vmulpd           %%ymm0,  %%ymm2, %%ymm6  \n\t"  //  vc00102030.v += _mm256_mul_pd(va0123.v, vb0p.v);  
+        "vaddpd           %%ymm8,  %%ymm6, %%ymm8  \n\t" 
+
+        "vbroadcastsd    104(%%rbx),   %%ymm3    \n\t" // vb1p = _mm256_broadcast_sd(b+1);        
+        "vmulpd           %%ymm0,  %%ymm3, %%ymm7  \n\t"  //  vc01112131.v += _mm256_mul_pd(va0123.v, vb1p.v); 
+        "vaddpd           %%ymm9,  %%ymm7, %%ymm9  \n\t" 
+
+        "vbroadcastsd    112(%%rbx),   %%ymm4    \n\t" // vb2p = _mm256_broadcast_sd(b+2);
+        "vmulpd           %%ymm0,  %%ymm4, %%ymm6  \n\t"  //  vc02122232.v += _mm256_mul_pd(va0123.v, vb2p.v); 
+        "vaddpd           %%ymm10,  %%ymm6, %%ymm10 \n\t" 
+        
+        "vbroadcastsd    120(%%rbx),   %%ymm5    \n\t" // vb3p = _mm256_broadcast_sd(b+3);
+        "vmulpd           %%ymm0,  %%ymm5, %%ymm7 \n\t"  //  vc03132333.v += _mm256_mul_pd(va0123.v, vb3p.v);  
+        "vaddpd           %%ymm11,  %%ymm7, %%ymm11 \n\t" 
+        "vmovapd    256(%%rax), %%ymm0   \n\t"  // va0123 = _mm256_load_pd(a+8)
+        "                            \n\t"
+
+        "vmulpd           %%ymm1,  %%ymm2, %%ymm6  \n\t"  //  vc40506070.v += _mm256_mul_pd(va4567.v, vb0p.v); 
+        "vaddpd           %%ymm12,  %%ymm6, %%ymm12  \n\t" 
+        "vmulpd           %%ymm1,  %%ymm3, %%ymm7  \n\t"  //  vc41516171.v += _mm256_mul_pd(va4567.v, vb1p.v); 
+        "vaddpd           %%ymm13,  %%ymm7, %%ymm13  \n\t" 
+        "vmulpd           %%ymm1,  %%ymm4, %%ymm6  \n\t"  //  vc42526272.v += _mm256_mul_pd(va4567.v, vb2p.v); 
+        "vaddpd           %%ymm14,  %%ymm6, %%ymm14  \n\t" 
+        "vmulpd           %%ymm1,  %%ymm5, %%ymm7  \n\t"  //  vc42526272.v += _mm256_mul_pd(va4567.v, vb2p.v);  
+        "vaddpd           %%ymm15,  %%ymm7, %%ymm15  \n\t"
+        "vmovapd  288(%%rax), %%ymm1   \n\t"  // va4567 = _mm256_load_pd(a+12)
+              
+        "                            \n\t"        
+        "addq      $0x100,     %%rax    \n\t"  // a += 32;
+        "addq      $0x80,     %%rbx    \n\t"  // b += 16;
+        "                            \n\t"  
+                
+        "decl      %%esi             \n\t"  // --p        
+        "jne       .DLOOP%=          \n\t"  // if p>= 1 go back
+        "                            \n\t"
+        
+        ///*
+        // rdi 
+        ".DREDIRECT%=:                   \n\t"
+        "testl     %%edi,   %%edi    \n\t"  // if kl==0 start writeback to C
+        "je        .DWRITEBACK%=     \n\t"
+        
+
+        "                            \n\t"
+        ".DLOOPLEFT%=:                   \n\t"  // for l = k,..,1 do
         "                            \n\t"
         
         "vbroadcastsd    0(%%rbx),   %%ymm2    \n\t" // vb0p = _mm256_broadcast_sd(b);        
@@ -104,9 +258,13 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "addq      $0x20,     %%rbx    \n\t"  // b += 4;
         "                            \n\t"  
 
-        "decl      %%esi             \n\t"  // --p        
-        "jne       .DLOOP%=          \n\t"  // if p>= 1 go back
+        "decq      %%rdi             \n\t"  // --p        
+        "jne       .DLOOPLEFT%=          \n\t"  // if p>= 1 go back
         "                            \n\t"
+        
+        //
+        // unroll end
+        //
         
         ".DWRITEBACK%=:              \n\t"  // Fill c with computed values
         "                            \n\t"
@@ -149,14 +307,15 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         //  r for register and m for memory
         //  = (a variable overwriting an existing value) or + (when reading and writing)
         : // output
-          "=r" (outputtest)
+          "=m" (outputtest)
         : // input
-            "m" (k),     // 0
-            "m" (a),      // 1
-            "m" (b),      // 2
-            "m" (c)      // 3
+            "m" (kp),     // 1
+            "m" (kl),     // 2
+            "m" (a),      // 3
+            "m" (b),      // 4
+            "m" (c)      // 5
         : // register clobber list
-            "rax", "rbx", "rcx", "esi",
+            "rax", "rbx", "rcx", "esi", "edi",
             "xmm0", "xmm1", "xmm2", "xmm3",
             "xmm4", "xmm5", "xmm6", "xmm7",
             "xmm8", "xmm9", "xmm10", "xmm11",

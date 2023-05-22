@@ -1,6 +1,6 @@
 OLD  := MMult24_asm2
 #NEW  := MMult22_avx2
-NEW  := MMult24_asm_unroll2
+NEW  := MMult26_prefetch
 #
 # sample makefile
 #
