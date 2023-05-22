@@ -1,6 +1,6 @@
-OLD  := MMult22_avx3_8x6
+OLD  := MMult24_asm2
 #NEW  := MMult22_avx2
-NEW  := MMult24_asm_unroll
+NEW  := MMult24_asm_unroll2
 #
 # sample makefile
 #

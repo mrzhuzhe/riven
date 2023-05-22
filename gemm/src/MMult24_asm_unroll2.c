@@ -78,7 +78,7 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         // update 1
         "vbroadcastsd    0(%%rbx),   %%ymm2    \n\t" // vb0p = _mm256_broadcast_sd(b);        
         "                            \n\t"
-        // this part only use 2 regs for temp 
+
         "vmulpd           %%ymm0,  %%ymm2, %%ymm6  \n\t"  //  vc00102030.v += _mm256_mul_pd(va0123.v, vb0p.v);  
         "vaddpd           %%ymm8,  %%ymm6, %%ymm8  \n\t" 
 
@@ -106,30 +106,25 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "vaddpd           %%ymm15,  %%ymm7, %%ymm15  \n\t"
         "vmovapd  96(%%rax), %%ymm1   \n\t"  // va4567 = _mm256_load_pd(a+12)
 
-        "                            \n\t"        
-        "addq      $0x40,     %%rax    \n\t"  // a += 8;
-        "addq      $0x20,     %%rbx    \n\t"  // b += 4;
-        "                            \n\t"  
-        
         // update 2
-        "vbroadcastsd    0(%%rbx),   %%ymm2    \n\t" // vb0p = _mm256_broadcast_sd(b);        
+        "vbroadcastsd    32(%%rbx),   %%ymm2    \n\t" // vb0p = _mm256_broadcast_sd(b);        
         "                            \n\t"
-        // this part only use 2 regs for temp 
+
         "vmulpd           %%ymm0,  %%ymm2, %%ymm6  \n\t"  //  vc00102030.v += _mm256_mul_pd(va0123.v, vb0p.v);  
         "vaddpd           %%ymm8,  %%ymm6, %%ymm8  \n\t" 
 
-        "vbroadcastsd    8(%%rbx),   %%ymm3    \n\t" // vb1p = _mm256_broadcast_sd(b+1);        
+        "vbroadcastsd    40(%%rbx),   %%ymm3    \n\t" // vb1p = _mm256_broadcast_sd(b+1);        
         "vmulpd           %%ymm0,  %%ymm3, %%ymm7  \n\t"  //  vc01112131.v += _mm256_mul_pd(va0123.v, vb1p.v); 
         "vaddpd           %%ymm9,  %%ymm7, %%ymm9  \n\t" 
 
-        "vbroadcastsd    16(%%rbx),   %%ymm4    \n\t" // vb2p = _mm256_broadcast_sd(b+2);
+        "vbroadcastsd    48(%%rbx),   %%ymm4    \n\t" // vb2p = _mm256_broadcast_sd(b+2);
         "vmulpd           %%ymm0,  %%ymm4, %%ymm6  \n\t"  //  vc02122232.v += _mm256_mul_pd(va0123.v, vb2p.v); 
         "vaddpd           %%ymm10,  %%ymm6, %%ymm10 \n\t" 
         
-        "vbroadcastsd    24(%%rbx),   %%ymm5    \n\t" // vb3p = _mm256_broadcast_sd(b+3);
+        "vbroadcastsd    56(%%rbx),   %%ymm5    \n\t" // vb3p = _mm256_broadcast_sd(b+3);
         "vmulpd           %%ymm0,  %%ymm5, %%ymm7 \n\t"  //  vc03132333.v += _mm256_mul_pd(va0123.v, vb3p.v);  
         "vaddpd           %%ymm11,  %%ymm7, %%ymm11 \n\t" 
-        "vmovapd    64(%%rax), %%ymm0   \n\t"  // va0123 = _mm256_load_pd(a+8)
+        "vmovapd    128(%%rax), %%ymm0   \n\t"  // va0123 = _mm256_load_pd(a+8)
         "                            \n\t"
 
         "vmulpd           %%ymm1,  %%ymm2, %%ymm6  \n\t"  //  vc40506070.v += _mm256_mul_pd(va4567.v, vb0p.v); 
@@ -140,31 +135,26 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "vaddpd           %%ymm14,  %%ymm6, %%ymm14  \n\t" 
         "vmulpd           %%ymm1,  %%ymm5, %%ymm7  \n\t"  //  vc42526272.v += _mm256_mul_pd(va4567.v, vb2p.v);  
         "vaddpd           %%ymm15,  %%ymm7, %%ymm15  \n\t"
-        "vmovapd  96(%%rax), %%ymm1   \n\t"  // va4567 = _mm256_load_pd(a+12)
-        
-        "                            \n\t"        
-        "addq      $0x40,     %%rax    \n\t"  // a += 8;
-        "addq      $0x20,     %%rbx    \n\t"  // b += 4;
-        "                            \n\t"  
-
+        "vmovapd  160(%%rax), %%ymm1   \n\t"  // va4567 = _mm256_load_pd(a+12)
+      
         // update 3
-        "vbroadcastsd    0(%%rbx),   %%ymm2    \n\t" // vb0p = _mm256_broadcast_sd(b);        
+        "vbroadcastsd    64(%%rbx),   %%ymm2    \n\t" // vb0p = _mm256_broadcast_sd(b);        
         "                            \n\t"
         "vmulpd           %%ymm0,  %%ymm2, %%ymm6  \n\t"  //  vc00102030.v += _mm256_mul_pd(va0123.v, vb0p.v);  
         "vaddpd           %%ymm8,  %%ymm6, %%ymm8  \n\t" 
 
-        "vbroadcastsd    8(%%rbx),   %%ymm3    \n\t" // vb1p = _mm256_broadcast_sd(b+1);        
+        "vbroadcastsd    72(%%rbx),   %%ymm3    \n\t" // vb1p = _mm256_broadcast_sd(b+1);        
         "vmulpd           %%ymm0,  %%ymm3, %%ymm7  \n\t"  //  vc01112131.v += _mm256_mul_pd(va0123.v, vb1p.v); 
         "vaddpd           %%ymm9,  %%ymm7, %%ymm9  \n\t" 
 
-        "vbroadcastsd    16(%%rbx),   %%ymm4    \n\t" // vb2p = _mm256_broadcast_sd(b+2);
+        "vbroadcastsd    80(%%rbx),   %%ymm4    \n\t" // vb2p = _mm256_broadcast_sd(b+2);
         "vmulpd           %%ymm0,  %%ymm4, %%ymm6  \n\t"  //  vc02122232.v += _mm256_mul_pd(va0123.v, vb2p.v); 
         "vaddpd           %%ymm10,  %%ymm6, %%ymm10 \n\t" 
         
-        "vbroadcastsd    24(%%rbx),   %%ymm5    \n\t" // vb3p = _mm256_broadcast_sd(b+3);
+        "vbroadcastsd    88(%%rbx),   %%ymm5    \n\t" // vb3p = _mm256_broadcast_sd(b+3);
         "vmulpd           %%ymm0,  %%ymm5, %%ymm7 \n\t"  //  vc03132333.v += _mm256_mul_pd(va0123.v, vb3p.v);  
         "vaddpd           %%ymm11,  %%ymm7, %%ymm11 \n\t" 
-        "vmovapd    64(%%rax), %%ymm0   \n\t"  // va0123 = _mm256_load_pd(a+8)
+        "vmovapd    192(%%rax), %%ymm0   \n\t"  // va0123 = _mm256_load_pd(a+8)
         "                            \n\t"
 
         "vmulpd           %%ymm1,  %%ymm2, %%ymm6  \n\t"  //  vc40506070.v += _mm256_mul_pd(va4567.v, vb0p.v); 
@@ -175,32 +165,27 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "vaddpd           %%ymm14,  %%ymm6, %%ymm14  \n\t" 
         "vmulpd           %%ymm1,  %%ymm5, %%ymm7  \n\t"  //  vc42526272.v += _mm256_mul_pd(va4567.v, vb2p.v);  
         "vaddpd           %%ymm15,  %%ymm7, %%ymm15  \n\t"
-        "vmovapd  96(%%rax), %%ymm1   \n\t"  // va4567 = _mm256_load_pd(a+12)
+        "vmovapd  224(%%rax), %%ymm1   \n\t"  // va4567 = _mm256_load_pd(a+12)
         
-        "                            \n\t"        
-        "addq      $0x40,     %%rax    \n\t"  // a += 8;
-        "addq      $0x20,     %%rbx    \n\t"  // b += 4;
-        "                            \n\t"  
-
         // update 4
-        "vbroadcastsd    0(%%rbx),   %%ymm2    \n\t" // vb0p = _mm256_broadcast_sd(b);        
+        "vbroadcastsd    96(%%rbx),   %%ymm2    \n\t" // vb0p = _mm256_broadcast_sd(b);        
         "                            \n\t"
-        // this part only use 2 regs for temp 
+
         "vmulpd           %%ymm0,  %%ymm2, %%ymm6  \n\t"  //  vc00102030.v += _mm256_mul_pd(va0123.v, vb0p.v);  
         "vaddpd           %%ymm8,  %%ymm6, %%ymm8  \n\t" 
 
-        "vbroadcastsd    8(%%rbx),   %%ymm3    \n\t" // vb1p = _mm256_broadcast_sd(b+1);        
+        "vbroadcastsd    104(%%rbx),   %%ymm3    \n\t" // vb1p = _mm256_broadcast_sd(b+1);        
         "vmulpd           %%ymm0,  %%ymm3, %%ymm7  \n\t"  //  vc01112131.v += _mm256_mul_pd(va0123.v, vb1p.v); 
         "vaddpd           %%ymm9,  %%ymm7, %%ymm9  \n\t" 
 
-        "vbroadcastsd    16(%%rbx),   %%ymm4    \n\t" // vb2p = _mm256_broadcast_sd(b+2);
+        "vbroadcastsd    112(%%rbx),   %%ymm4    \n\t" // vb2p = _mm256_broadcast_sd(b+2);
         "vmulpd           %%ymm0,  %%ymm4, %%ymm6  \n\t"  //  vc02122232.v += _mm256_mul_pd(va0123.v, vb2p.v); 
         "vaddpd           %%ymm10,  %%ymm6, %%ymm10 \n\t" 
         
-        "vbroadcastsd    24(%%rbx),   %%ymm5    \n\t" // vb3p = _mm256_broadcast_sd(b+3);
+        "vbroadcastsd    120(%%rbx),   %%ymm5    \n\t" // vb3p = _mm256_broadcast_sd(b+3);
         "vmulpd           %%ymm0,  %%ymm5, %%ymm7 \n\t"  //  vc03132333.v += _mm256_mul_pd(va0123.v, vb3p.v);  
         "vaddpd           %%ymm11,  %%ymm7, %%ymm11 \n\t" 
-        "vmovapd    64(%%rax), %%ymm0   \n\t"  // va0123 = _mm256_load_pd(a+8)
+        "vmovapd    256(%%rax), %%ymm0   \n\t"  // va0123 = _mm256_load_pd(a+8)
         "                            \n\t"
 
         "vmulpd           %%ymm1,  %%ymm2, %%ymm6  \n\t"  //  vc40506070.v += _mm256_mul_pd(va4567.v, vb0p.v); 
@@ -211,17 +196,11 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "vaddpd           %%ymm14,  %%ymm6, %%ymm14  \n\t" 
         "vmulpd           %%ymm1,  %%ymm5, %%ymm7  \n\t"  //  vc42526272.v += _mm256_mul_pd(va4567.v, vb2p.v);  
         "vaddpd           %%ymm15,  %%ymm7, %%ymm15  \n\t"
-        "vmovapd  96(%%rax), %%ymm1   \n\t"  // va4567 = _mm256_load_pd(a+12)
-        
+        "vmovapd  288(%%rax), %%ymm1   \n\t"  // va4567 = _mm256_load_pd(a+12)
+              
         "                            \n\t"        
-        "addq      $0x40,     %%rax    \n\t"  // a += 8;
-        "addq      $0x20,     %%rbx    \n\t"  // b += 4;
-        "                            \n\t"  
-
-        
-        "                            \n\t"        
-        //"addq      $0x100,     %%rax    \n\t"  // a += 32;
-        //"addq      $0x80,     %%rbx    \n\t"  // b += 16;
+        "addq      $0x100,     %%rax    \n\t"  // a += 32;
+        "addq      $0x80,     %%rbx    \n\t"  // b += 16;
         "                            \n\t"  
                 
         "decl      %%esi             \n\t"  // --p        
