@@ -64,13 +64,15 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "vmovapd   %%ymm8, %%ymm14  \n\t"  // vc42526272 = _mm256_setzero_pd()
         "vmovapd   %%ymm8, %%ymm15  \n\t"  // vc43536373 = _mm256_setzero_pd()
         "                            \n\t"
-        //"movl    %%esi,  %0  \n\t"  // debugger
+        "movq    %%rdi,  %0  \n\t"  // debugger
         
         //
         //  unroll start
         //  
         
         // rsi
+        "testq     %%rsi,   %%rsi    \n\t"  // if kl==0 start writeback to C
+        "je        .DWRITEBACK%=     \n\t"
         "                            \n\t"
         ".DLOOP%=:                   \n\t"  // for l = k,..,1 do
         "                            \n\t"
@@ -228,7 +230,8 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "decq      %%rsi             \n\t"  // --p        
         "jne       .DLOOP%=          \n\t"  // if p>= 1 go back
         "                            \n\t"
-        /*
+        
+        ///*
         // rdi 
         "testq     %%rdi,   %%rdi    \n\t"  // if kl==0 start writeback to C
         "je        .DWRITEBACK%=     \n\t"
@@ -274,7 +277,7 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "decq      %%rdi             \n\t"  // --p        
         "jne       .DLOOPLEFT%=          \n\t"  // if p>= 1 go back
         "                            \n\t"
-        */
+        //*/
 
         //
         // unroll end
@@ -321,7 +324,7 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         //  r for register and m for memory
         //  = (a variable overwriting an existing value) or + (when reading and writing)
         : // output
-          "=r" (outputtest)
+          "=m" (outputtest)
         : // input
             "m" (kp),     // 1
             "m" (kl),     // 2
