@@ -41,11 +41,11 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
     //  这一块 load 和 mul add 交替进行应该是跟流水线数量之类的有关
     int outputtest;
     const int kp = k / 1;
-    const int kl = k % 1;
+    const int kl = k % 1;  // [TODO] why in cannot be used in rsi but canbe used in 
     __asm__ volatile
         (
-        "movq      %1,      %%rsi    \n\t"  // kp (32 bit) stored in %rsi
-        "movq      %2,      %%rdi    \n\t"  // kl (32 bit) stored in %rdi
+        "movl      %1,      %%esi    \n\t"  // kp (32 bit) stored in %rsi
+        "movl      %2,      %%edi    \n\t"  // kl (32 bit) stored in %rdi
         "movq      %3,      %%rax    \n\t"  // Address of A stored in %rax
         "movq      %4,      %%rbx    \n\t"  // Address of B stored in %rbx
         "movq      %5,      %%rcx    \n\t"  // Address of C stored in %rcx
@@ -64,15 +64,14 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "vmovapd   %%ymm8, %%ymm14  \n\t"  // vc42526272 = _mm256_setzero_pd()
         "vmovapd   %%ymm8, %%ymm15  \n\t"  // vc43536373 = _mm256_setzero_pd()
         "                            \n\t"
-        "movq    %%rdi,  %0  \n\t"  // debugger
+        //"movq    %%rdi,  %0  \n\t"  // debugger
         
         //
         //  unroll start
-        //  
-        
+        //          
         // rsi
-        "testq     %%rsi,   %%rsi    \n\t"  // if kl==0 start writeback to C
-        "je        .DWRITEBACK%=     \n\t"
+        "testl     %%esi,   %%esi    \n\t"  // if kl==0 start writeback to C
+        "je        .DREDIRECT%=     \n\t"
         "                            \n\t"
         ".DLOOP%=:                   \n\t"  // for l = k,..,1 do
         "                            \n\t"
@@ -227,14 +226,17 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         */
 
         
-        "decq      %%rsi             \n\t"  // --p        
+        "decl      %%esi             \n\t"  // --p        
         "jne       .DLOOP%=          \n\t"  // if p>= 1 go back
         "                            \n\t"
         
         ///*
         // rdi 
-        "testq     %%rdi,   %%rdi    \n\t"  // if kl==0 start writeback to C
+        ".DREDIRECT%=:                   \n\t"
+        "testl     %%edi,   %%edi    \n\t"  // if kl==0 start writeback to C
         "je        .DWRITEBACK%=     \n\t"
+        
+
         "                            \n\t"
         ".DLOOPLEFT%=:                   \n\t"  // for l = k,..,1 do
         "                            \n\t"
@@ -277,7 +279,7 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
         "decq      %%rdi             \n\t"  // --p        
         "jne       .DLOOPLEFT%=          \n\t"  // if p>= 1 go back
         "                            \n\t"
-        //*/
+        
 
         //
         // unroll end
@@ -332,7 +334,7 @@ void AddDot8x4(const int k, const double *a, int lda, const double *b, int ldb, 
             "m" (b),      // 4
             "m" (c)      // 5
         : // register clobber list
-            "rax", "rbx", "rcx", "rsi", "rdi",
+            "rax", "rbx", "rcx", "esi", "edi",
             "xmm0", "xmm1", "xmm2", "xmm3",
             "xmm4", "xmm5", "xmm6", "xmm7",
             "xmm8", "xmm9", "xmm10", "xmm11",
