@@ -40,10 +40,13 @@ int main()
 
     gflops = 2.0 * m * n * k * 1.0e-09;
 
+    /*
     lda = ( LDA == -1 ? m : LDA );
     ldb = ( LDB == -1 ? k : LDB );
     ldc = ( LDC == -1 ? m : LDC );
-
+    */
+    lda = ldb =ldc = n;
+    
     /* Allocate space for the matrices */
     /* Note: I create an extra column in A to make sure that
        prefetching beyond the matrix does not cause a segfault */

@@ -1,6 +1,11 @@
-OLD  := MMult24_asm2
-#NEW  := MMult22_avx2
-NEW  := MMult26_prefetch
+#OLD  := MMult26_prefetch
+OLD	:= MMult22_avx
+#NEW  := MMult22_avx
+# 23 - 26 down [TODO]
+#NEW  := MMult24_asm
+#NEW  := MMult26_prefetch
+#NEW  := MMult27_perf
+NEW  := MMult23_reordering
 #
 # sample makefile
 #

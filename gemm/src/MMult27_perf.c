@@ -1,10 +1,4 @@
-// 4 X 4 tiles
-// SIMD
-// still has variable bad case 
-// add kernel pack
-//  First, we pack the block of A so that we march through it contiguously.
-
-
+// use perf tools to find bottle neck
 
 /* Create macros so that the matrices are stored in column-major order */
 
@@ -36,9 +30,9 @@ typedef union {
 void AddDot8x4(int k, double *a, int lda, double *b, int ldb, double *c, int ldc){
       
     int p;
-    register v4df_t vc00102030, vc01112131, vc02122232, vc03132333, vc40506070, vc41516171, vc42526272, vc43536373;
-    register v4df_t va0123, va4567;
-    register v4df_t vb0p, vb1p, vb2p, vb3p; 
+    v4df_t vc00102030, vc01112131, vc02122232, vc03132333, vc40506070, vc41516171, vc42526272, vc43536373;
+    v4df_t va0123, va4567;
+    v4df_t vb0p, vb1p, vb2p, vb3p; 
 
     
    
@@ -70,15 +64,15 @@ void AddDot8x4(int k, double *a, int lda, double *b, int ldb, double *c, int ldc
       vb3p.v = _mm256_broadcast_sd((double *) (b + 3));
 
       //vc00102030.v += va0123.v * vb0p.v;                    
-      vc00102030.v += _mm256_mul_pd(va0123.v, vb0p.v);     
-      vc01112131.v += _mm256_mul_pd(va0123.v, vb1p.v);          
-      vc02122232.v += _mm256_mul_pd(va0123.v, vb2p.v); 
-      vc03132333.v += _mm256_mul_pd(va0123.v, vb3p.v);   
+      vc00102030.v += (va0123.v * vb0p.v);     
+      vc01112131.v += (va0123.v * vb1p.v);          
+      vc02122232.v += (va0123.v * vb2p.v); 
+      vc03132333.v += (va0123.v * vb3p.v);   
       //  _mm256_mul_pd _mm256_add_pd
-      vc40506070.v += _mm256_mul_pd(va4567.v, vb0p.v);  
-      vc41516171.v += _mm256_mul_pd(va4567.v, vb1p.v);  
-      vc42526272.v += _mm256_mul_pd(va4567.v, vb2p.v);  
-      vc43536373.v += _mm256_mul_pd(va4567.v, vb3p.v);     
+      vc40506070.v += va4567.v * vb0p.v;   
+      vc41516171.v += va4567.v * vb1p.v;   
+      vc42526272.v += va4567.v * vb2p.v;   
+      vc43536373.v += va4567.v * vb3p.v;      
 
       b += 4;
 
@@ -97,8 +91,7 @@ void AddDot8x4(int k, double *a, int lda, double *b, int ldb, double *c, int ldc
     _mm256_store_pd((c + ldc * 2 + 4), _mm256_add_pd(_mm256_load_pd((c + ldc * 2 + 4)), vc42526272.v));
     _mm256_store_pd((c + ldc * 3 + 4), _mm256_add_pd(_mm256_load_pd((c + ldc * 3 + 4)), vc43536373.v));
 
-         
-
+            
 };
 
 
@@ -143,20 +136,25 @@ void PackMatrixB(int k, double *b, int ldb, double *b_to){
   }
 }
 
-void Innerkernel(int m, int n, int k, double *a, int lda, double *b, int ldb, double *c, int ldc, int first_time)
+void Innerkernel(int m, int n, int k
+, double *a, int lda
+, double *b, int ldb
+, double *c, int ldc
+, int first_time
+, double *packA
+, double *packB)
 {
   int i, j;
   // todo this part need align and malloc
-  double packedA[m*k] __attribute__ ((aligned (64)));
-  static double packedB[kc*nb] __attribute__ ((aligned (64)));
   for (j = 0; j < n; j+=4){
     if ( first_time ) {
-      PackMatrixB(k, &B(0, j), ldb, &packedB[j*k]);
+      PackMatrixB(k, &B(0, j), ldb, &packB[j*k]);
     }
     
     for (i = 0; i < m; i +=8){
-      if ( j == 0 ) PackMatrixA(k, &A(i, 0), lda, &packedA[i*k]);
-      AddDot8x4(k, &packedA[i*k], 8, &packedB[j*k], k , &C( i,j ), ldc);
+      //if ( j == 0 ) PackMatrixA(k, &A(i, 0), lda, ((packA + i*k))); // also ok
+      if ( j == 0 ) PackMatrixA(k, &A(i, 0), lda, (&(packA[i*k])));
+      AddDot8x4(k, &packA[i*k], 8, &packB[j*k], k , &C( i,j ), ldc);
     }
   }
 }
@@ -166,6 +164,12 @@ void MY_MMult( int m, int n, int k, double *a, int lda,
                                     double *c, int ldc )
 {
   int i, j, jb, ib;
+  double *packA;
+  double *packB;
+
+  const int align = 32;
+  packA = ( double * ) aligned_alloc(align, kc * mc * sizeof( double ) );
+  packB = ( double * ) aligned_alloc(align, kc * nb * sizeof( double ) );
 
   for ( j=0; j< k ; j+=kc ){        /* Loop over the columns of C */
     jb = min(k-j, kc);
@@ -173,8 +177,12 @@ void MY_MMult( int m, int n, int k, double *a, int lda,
       /* Update the C( i,j ) with the inner product of the ith row of A
 	 and the jth column of B */
       ib = min(m-i, mc);
-      Innerkernel(ib, n, jb, &A(i, j), lda, &B(j,0), ldb, &C(i, 0), ldc, i==0);
+      Innerkernel(ib, n, jb, &A(i, j), lda, &B(j,0), ldb, &C(i, 0), ldc, i==0, packA, packB);
             
     }
   }
+
+  free(packA);
+  free(packB);
+
 }
