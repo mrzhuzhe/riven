@@ -14,7 +14,7 @@
 
 #define mc 256
 #define kc 128
-#define nb 1000
+#define nb 1024
 
 typedef union {
   __m256d v;

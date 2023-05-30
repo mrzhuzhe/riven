@@ -27,7 +27,7 @@ last = size( MY_MMult, 1 );
 
 hold on
 
-axis( [ 0 MY_MMult( last,1 ) 0 max_gflops ] );
+axis( [ 0 MY_MMult( last,1 ) 0 max_gflops * 2 ] );
 
 xlabel( 'm = n = k' );
 ylabel( 'GFLOPS/sec.' );

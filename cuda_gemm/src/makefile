@@ -1,5 +1,5 @@
-OLD := MMult_cuda_2
-NEW := MMult_cublas
+OLD := MMult_cuda_5
+NEW := MMult_cuda_6
 SMS ?= 80
 
 outpath = ./outputs/
