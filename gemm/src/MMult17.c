@@ -103,7 +103,7 @@ void AddDot4x4(int k, double *a, int lda, double *b, int ldb, double *c, int ldc
 };
 
 
-void Innerkernel(int m, int n, int k, double *a, int lda, double *b, int ldb, double *c, int ldc)
+void Macrokernel(int m, int n, int k, double *a, int lda, double *b, int ldb, double *c, int ldc)
 {
   int i, j;
   for (j = 0; j < n; j+=4){
@@ -125,7 +125,7 @@ void MY_MMult( int m, int n, int k, double *a, int lda,
       /* Update the C( i,j ) with the inner product of the ith row of A
 	 and the jth column of B */
       ib = min(m-i, mc);
-      Innerkernel(ib, n, jb, &A(i, j), lda, &B(j,0), ldb, &C(i, 0), ldc);
+      Macrokernel(ib, n, jb, &A(i, j), lda, &B(j,0), ldb, &C(i, 0), ldc);
             
     }
   }
