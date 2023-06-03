@@ -11,4 +11,5 @@ void random_matrix( int m, int n, double *a, int lda )
     for ( i=0; i<m; i++ )
       A( i,j ) = 2.0 * drand48( ) - 1.0;
       //A( i,j ) = (double)j;
+      //A( i,j ) = (double)1;
 }

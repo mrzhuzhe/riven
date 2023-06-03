@@ -65,7 +65,7 @@ int main()
     /* Generate random matrices A, B, Cold */
     random_matrix( m, k, a, lda );
     random_matrix( k, n, b, ldb );
-    random_matrix( m, n, cold, ldc );
+    //random_matrix( m, n, cold, ldc );
 
     copy_matrix( m, n, cold, ldc, cref, ldc );
 

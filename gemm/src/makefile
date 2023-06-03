@@ -1,9 +1,9 @@
 #OLD := MMult17
-OLD := MMult5
+#OLD := MMult5
 #NEW := MMult17
-#OLD	:= MMult22_avx
-NEW  := MMult22_avx
-#NEW := MMult22_avx3_8x6
+OLD	:= MMult22_avx
+#NEW  := MMult_cblas
+NEW := MMult22_avx3_8x6
 #NEW  := MMult23_reordering
 #NEW  := MMult24_asm2
 #NEW  := MMult25_asm_unroll2
@@ -18,7 +18,7 @@ LINKER     := $(CC)
 #CFLAGS     := -O2 -Wall -msse3 
 #CFLAGS     := -O0 -Wall -mavx -g	#for asm debug
 CFLAGS     := -O2 -Wall -mavx
-LDFLAGS    := -lm
+LDFLAGS    := -lm -lopenblas
 
 output_path = outputs/
 
