@@ -27,6 +27,12 @@ int main()
     // Shuffle vb (b1,b0,b3,b2)
     __m256d r0 = _mm256_shuffle_pd( v0, v0, 0x5 );
     _mm256_store_pd(a0, r0);
+    std::cout << "_mm256_shuffle_pd 0101" << std::endl;
+    std::cout << a0[0] << " " << a0[1] << " " << a0[2] << " " << a0[3] << " " << std::endl;
+
+    r0 = _mm256_shuffle_pd( v0, v0, 0x6 );
+    _mm256_store_pd(a0, r0);
+    std::cout << "_mm256_shuffle_pd 0110" << std::endl;
     std::cout << a0[0] << " " << a0[1] << " " << a0[2] << " " << a0[3] << " " << std::endl;
 
     // Permute vb (b3,b2,b1,b0)

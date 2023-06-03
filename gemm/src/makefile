@@ -3,12 +3,12 @@
 #NEW := MMult17
 OLD	:= MMult22_avx
 #NEW  := MMult_cblas
-NEW := MMult22_avx3_8x6
+#NEW := MMult22_avx3_8x6
 #NEW  := MMult23_reordering
 #NEW  := MMult24_asm2
 #NEW  := MMult25_asm_unroll2
 #NEW  := MMult26_prefetch
-#NEW  := MMult27_perf
+NEW  := MMult27_perf
 #
 # sample makefile
 #
