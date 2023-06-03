@@ -30,17 +30,20 @@ int main()
     std::cout << a0[0] << " " << a0[1] << " " << a0[2] << " " << a0[3] << " " << std::endl;
 
     // Permute vb (b3,b2,b1,b0)
-    __m256d r1 = _mm256_permute2f128_pd( r0, r0, 0x1 );
+    __m256d r1 = _mm256_permute2f128_pd( v0, v0, 0x00000010 );
     _mm256_store_pd(a0, r1);
+    std::cout << "_mm256_permute2f128_pd" << std::endl;
     std::cout << a0[0] << " " << a0[1] << " " << a0[2] << " " << a0[3] << " " << std::endl;
 
     // Shuffle vb (b2,b3,b0,b1) 
-    __m256d r2 = _mm256_shuffle_pd( r1, r1, 0x5 );
-    _mm256_store_pd(a0, r2);
-    std::cout << a0[0] << " " << a0[1] << " " << a0[2] << " " << a0[3] << " " << std::endl;
+    //__m256d r2 = _mm256_shuffle_pd( r1, r1, 0x5 );
+    //_mm256_store_pd(a0, r2);
+    //std::cout << a0[0] << " " << a0[1] << " " << a0[2] << " " << a0[3] << " " << std::endl;
 
     //
-    __m256d r3 = _mm256_blend_pd( v0, v1, 0x6 );
+    //__m256d r3 = _mm256_blend_pd( v0, v1, 0x6 );
+    //__m256d r3 = _mm256_blend_pd( v0, v1, 0x7 );
+    __m256d r3 = _mm256_blend_pd( v0, v1, 0xe );
     _mm256_store_pd(a0, r3);
     std::cout << "bend" << std::endl;
     std::cout << a0[0] << " " << a0[1] << " " << a0[2] << " " << a0[3] << " " << std::endl;
