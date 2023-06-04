@@ -4,7 +4,11 @@
 // add kernel pack
 //  First, we pack the block of A so that we march through it contiguously.
 
-
+//  sudo perf record -a -g ./outputs/test_MMult.x
+//  sudo perf report --call-graph none
+//  sudo perf report --call-graph none -c test_MMult.x
+//  sudo perf report -i perf.data
+//  sudo perf timechart record -T ./outputs/test_MMult.x && sudo perf timechart –p test_MMult.x  
 
 /* Create macros so that the matrices are stored in column-major order */
 
@@ -19,6 +23,8 @@
 
 #define mc 256
 #define kc 128
+//#define mc 512
+//#define kc 256
 #define nb 1000
 
 typedef union {
