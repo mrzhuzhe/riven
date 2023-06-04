@@ -494,8 +494,8 @@ void bl_macro_kernel(
                     );
             */
            
-           //AddDot8x4(
-           bl_dgemm_int_8x4(
+           AddDot8x4(
+           //bl_dgemm_int_8x4(
             k,
             &packA[ i * k ],
             ldc,

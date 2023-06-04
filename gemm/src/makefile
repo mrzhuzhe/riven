@@ -17,7 +17,8 @@ CC         := gcc
 LINKER     := $(CC)
 #CFLAGS     := -O2 -Wall -msse3 
 #CFLAGS     := -O0 -Wall -mavx -g	#for asm debug
-CFLAGS     := -O2 -Wall -mavx
+#CFLAGS     := -O2 -Wall -mavx
+CFLAGS     := -O2 -Wall -march=core-avx2
 LDFLAGS    := -lm -lopenblas
 
 output_path = outputs/
