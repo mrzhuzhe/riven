@@ -1,4 +1,10 @@
 # Optimize Gemm
+
+## AVX BUgs
+1. avx2 is much faster than avx 
+2. 8x6 and asm is slower
+
+
 ## Bad Case Check ASM
 
 1. gcc -O2 -Wall -msse3 -c MMult7.c -S -o outputs/asm/MMult7.s
