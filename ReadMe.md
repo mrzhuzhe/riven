@@ -7,6 +7,22 @@
 1. all application is compiler with cuda Arch 80 (RTX 3090) you can change it on CMakeLists
 
 ## Applications
+### Gemm
+
+```
+// x86 gemm
+cd /gemm/
+// nowaday the best result /MMult22_avx.c it's about 60GFlops (corresponding openBLAS is about 75GFLOPS )
+// [TODO]use core-avx2 is much better than mavx
+// [TODO] 8x6_avx is only about 40GFLOPS  MMult22_avx3_8x6.c
+// [TODO] inline volatile seems not work
+
+// cuda gemm
+cd /cuda_gemm/
+//  best result is /MMult_cuda_6_1.cu 
+
+```
+
 
 ### CUDA
 ```
