@@ -3,3 +3,4 @@ __pycache__
 build
 aerosmith-double
 .vscode
+.DS_Store
