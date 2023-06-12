@@ -9,6 +9,8 @@
 ## Applications
 ### Gemm
 
+both for CPU and CUDA
+
 ```
 // x86 gemm
 cd /gemm/
