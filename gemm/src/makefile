@@ -41,7 +41,7 @@ ${output_path}%.o: %.c
 #	$(CC) $(CFLAGS) -c $< -o $@
 
 all: 
-	make clean;
+	make clean
 	make test_MMult.x
 
 test_MMult.x: $(TEST_OBJS) $(UTIL) parameters.h

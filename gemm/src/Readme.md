@@ -1,9 +1,13 @@
 # Optimize Gemm
 
+## Perf event 
+1. perf record -e cpu-clock -o xxx.data xxx
+2. perf report -i xxx.data
+3. perf model concept
+
 ## AVX BUgs
 1. avx2 is much faster than avx 
 2. 8x6 and asm is slower
-
 
 ## Bad Case Check ASM
 

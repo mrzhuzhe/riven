@@ -31,7 +31,7 @@ ${outpath}%.o: %.cu
 	$(CC) $(CFLAGS) $(GENCODE_FLAGS)  -c $< -o $@
 
 all: 
-	make clean;
+	make clean
 	make test_MMult.x
 
 test_MMult.x: $(TEST_OBJS) $(UTIL) parameters.h
