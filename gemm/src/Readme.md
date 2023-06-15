@@ -1,9 +1,19 @@
 # Optimize Gemm
 
 ## Perf event 
+
+### CMDS
+
 1. perf record -e cpu-clock -o xxx.data xxx
 2. perf report -i xxx.data
-3. perf model concept
+3. perf record -e cycles --call-graph fp -o xxx.data -i xxx
+
+### TODOS
+
+1. what is perf inject ?
+
+### References
+1. https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/monitoring_and_managing_system_status_and_performance/recording-and-analyzing-performance-profiles-with-perf_monitoring-and-managing-system-status-and-performance
 
 ## AVX BUgs
 1. avx2 is much faster than avx 
