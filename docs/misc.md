@@ -5,6 +5,12 @@
 2. what is boost 
 3. what cmake install do
 4. add nsight comput
+5. template / static template / struct template member
+6. thrust iterator
+7. memory poo
+8. cuda helper
+9. thrust complex std complex
+10. cuda last error / max thread in block
 
 ## Thought
 1. mix precision
