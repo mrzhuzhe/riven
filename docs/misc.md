@@ -7,10 +7,12 @@
 4. add nsight comput
 5. template / static template / struct template member
 6. thrust iterator
-7. memory poo
+7. memory pool not free pointer ? / why pointer can be used after cudafree
 8. cuda helper
 9. thrust complex std complex
 10. cuda last error / max thread in block
+11. stakoverflow ? cpp pointer and memory management 
+12. eigen docs
 
 ## Thought
 1. mix precision
