@@ -1,7 +1,7 @@
 OLD := MMult_cuda_2
 NEW := MMult_cuda_6_1
-#SMS ?= 60
-SMS ?= 80
+SMS ?= 60
+#SMS ?= 80
 
 outpath = ./outputs/
 #

@@ -4,14 +4,11 @@
 1. Debug speed
 2. what is boost 
 3. what cmake install do
-4. add nsight comput
-5. template / static template / struct template member
-6. thrust iterator
-7. memory pool not free pointer ? / why pointer can be used after cudafree
-8. cuda helper
-9. thrust complex std complex
-10. cuda last error / max thread in block
-11. stakoverflow ? cpp pointer and memory management 
+4. add nsight compute
+5. memory pool not free pointer ? / why pointer can be used after cudafree
+6. cuda helper
+7. cuda last error / max thread in block
+11. cpp pointer and memory management concept
 12. eigen docs
 
 ## Thought
