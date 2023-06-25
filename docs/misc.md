@@ -24,3 +24,5 @@
 10. vtune
 11. mkl cbwr 
 12. intel trust zone
+13. float point error
+14. measurement theory / toppology material
