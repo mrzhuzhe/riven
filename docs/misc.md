@@ -10,6 +10,7 @@
 7. cuda last error / max thread in block
 11. cpp pointer and memory management concept
 12. eigen docs
+13. google benchmark
 
 ## Thought
 1. mix precision
