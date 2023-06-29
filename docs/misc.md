@@ -20,7 +20,7 @@
 5. ARM neon
 6. avx_e1 / avx_mic / avx_mic_31 differen between avx and core_avx2
 7. cpu a55 and a72
-8. LBM 
+8. theoric mechanic statistical mechanic quantum mechanic electric mechanic LBM 
 9. wasm
 10. vtune
 11. mkl cbwr 
