@@ -8,15 +8,18 @@
 5. memory pool not free pointer ? / why pointer can be used after cudafree
 6. cuda helper
 7. cuda last error / max thread in block
-11. cpp pointer and memory management concept
-12. eigen docs
-13. google benchmark
+8. cpp pointer and memory management concept
+9. eigen docs
+10. google benchmark glog gtest
+11. boost
+12. cgal
+13. dllopen extern C
 
 ## Thought
 1. mix precision
 2. tensor_core
 3. perf other events
-4. LLVM MLIR TVM 
+4. LLVM IR pass
 5. ARM neon
 6. avx_e1 / avx_mic / avx_mic_31 differen between avx and core_avx2
 7. cpu a55 and a72
@@ -27,3 +30,4 @@
 12. intel trust zone
 13. float point error
 14. measurement theory / toppology material
+15. fftshift r2c guassblur
