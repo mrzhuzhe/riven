@@ -184,6 +184,14 @@ int main(int argc, char **argv) {
     //cout << decltype(ci) << endl;
     //printf(decltype(ci));
 
+    std::cout << "----- new test ------" << std::endl;
+    int n_a = 123;
+    double n_b = 0.456;
+    void *v_a;
+    v_a = &n_a;
+    printf(" %d \n", *(int*)v_a);
+    v_a = &n_b;
+    printf(" %f \n", *(double*)v_a);
     
     return 0;
 }
