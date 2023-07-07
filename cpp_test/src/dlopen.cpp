@@ -3,6 +3,8 @@
 #include <string.h>
 #include <dlfcn.h>
 
+//void print_name(const char* type);
+
 int main(int argc, char** argv){
     void *handle;
     void (*func_print_name)(const char *);
