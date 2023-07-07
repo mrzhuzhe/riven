@@ -42,3 +42,7 @@ set_property(TARGET templateTest.o PROPERTY CXX_STANDARD 17)
 
 
 add_executable(vfn_test.o vfn_test.cpp)
+
+add_library(cat SHARED libs/cat.cpp)
+add_library(dog SHARED libs/dog.cpp)
+add_executable(dlopen.o dlopen.cpp)
