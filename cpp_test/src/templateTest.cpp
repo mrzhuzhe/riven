@@ -192,7 +192,7 @@ int main(int argc, char **argv) {
 
     flip2(g, i, 42);    // error: can’t initialize int&& from an lvalue
 
-    printf("%c\n", cpp_type_name<int>);
+    printf("%d\n", cpp_type_name<int>);
 
 
     return 0;

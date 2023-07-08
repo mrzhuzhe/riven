@@ -15,9 +15,11 @@ int main(int argc, char** argv){
     }
 
     if (strcmp(argv[1], "dog") == 0){
-        handle = dlopen("./build/libdog.dylib", RTLD_LAZY);
+        //handle = dlopen("./build/libdog.dylib", RTLD_LAZY);
+        handle = dlopen("./build/libdog.so", RTLD_LAZY);
     } else if (strcmp(argv[1], "cat") == 0){
-        handle = dlopen("./build/libcat.dylib", RTLD_LAZY);
+        //handle = dlopen("./build/libcat.dylib", RTLD_LAZY);
+        handle = dlopen("./build/libcat.so", RTLD_LAZY);
     } else {
         fprintf(stderr, "Error: unknown animal type: %s\n", argv[1]);
         return EXIT_FAILURE;
