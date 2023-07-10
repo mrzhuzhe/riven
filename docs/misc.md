@@ -3,17 +3,11 @@
 ## Labor 
 1. Debug speed
 2. what is boost 
-3. what cmake install do
-4. add nsight compute
-5. memory pool not free pointer ? / why pointer can be used after cudafree
-6. cuda helper
-7. cuda last error / max thread in block
-8. cpp pointer and memory management concept
-9. eigen docs
-10. google benchmark glog gtest
-11. boost
-12. cgal
-13. dllopen extern C
+3. add nsight compute
+4. cuda helper
+5. eigen docs
+6. google benchmark glog gtest
+7. cgal normalize
 
 ## Thought
 1. mix precision
