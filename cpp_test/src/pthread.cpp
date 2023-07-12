@@ -1,12 +1,16 @@
+//  https://www.cs.cmu.edu/afs/cs/academic/class/15492-f07/www/pthreads.html
 #include <iostream>
 #include <pthread.h>
+#include<unistd.h>   
 
 void* func1(void* args){
     printf("this is async 0 \n");
+    sleep(30);
 }
 
 void* func2(void* args){
     printf("this is async 1 \n");
+    sleep(30);
 }
 
 int main(){
