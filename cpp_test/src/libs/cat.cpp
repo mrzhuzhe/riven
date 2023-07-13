@@ -1,9 +1,6 @@
 #include <iostream>
+#include "animal.hpp"   // include is in the end of file
 
-
-extern "C" {
-    void print_name(const char*);
-}
 
 void print_name(const char* type){
     printf("cat name is %s \n", type);
