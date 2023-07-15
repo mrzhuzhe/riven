@@ -2,10 +2,7 @@
 
 ## Labor 
 1. Debug speed
-2. what is boost 
 3. add nsight compute
-4. cuda helper
-5. eigen docs
 6. google benchmark glog gtest
 7. cgal normalize
 9. LLM Megatron Oneflow lora
