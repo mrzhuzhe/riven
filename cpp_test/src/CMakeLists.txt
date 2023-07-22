@@ -50,3 +50,7 @@ add_executable(dlopen.o dlopen.cpp)
 
 add_executable(pthread.o pthread.cpp)
 set_property(TARGET pthread.o PROPERTY CXX_STANDARD 14)
+
+
+
+add_subdirectory(practice)

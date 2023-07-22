@@ -2,8 +2,9 @@
 
 ## Labor 
 1. Debug speed
+2. https://norasandler.com/2017/11/29/Write-a-Compiler.html
+https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 3. add nsight compute
-6. google benchmark glog gtest
 7. cgal normalize
 9. LLM Megatron Oneflow lora
 10. stable diffusion
