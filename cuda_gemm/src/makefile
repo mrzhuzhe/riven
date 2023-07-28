@@ -1,6 +1,7 @@
 OLD := MMult_cuda_2
 NEW := MMult_cuda_6_1
-SMS ?= 80
+SMS ?= 60
+#SMS ?= 80
 
 outpath = ./outputs/
 #
@@ -31,7 +32,7 @@ ${outpath}%.o: %.cu
 	$(CC) $(CFLAGS) $(GENCODE_FLAGS)  -c $< -o $@
 
 all: 
-	make clean;
+	make clean
 	make test_MMult.x
 
 test_MMult.x: $(TEST_OBJS) $(UTIL) parameters.h

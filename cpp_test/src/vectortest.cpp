@@ -2,6 +2,8 @@
 #include <iostream>
 #include "sales_data.h"
 #include <vector>
+#include <map>
+
 using std::vector;
 using namespace std;
 
@@ -22,6 +24,8 @@ vector<int> v2;
 
 string word;
 vector<string> text;
+
+vector<int> test_vec01;
 
 
 string::size_type find_char(const string &s, char c, string::size_type &occurs)
@@ -81,7 +85,23 @@ int main(int argc, char **argv) {
 
     cout << is_sentence("asdasda.s") << endl;
     
-    cout << argv[0] << argv[1] << argv[2] << endl;
+    //cout << argv[0] << argv[1] << argv[2] << endl;
+
+    std::cout << "-----" << std::endl;
+    int _emp_a = 123;
+    //test_vec01.emplace_back(_emp_a);
+    test_vec01.push_back(_emp_a);
+    std::cout << _emp_a << std::endl;
+    _emp_a = 456;
+    std::cout << test_vec01[0] << std::endl;
+    
+    std::map<std::string, int> map01 = {{"zzz", 11}, {"ggg", 22}};
+    printf("zzz: %d \n", map01["zzz"]);
+    map01["wbbbb"] = 333;
+    
+    //  https://en.cppreference.com/w/cpp/container/map
+    for (const auto& [key, value] : map01)
+        std::cout << '[' << key << "] = " << value << "; ";
 
     return 0;
 }
