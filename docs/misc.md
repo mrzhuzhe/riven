@@ -6,7 +6,6 @@
 https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 3. add nsight compute
 4. cuda kernel input cannot be a struct , and what about output
-5. error in cufft and multiply and accumulate
 6. cuda error message 
 7. cgal normalize
 9. LLM Megatron Oneflow lora
