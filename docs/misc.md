@@ -6,7 +6,6 @@
 https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 3. add nsight compute
 4. cuda kernel input cannot be a struct , and what about output
-6. cuda error message 
 7. cgal normalize
 9. LLM Megatron Oneflow lora
 10. stable diffusion
@@ -15,7 +14,7 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 13. ncnn / oneflow / taichi
 14. cuda tensor core
 15. special relative theory
-16. pthread boost multi thread
+16. boost multi thread
 
 ## Thought
 1. mix precision
