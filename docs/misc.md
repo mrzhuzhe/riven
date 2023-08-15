@@ -1,7 +1,7 @@
 # Misc
 
 ## Labor 
-1. Debug speed
+1. eucliend distance map
 2. https://norasandler.com/2017/11/29/Write-a-Compiler.html
 https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 3. add nsight compute
@@ -17,6 +17,7 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 14. cuda tensor core
 15. special relative theory
 16. boost multi thread
+
 
 ## Thought
 1. mix precision
