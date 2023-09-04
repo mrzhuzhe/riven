@@ -1,6 +1,7 @@
 # Misc
 
 ## Labor 
+1. fast sweep method https://github.com/rgl-epfl/fastsweep
 2. https://norasandler.com/2017/11/29/Write-a-Compiler.html
 https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 3. add nsight compute
