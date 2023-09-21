@@ -7,8 +7,9 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 3. add nsight compute
 4. maxwell equation
 5. blender tutorial
-4. cuda kernel input cannot be a struct , and what about output
+6. cuda kernel input cannot be a struct , and what about output
 7. cgal normalize
+8. extern cannot use template, maybe use attribute_visible 
 9. LLM Megatron Oneflow lora
 10. stable diffusion
 11. physics meaning of fft
@@ -34,3 +35,5 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 12. intel trust zone
 13. float point error
 14. measurement theory / toppology material
+15. memory reused save a lot of time
+16. double to float will lead to a missmatch
