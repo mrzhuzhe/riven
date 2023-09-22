@@ -33,7 +33,7 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 10. vtune
 11. mkl cbwr 
 12. intel trust zone
-13. float point error
+13. float point error https://en.wikipedia.org/wiki/IEEE_754
 14. measurement theory / toppology material
 15. memory reused save a lot of time
 16. double to float will lead to a missmatch , .so pass params
