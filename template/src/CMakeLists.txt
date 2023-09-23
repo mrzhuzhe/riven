@@ -12,8 +12,9 @@ link_directories(${opencv4_libary_path})
 
 
 add_library(libtest SHARED libtest.cpp)
-link_libraries(opencv_core opencv_imgproc opencv_highgui)
+#link_libraries(opencv_core opencv_imgproc opencv_highgui)
 
 add_executable(${target_name} main.cpp)
 
 target_link_libraries(${target_name} libtest)
+target_link_libraries(${target_name} opencv_core opencv_imgproc opencv_highgui)
