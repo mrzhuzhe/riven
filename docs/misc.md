@@ -20,6 +20,7 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 16. boost multi thread
 17. cpp memory align cause params address interrupt
 18. gdb ldd bt
+19. gpu io bottoneck, param by address faster than params by value?
 
 
 ## Thought
