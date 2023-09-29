@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dlfcn.h>
+#include "libs/animal.hpp"
 
 //void print_name(const char* type);
 

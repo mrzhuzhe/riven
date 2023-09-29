@@ -47,10 +47,12 @@ add_library(cat SHARED libs/cat.cpp)
 add_library(dog SHARED libs/dog.cpp)
 add_executable(dlopen.o dlopen.cpp)
 
+target_link_libraries(dlopen.o dl)
+
 
 add_executable(pthread.o pthread.cpp)
 set_property(TARGET pthread.o PROPERTY CXX_STANDARD 14)
-
+target_link_libraries(pthread.o pthread)
 
 
 add_subdirectory(practice)
