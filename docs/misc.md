@@ -17,7 +17,6 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 14. cuda tensor core
 15. special relative theory
 16. boost multi thread
-17. cpp memory align cause params address interrupt
 18. gdb ldd bt
 19. gpu io bottoneck, param by address faster than params by value?
 
@@ -38,4 +37,4 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 13. float point error https://en.wikipedia.org/wiki/IEEE_754
 14. measurement theory / toppology material
 15. memory reused save a lot of time
-16. double to float will lead to a missmatch , .so pass params
+16. .so pass params cpp memory align cause params address interrupt
