@@ -36,5 +36,5 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 12. intel trust zone
 13. float point error https://en.wikipedia.org/wiki/IEEE_754
 14. measurement theory / toppology material
-15. memory reused save a lot of time
+15. memory reused save a lot of time https://en.cppreference.com/w/cpp/memory/shared_ptr
 16. .so pass params cpp memory align cause params address interrupt
