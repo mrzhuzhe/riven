@@ -9,7 +9,7 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 5. blender tutorial
 6. cuda kernel input cannot be a struct , and what about output
 7. cgal normalize
-8. opeator rewrite and lazy computing
+8. opeator rewrite and lazy computing / cpp template guide ? 
 9. LLM Megatron Oneflow lora
 10. stable diffusion
 11. physics meaning of fft
