@@ -6,7 +6,7 @@
 https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 3. add nsight compute
 4. maxwell equation
-5. blender tutorial
+5. blender uv paint / animate
 6. cuda kernel input cannot be a struct , and what about output
 7. cgal normalize
 8. opeator rewrite and lazy computing / cpp template guide ? 
@@ -20,7 +20,7 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 16. boost multi thread
 18. gdb ldd bt
 19. gpu io bottoneck, param by address faster than params by value?
-20. cuda rpc
+20. cuda rpc / devicetodevice copy and free
 
 
 ## Thought
