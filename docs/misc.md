@@ -9,7 +9,7 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 5. blender uv paint / animate
 6. cuda kernel input cannot be a struct , and what about output
 7. cgal normalize
-8. opeator rewrite and lazy computing / cpp template guide ? 
+8. lazy evaluate / cpp template guide ? https://github.com/matazure/mtensor
 9. LLM Megatron Oneflow lora
 10. stable diffusion
 11. physics meaning of fft
@@ -19,9 +19,10 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 15. special relative theory
 16. boost multi thread
 18. gdb ldd bt
-19. gpu io bottoneck, param by address faster than params by value?
-20. cuda rpc / devicetodevice copy and free
-
+19. param by address faster than params by value?
+20. cuda rpc 
+21. sharedptr reset cause memory corruption
+22. use log to address memory leak
 
 ## Thought
 1. mix precision
