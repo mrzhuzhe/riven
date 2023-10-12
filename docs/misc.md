@@ -19,7 +19,6 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 15. special relative theory
 16. boost multi thread
 18. gdb ldd bt
-19. param by address faster than params by value?
 20. cuda rpc 
 21. sharedptr reset cause memory corruption
 22. use log to address memory leak
