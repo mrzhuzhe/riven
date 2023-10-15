@@ -16,16 +16,12 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 12. opencv gpu implement 
 13. ncnn / oneflow / taichi
 14. cuda tensor core
-15. special relative theory
-16. boost multi thread
-18. gdb ldd bt
 20. cuda rpc 
 21. sharedptr reset cause memory corruption
 22. use log to address memory leak
 
 ## Thought
 1. mix precision
-2. perf other events
 3. shared memory mapping read
 4. EURO LLVM
 5. ARM neon
