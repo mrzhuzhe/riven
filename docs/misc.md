@@ -4,7 +4,6 @@
 1. fast sweep method https://github.com/rgl-epfl/fastsweep
 2. https://norasandler.com/2017/11/29/Write-a-Compiler.html
 https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
-3. add nsight compute
 4. maxwell equation
 5. blender uv paint / animate
 6. cuda kernel input cannot be a struct , and what about output
@@ -16,7 +15,6 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 12. opencv gpu implement 
 13. ncnn / oneflow / taichi
 14. cuda tensor core
-20. cuda rpc 
 21. sharedptr reset cause memory corruption
 22. use log to address memory leak
 
@@ -34,5 +32,4 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 12. intel trust zone
 13. float point error https://en.wikipedia.org/wiki/IEEE_754
 14. measurement theory / toppology material
-15. memory reused save a lot of time https://en.cppreference.com/w/cpp/memory/shared_ptr
 16. .so pass params cpp memory align cause params address interrupt
