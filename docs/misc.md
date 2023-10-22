@@ -4,6 +4,7 @@
 1. fast sweep method https://github.com/rgl-epfl/fastsweep
 2. https://norasandler.com/2017/11/29/Write-a-Compiler.html
 https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
+3. what is smybol table
 4. maxwell equation
 5. blender uv paint / animate
 6. cuda kernel input cannot be a struct , and what about output
@@ -15,6 +16,8 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 12. opencv gpu implement 
 13. ncnn / oneflow / taichi
 14. cuda tensor core
+15. gpg key
+16. catmuli-clark
 21. sharedptr reset cause memory corruption
 22. use log to address memory leak
 
