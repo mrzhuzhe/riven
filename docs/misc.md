@@ -16,7 +16,7 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 12. opencv gpu implement 
 13. ncnn / oneflow / taichi
 14. cuda tensor core
-15. gpg key
+15. sagemath circultlab
 16. catmuli-clark
 21. sharedptr reset cause memory corruption
 22. use log to address memory leak
