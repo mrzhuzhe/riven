@@ -36,3 +36,4 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 13. float point error https://en.wikipedia.org/wiki/IEEE_754
 14. measurement theory / toppology material
 16. .so pass params cpp memory align cause params address interrupt
+17. thread safty
