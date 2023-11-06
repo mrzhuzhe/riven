@@ -9,3 +9,4 @@
 ### Notes 
 1. perf can show call graph without -g
 2. but packA packB is not include in graph
+3. dwarf seem better than fp
