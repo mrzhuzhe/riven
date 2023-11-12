@@ -15,7 +15,7 @@ class A {
 int main(){
     A a(2);
     int b;
-    b = a+1;
+    b = a
     std::cout << " b " << b << std::endl;
     return 0;
 }
