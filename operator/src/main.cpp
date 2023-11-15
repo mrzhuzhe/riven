@@ -34,5 +34,12 @@ int main(){
     A b;
     b = a+1+a+2+a+3;
     std::cout << " b " << b.getVal() << std::endl;
+
+    std::cout << sizeof(unsigned int) << " " << sizeof(float) << std::endl;
+
+    char ch1 = 'x';
+    char chrs[] = "asdasdas";
+    std::cout << ch1 << " "<< chrs << " " << sizeof(chrs) << " " << sizeof(ch1) << std::endl;
+    printf("%c %s \n", ch1, chrs);
     return 0;
 }
