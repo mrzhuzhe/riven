@@ -2,6 +2,8 @@
 1. perf vtune and so on
 2. thread santinzer / how to debug multi process
 3. lsf sge
+4. tiger complier 
+5. cpu0
 
 ## done
 1. static member / struct class / protected / local thread / virtual func
