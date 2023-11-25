@@ -24,6 +24,25 @@ class CB : public CA {
 
 int CB::n = 321;
 
+class CC {
+    private:
+        CC(){
+            std::cout << "CC create" << std::endl;
+        }
+        static CC* impl;
+    public: 
+        int nx;
+        CC(const CC& other) = delete;
+        static CC* getInstance(){
+            if (impl == nullptr) {
+                impl = new CC();
+            }
+            return impl;
+        };
+};
+
+CC* CC::getInstance() = nullptr;
+
 void inc_a(std::string name){
     a++;
     std::lock_guard<std::mutex> guard(mutex_lock);
@@ -55,5 +74,7 @@ int main(){
     cb.n = 333;
     cb.getN();
 
+    CC* cc = CC::getInstance();
+    //std::cout << "singleton data " <<  cc->nx << std::endl;
     return 0;
 }
