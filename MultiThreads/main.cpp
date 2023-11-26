@@ -79,17 +79,42 @@ void* thread_fn(void *arg){
 
 void* thread_fn2(void *arg){
     int status;
-    thread_info *tinfo  = (thread_info *)arg;
-    
-    status = pthread_setspecific(tpskey, tinfo);
+    thread_info *tinfo = (thread_info *)arg;
 
+    thread_info *tinfo3;
+    tinfo3 = (thread_info*)malloc(sizeof(thread_info));
+    tinfo3->thread_num = tinfo->thread_num;
+    tinfo3->arg_string = 100 + tinfo->thread_num;
+    status = pthread_setspecific(tpskey, tinfo3);
+    
     //pthread_getthreadid_np() is undefined    
     std::cout << "thread fn arg" << " " << " "<< tinfo->arg_string << std::endl;
     
+    std::this_thread::sleep_for(std::chrono::milliseconds((int)random()%3000));
+
     thread_info *tinfo2= (thread_info*)pthread_getspecific(tpskey);
-    std::cout << "thread fn " << " " << " "<< tinfo2->arg_string << " " << (int)random()%3000 << std::endl;
+    std::cout << "thread fn " << " " << " "<< tinfo2->arg_string << " " << (int)random()%3000  << " "<< tinfo->arg_string << std::endl;
+
+
+    return NULL;
+}
+
+void* thread_fn3(void *arg){
+    int status;
+    thread_info *tinfo = (thread_info *)arg;
+    
+    int* a = (int*)malloc(sizeof(int)*10);
+    a[0] = (int)random()%3000;    
+    std::cout << tinfo->thread_num << " a1 " << a[0] << std::endl;
 
     std::this_thread::sleep_for(std::chrono::milliseconds((int)random()%3000));
+    
+    std::cout << tinfo->thread_num << " a2 " << a[0] << std::endl;
+
+    // a[0] = 456;
+
+    // std::cout << " a " << a[0] << " " << (int)random()%3000  << std::endl;
+
 
     return NULL;
 }
@@ -159,22 +184,27 @@ int main(){
     
     std::cout << "********** pthread_key_create ***************" << std::endl;
 
-    thread_info* singletinfo;
+    
     status = pthread_key_create(&tpskey, dataDestructor);
 
     status = pthread_attr_init(&attr);
+    
+    //status = pthread_setspecific(tpskey, &tinfo[0]);  // no use for main thread
+    std::cout << tinfo[0].arg_string << " set all" << std::endl;
 
     for (size_t tnum = 0; tnum < num_threads; tnum++){       
         // thread_info singletinfo2;
         // singletinfo2.thread_num = tnum;
         // singletinfo2.arg_string = 12 + tnum;
         // status = pthread_create(&tinfo[tnum].thread_id, &attr, &thread_fn, &singletinfo2);
-
+        
+        thread_info* singletinfo;
         singletinfo = (thread_info*)malloc(sizeof(thread_info));
         singletinfo->thread_num = tnum;
         singletinfo->arg_string = 100 + tnum;
         status = pthread_create(&tinfo[tnum].thread_id, &attr, &thread_fn2, singletinfo);
         // free(singletinfo);
+
         if (status) {
             std::cout << "create status " << status << std::endl;
         }
@@ -192,6 +222,36 @@ int main(){
     
 
     pthread_key_delete(tpskey);
+
+
+    std::cout << "********** localstorage ***************" << std::endl;
+
+    status = pthread_attr_init(&attr);
+    
+    for (size_t tnum = 0; tnum < num_threads; tnum++){           
+        
+        thread_info* singletinfo;
+        singletinfo = (thread_info*)malloc(sizeof(thread_info));
+        singletinfo->thread_num = tnum;
+        singletinfo->arg_string = 100 + tnum;
+        status = pthread_create(&tinfo[tnum].thread_id, &attr, &thread_fn3, singletinfo);
+        // free(singletinfo);
+
+        if (status) {
+            std::cout << "create status " << status << std::endl;
+        }
+    }
+
+    status = pthread_attr_destroy(&attr);
+
+    for (size_t tnum = 0; tnum < num_threads; tnum++){
+        status = pthread_join(tinfo[tnum].thread_id, &res);
+        if (status) {
+            std::cout << "join " << tinfo[tnum].thread_id << " "  << status << std::endl;
+        }
+        //std::cout << "joined" << ((thread_info *)res)->thread_num << std::endl;
+    }
+    
 
     return 0;
 }
