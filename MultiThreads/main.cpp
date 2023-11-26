@@ -70,7 +70,7 @@ void* thread_fn(void *arg){
     int status;
     thread_info *tinfo  = (thread_info *)arg;
     //pthread_getthreadid_np() is undefined    
-    std::this_thread::sleep_for(std::chrono::milliseconds((int)random()%3000));
+    std::this_thread::sleep_for(std::chrono::milliseconds((int)random()%1000));
     std::cout << "thread fn arg" << " " << " "<< tinfo->arg_string << std::endl;
 
     return tinfo;
@@ -81,19 +81,19 @@ void* thread_fn2(void *arg){
     int status;
     thread_info *tinfo = (thread_info *)arg;
 
-    thread_info *tinfo3;
-    tinfo3 = (thread_info*)malloc(sizeof(thread_info));
-    tinfo3->thread_num = tinfo->thread_num;
-    tinfo3->arg_string = 100 + tinfo->thread_num;
-    status = pthread_setspecific(tpskey, tinfo3);
+    // thread_info *tinfo3;
+    // tinfo3 = (thread_info*)malloc(sizeof(thread_info));
+    // tinfo3->thread_num = tinfo->thread_num;
+    // tinfo3->arg_string = 100 + tinfo->thread_num;
+    status = pthread_setspecific(tpskey, tinfo);
     
     //pthread_getthreadid_np() is undefined    
     std::cout << "thread fn arg" << " " << " "<< tinfo->arg_string << std::endl;
     
-    std::this_thread::sleep_for(std::chrono::milliseconds((int)random()%3000));
+    std::this_thread::sleep_for(std::chrono::milliseconds((int)random()%1000));
 
     thread_info *tinfo2= (thread_info*)pthread_getspecific(tpskey);
-    std::cout << "thread fn " << " " << " "<< tinfo2->arg_string << " " << (int)random()%3000  << " "<< tinfo->arg_string << std::endl;
+    std::cout << "thread fn " << " " << " "<< tinfo2->arg_string << " " << (int)random()%1000  << " "<< tinfo->arg_string << std::endl;
 
 
     return NULL;
@@ -107,7 +107,7 @@ void* thread_fn3(void *arg){
     a[0] = (int)random()%3000;    
     std::cout << tinfo->thread_num << " a1 " << a[0] << std::endl;
 
-    std::this_thread::sleep_for(std::chrono::milliseconds((int)random()%3000));
+    std::this_thread::sleep_for(std::chrono::milliseconds((int)random()%1000));
     
     std::cout << tinfo->thread_num << " a2 " << a[0] << std::endl;
 
@@ -156,7 +156,7 @@ int main(){
 
     int status;
     void* res;
-    size_t num_threads = 20;
+    size_t num_threads = 2;
     pthread_attr_t attr;
     thread_info tinfo[num_threads];
 
