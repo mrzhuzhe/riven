@@ -4,6 +4,9 @@
 #include <string>
 #include <pthread.h>
 #include <cstring>
+//  https://stackoverflow.com/questions/4184468/sleep-for-milliseconds
+#include <chrono>
+#include <thread>
 
 //thread_local int a = 1;
 //static int a = 1;
@@ -69,11 +72,13 @@ void* thread_fn(void *arg){
     
     status = pthread_setspecific(tpskey, tinfo);
 
-    //  pthread_getthreadid_np() is undefined    
-    //std::cout << "thread fn " << " " << " "<< tinfo->arg_string << std::endl;
+    //pthread_getthreadid_np() is undefined    
+    std::cout << "thread fn " << " " << " "<< tinfo->arg_string << std::endl;
     
     thread_info *tinfo2= (thread_info*)pthread_getspecific(tpskey);
-    std::cout << "thread fn " << " " << " "<< tinfo2->arg_string << std::endl;
+    std::cout << "thread fn " << " " << " "<< tinfo2->arg_string << " " << (int)random()%3000 << std::endl;
+
+    std::this_thread::sleep_for(std::chrono::milliseconds((int)random()%3000));
 
     return NULL;
 }
@@ -81,7 +86,7 @@ void* thread_fn(void *arg){
 
 
 void dataDestructor(void *data) {
-    std::cout << "destructor " << std::endl;
+    std::cout << "destructor " << ((thread_info*)data)->thread_num << std::endl;
     pthread_setspecific(tpskey, NULL);
     free(data);
 }
@@ -116,7 +121,7 @@ int main(){
 
     int status;
     void* res;
-    size_t num_threads = 2;
+    size_t num_threads = 20;
     pthread_attr_t attr;
     thread_info tinfo[num_threads];
     thread_info* singletinfo;
@@ -137,7 +142,7 @@ int main(){
 
         singletinfo = (thread_info*)malloc(sizeof(thread_info));
         singletinfo->thread_num = tnum;
-        singletinfo->arg_string = 12 + tnum;
+        singletinfo->arg_string = 100 + tnum;
         status = pthread_create(&tinfo[tnum].thread_id, &attr, &thread_fn, singletinfo);
         if (status) {
             std::cout << "create status " << status << std::endl;
