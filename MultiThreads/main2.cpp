@@ -36,6 +36,14 @@ void *theThread(void *parm)
    rc = pthread_setspecific(threadSpecificKey, gData);
    checkResults("pthread_setspecific()\n", rc);
    foo();
+
+   threadSpecific_data_t *gData2 = (threadSpecific_data_t *)pthread_getspecific(threadSpecificKey);
+   gData2->threadSpecific1 = 9999;
+   gData2->threadSpecific2 = 9999;
+   printf("Thread %.8x %.8x: 999(), threadSpecific data=%d %d\n",
+          pthread_getthreadid_np(), gData2->threadSpecific1, gData2->threadSpecific2);
+
+
    return NULL;
 }
  
@@ -50,6 +58,7 @@ void bar() {
    threadSpecific_data_t *gData = (threadSpecific_data_t *)pthread_getspecific(threadSpecificKey);
    printf("Thread %.8x %.8x: bar(), threadSpecific data=%d %d\n",
           pthread_getthreadid_np(), gData->threadSpecific1, gData->threadSpecific2);
+   gData->threadSpecific1 = 9999;
    return;
 }
  
@@ -86,7 +95,9 @@ int main(int argc, char **argv)
   rc = pthread_join(thread[i], NULL);
      checkResults("pthread_join()\n", rc);
   }
- 
+   
+  printf("  %d  \n", gData->threadSpecific2);
+
   pthread_key_delete(threadSpecificKey);
   printf("Main completed\n");
   return 0;

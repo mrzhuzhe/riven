@@ -72,14 +72,15 @@ void* thread_fn(void *arg){
     //pthread_getthreadid_np() is undefined    
     std::this_thread::sleep_for(std::chrono::milliseconds((int)random()%1000));
     std::cout << "thread fn arg" << " " << " "<< tinfo->arg_string << std::endl;
-
+    tinfo->arg_string = 1231231;
     return tinfo;
 }
 
 
 void* thread_fn2(void *arg){
     int status;
-    thread_info *tinfo = (thread_info *)arg;
+    thread_info *tinfo; 
+    tinfo = (thread_info *)arg;
 
     // thread_info *tinfo3;
     // tinfo3 = (thread_info*)malloc(sizeof(thread_info));
@@ -90,11 +91,12 @@ void* thread_fn2(void *arg){
     //pthread_getthreadid_np() is undefined    
     std::cout << "thread fn arg" << " " << " "<< tinfo->arg_string << std::endl;
     
-    std::this_thread::sleep_for(std::chrono::milliseconds((int)random()%1000));
+    //std::this_thread::sleep_for(std::chrono::milliseconds((int)random()%1000));
 
     thread_info *tinfo2= (thread_info*)pthread_getspecific(tpskey);
-    std::cout << "thread fn " << " " << " "<< tinfo2->arg_string << " " << (int)random()%1000  << " "<< tinfo->arg_string << std::endl;
+    std::cout << "thread fn " << " " << " "<< tinfo2->arg_string << " " << " "<< tinfo->arg_string << std::endl;
 
+    tinfo2->arg_string = 456456;
 
     return NULL;
 }
@@ -123,7 +125,7 @@ void* thread_fn3(void *arg){
 void dataDestructor(void *data) {
     std::cout << "destructor " << ((thread_info*)data)->thread_num << std::endl;
     pthread_setspecific(tpskey, NULL);
-    free(data);
+    //free(data);
 }
 
 int main(){
@@ -146,6 +148,8 @@ int main(){
 
     td_1.join();
     td_2.join();
+    
+    std::cout << "main thread a final " << a << std::endl;
 
     CB cb;
     cb.n = 333;
@@ -191,18 +195,18 @@ int main(){
     
     //status = pthread_setspecific(tpskey, &tinfo[0]);  // no use for main thread
     std::cout << tinfo[0].arg_string << " set all" << std::endl;
-
+    thread_info* singletinfo;
     for (size_t tnum = 0; tnum < num_threads; tnum++){       
         // thread_info singletinfo2;
         // singletinfo2.thread_num = tnum;
         // singletinfo2.arg_string = 12 + tnum;
         // status = pthread_create(&tinfo[tnum].thread_id, &attr, &thread_fn, &singletinfo2);
         
-        thread_info* singletinfo;
+
         singletinfo = (thread_info*)malloc(sizeof(thread_info));
         singletinfo->thread_num = tnum;
         singletinfo->arg_string = 100 + tnum;
-        status = pthread_create(&tinfo[tnum].thread_id, &attr, &thread_fn2, singletinfo);
+        status = pthread_create(&tinfo[tnum].thread_id, &attr, thread_fn2, singletinfo);
         // free(singletinfo);
 
         if (status) {
@@ -218,7 +222,9 @@ int main(){
             std::cout << "join " << tinfo[tnum].thread_id << " "  << status << std::endl;
         }
         //std::cout << "joined" << ((thread_info *)res)->thread_num << std::endl;
+        //std::cout << "joined " << singletinfo->arg_string << std::endl;
     }
+    std::cout << "joined " << singletinfo->arg_string << std::endl;
     
 
     pthread_key_delete(tpskey);
@@ -228,9 +234,10 @@ int main(){
 
     status = pthread_attr_init(&attr);
     
+    thread_info* singletinfo;
+
     for (size_t tnum = 0; tnum < num_threads; tnum++){           
-        
-        thread_info* singletinfo;
+                
         singletinfo = (thread_info*)malloc(sizeof(thread_info));
         singletinfo->thread_num = tnum;
         singletinfo->arg_string = 100 + tnum;
