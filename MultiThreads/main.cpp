@@ -12,8 +12,6 @@
 //static int a = 1;
 __thread int a = 1;
 std::mutex mutex_lock;
-pthread_key_t thread_key;
-
 class CA {
     public:
         int n = 123;
@@ -68,6 +66,7 @@ struct thread_info{
 };
 
 pthread_key_t tpskey;
+pthread_key_t thread_inner_new;
 
 void* thread_fn(void *arg){
     int status;
@@ -99,6 +98,10 @@ void* thread_fn2(void *arg){
     thread_info *tinfo2= (thread_info*)pthread_getspecific(tpskey);
     std::cout << "thread fn " << " " << " "<< tinfo2->arg_string << " " << " "<< tinfo->arg_string << std::endl;
 
+    thread_info *tinfo99 = new thread_info;
+    tinfo99->thread_num = tinfo->thread_num;
+    tinfo99->arg_string = 99000 + tinfo->thread_num;
+    status = pthread_setspecific(thread_inner_new, tinfo99);
     //tinfo2->arg_string = 456456;
 
     return NULL;
@@ -129,6 +132,17 @@ void dataDestructor(void *data) {
     std::cout << "destructor " << ((thread_info*)data)->arg_string << std::endl;
     pthread_setspecific(tpskey, NULL);
     free(data);
+}
+
+thread_info* subthread_new_data_ptr[2];
+
+void dataInnerDestructor(void *data) {
+    thread_info* tdata = ((thread_info*)data);
+    std::cout << "data inner destructor " << tdata->arg_string << std::endl;
+    pthread_setspecific(thread_inner_new, NULL);
+
+    subthread_new_data_ptr[tdata->thread_num] = tdata;
+    //free(data);
 }
 
 int main(){
@@ -166,7 +180,7 @@ int main(){
     size_t num_threads = 2;
     pthread_attr_t attr;
     thread_info tinfo[num_threads];
-
+    
     status = pthread_attr_init(&attr);
 
     for (size_t tnum = 0; tnum < num_threads; tnum++){       
@@ -191,9 +205,11 @@ int main(){
     
     std::cout << "********** pthread_key_create ***************" << std::endl;
 
-    
-    status = pthread_key_create(&tpskey, dataDestructor);
 
+
+    status = pthread_key_create(&tpskey, dataDestructor);
+    status = pthread_key_create(&thread_inner_new, dataInnerDestructor);
+    
     status = pthread_attr_init(&attr);
     
     //status = pthread_setspecific(tpskey, &tinfo[0]);  // no use for main thread
@@ -230,14 +246,16 @@ int main(){
         if (status) {
             std::cout << "join " << tinfo[tnum].thread_id << " "  << status << std::endl;
         }
+        std::cout << "subthread_new_data_ptr if this value exist sub thread will not clear new data " << subthread_new_data_ptr[tnum]->arg_string << std::endl;
         //std::cout << "joined" << ((thread_info *)res)->thread_num << std::endl;
-        //std::cout << "joined " << singletinfo->arg_string << std::endl;
     }
-    std::cout << "joined " << singletinfo->arg_string << " notice thread arg 100 and 101 not destructor " << std::endl;
+    std::cout << "joined " << singletinfo->arg_string  << std::endl;
+    std::cout << " notice thread arg 100 and 101 not in Thread info destructor " << std::endl;
+    
     
 
     pthread_key_delete(tpskey);
-
+    pthread_key_delete(thread_inner_new);
 
     std::cout << "********** localstorage ***************" << std::endl;
 
