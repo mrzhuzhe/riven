@@ -62,6 +62,9 @@ struct thread_info{
     pthread_t thread_id;
     int thread_num;
     int arg_string;
+    ~thread_info(){
+        std::cout << "Thread info destructor "  << this->arg_string << std::endl;
+    }
 };
 
 pthread_key_t tpskey;
@@ -72,7 +75,7 @@ void* thread_fn(void *arg){
     //pthread_getthreadid_np() is undefined    
     std::this_thread::sleep_for(std::chrono::milliseconds((int)random()%1000));
     std::cout << "thread fn arg" << " " << " "<< tinfo->arg_string << std::endl;
-    tinfo->arg_string = 1231231;
+    //tinfo->arg_string = 1231231;
     return tinfo;
 }
 
@@ -96,7 +99,7 @@ void* thread_fn2(void *arg){
     thread_info *tinfo2= (thread_info*)pthread_getspecific(tpskey);
     std::cout << "thread fn " << " " << " "<< tinfo2->arg_string << " " << " "<< tinfo->arg_string << std::endl;
 
-    tinfo2->arg_string = 456456;
+    //tinfo2->arg_string = 456456;
 
     return NULL;
 }
@@ -106,10 +109,10 @@ void* thread_fn3(void *arg){
     thread_info *tinfo = (thread_info *)arg;
     
     int* a = (int*)malloc(sizeof(int)*10);
-    a[0] = (int)random()%3000;    
+    a[0] = (int)random()%1000;    
     std::cout << tinfo->thread_num << " a1 " << a[0] << std::endl;
 
-    std::this_thread::sleep_for(std::chrono::milliseconds((int)random()%1000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(a[0]));
     
     std::cout << tinfo->thread_num << " a2 " << a[0] << std::endl;
 
@@ -123,9 +126,9 @@ void* thread_fn3(void *arg){
 
 
 void dataDestructor(void *data) {
-    std::cout << "destructor " << ((thread_info*)data)->thread_num << std::endl;
+    std::cout << "destructor " << ((thread_info*)data)->arg_string << std::endl;
     pthread_setspecific(tpskey, NULL);
-    //free(data);
+    free(data);
 }
 
 int main(){
@@ -197,16 +200,22 @@ int main(){
     std::cout << tinfo[0].arg_string << " set all" << std::endl;
     thread_info* singletinfo;
     for (size_t tnum = 0; tnum < num_threads; tnum++){       
-        // thread_info singletinfo2;
-        // singletinfo2.thread_num = tnum;
-        // singletinfo2.arg_string = 12 + tnum;
-        // status = pthread_create(&tinfo[tnum].thread_id, &attr, &thread_fn, &singletinfo2);
+        thread_info singletinfo3;
+        singletinfo3.thread_num = tnum;
+        singletinfo3.arg_string = 12 + tnum;
+        std::cout << "This is because struct initial without new will be free in for loop scope so this address must be same " << &singletinfo3 << std::endl;
         
+        // status = pthread_create(&tinfo[tnum].thread_id, &attr, &thread_fn2, &singletinfo2);
+        
+        thread_info *singletinfo2 = new thread_info;
+        singletinfo2->thread_num = tnum;
+        singletinfo2->arg_string = 100 + tnum;
+        status = pthread_create(&tinfo[tnum].thread_id, &attr, &thread_fn2, singletinfo2);
 
-        singletinfo = (thread_info*)malloc(sizeof(thread_info));
-        singletinfo->thread_num = tnum;
-        singletinfo->arg_string = 100 + tnum;
-        status = pthread_create(&tinfo[tnum].thread_id, &attr, thread_fn2, singletinfo);
+        // singletinfo = (thread_info*)malloc(sizeof(thread_info));
+        // singletinfo->thread_num = tnum;
+        // singletinfo->arg_string = 100 + tnum;
+        // status = pthread_create(&tinfo[tnum].thread_id, &attr, thread_fn2, singletinfo);
         // free(singletinfo);
 
         if (status) {
@@ -224,7 +233,7 @@ int main(){
         //std::cout << "joined" << ((thread_info *)res)->thread_num << std::endl;
         //std::cout << "joined " << singletinfo->arg_string << std::endl;
     }
-    std::cout << "joined " << singletinfo->arg_string << std::endl;
+    std::cout << "joined " << singletinfo->arg_string << " notice thread arg 100 and 101 not destructor " << std::endl;
     
 
     pthread_key_delete(tpskey);
@@ -233,8 +242,6 @@ int main(){
     std::cout << "********** localstorage ***************" << std::endl;
 
     status = pthread_attr_init(&attr);
-    
-    thread_info* singletinfo;
 
     for (size_t tnum = 0; tnum < num_threads; tnum++){           
                 

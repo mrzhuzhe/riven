@@ -13,5 +13,5 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread")
 
 target_link_libraries(${target_name} pthread)
 
-add_executable(main2 main2.cpp)
-target_link_libraries(main2 pthread)
+#add_executable(main2 main2.cpp)
+#target_link_libraries(main2 pthread)
