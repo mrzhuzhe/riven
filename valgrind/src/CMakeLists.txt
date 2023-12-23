@@ -7,3 +7,6 @@ set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 
 
 add_executable(${target_name} main.cpp)
+
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
