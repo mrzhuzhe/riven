@@ -6,15 +6,17 @@
 
 _test:
 test:
-    mov rsi, 1 
-	mov [rax], rsi	
-    mov rsi, 2 	
-    mov [rbx], rsi
-    mov rsi, 3 		
-    mov [rcx], rsi
-    mov rsi, 4 		
-    mov [rdx], rsi	
-    mov rsi, 5	
-    mov [r8], rsi	
+    mov rax, 's'
+	mov [rsi], rax	
+    mov rax, 'd' 	
+    mov [rdi], rax
+    mov rax, 'c' 		
+    mov [rcx], rax
+    mov rax, 'd' 		
+    mov [rdx], rax	
+    mov rax, '8'	
+    mov [r8], rax
+    mov rax, '9'	
+    mov [r9], rax
 done:
 	ret

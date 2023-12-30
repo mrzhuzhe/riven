@@ -4,7 +4,7 @@
 extern "C" {
 #endif
 
-void test(int* A);
+void test(char* A, char* B, char* C, char* D, char* E, char* F, char* G);
 
 #ifdef __cplusplus
 }
