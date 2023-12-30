@@ -14,7 +14,7 @@ int main(){
     f = new float{0};
     g = new float{0};
     
-    testf(a, b, c ,d, e, f, g);
+    testf(a, b, c ,d, e, f, g, 1.1, 2.1, 3.1, 4.1, 5.1, 6.1);
     std::cout << "first param a: " << *a << std::endl;
     std::cout << "second param a: " << *b << std::endl;
     std::cout << "third param a: " << *c << std::endl;

@@ -7,16 +7,16 @@ _testf:
 testf:
     mov rax, 0x3f000000
 #    movd xmm0, rax
-#	mov [rsi], rax	
+	movd [rsi], xmm0	
 #    mov rax, 2 	
-#    mov [rdi], rax
+    movd [rdi], xmm1
 #    mov rax, 3 		
-#    mov [rcx], rax
+    movd [rcx], xmm2
 #    mov rax, 4 		
-#    mov [rdx], rax	
+    movd [rdx], xmm3	
 #    mov rax, 5	
-#    mov [r8], rax
+    movd [r8], xmm4
 #    mov rax, 6	
-    mov [r9], rax
+    movd [r9], xmm5
 done:
 	ret
