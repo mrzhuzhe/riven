@@ -27,9 +27,14 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 7. cpu a55 and a72
 8. theoric mechanic statistical mechanic quantum mechanic electric mechanic LBM 
 9. wasm
-10. vtune
+10. qume loongson
 11. mkl cbwr 
 12. intel trust zone
-13. float point error https://en.wikipedia.org/wiki/IEEE_754
+
 14. measurement theory / toppology material
 16. .so pass params cpp memory align cause params address interrupt
+
+
+# done 
+1. vtune
+2. float point error https://en.wikipedia.org/wiki/IEEE_754
