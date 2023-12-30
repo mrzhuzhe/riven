@@ -4,6 +4,9 @@
 int main(){
 
 //  https://en.wikipedia.org/wiki/X86_calling_conventions
+//  System V AMD64 ABI
+//  RDI, RSI, RDX, RCX, R8, R9
+
     printf("Intel ASM test go \n");  
     char *a, *b, *c, *d, *e, *f, *g;
     a = new char[3]{"x"};
