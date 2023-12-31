@@ -13,9 +13,9 @@ int main(){
     float *buff = (float*)malloc(BUFF_SIZE*sizeof(float));
     sum = 0;
     for (int i = 0; i < BUFF_SIZE; i++){
-        buff[i] = 1.3;
+        buff[i] = 0.3333;
     }
-    for (int i = 0; i < BUFF_SIZE; i++){
+    for (int i = 0; i < BUFF_SIZE; i+=4){
         sum += buff[i];
     }
     std::cout << "sum " << sum << std::endl;

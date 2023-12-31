@@ -3,7 +3,7 @@
 	.globl _test_bandwidth
 	.globl test_bandwidth
 	.text
-
+#   https://docs.oracle.com/cd/E19253-01/817-5477/eojde/index.html
 _test_bandwidth:
 test_bandwidth:
     xor eax, eax
@@ -22,12 +22,13 @@ loop_start:
     cmp eax, edx
     jl loop_start
 sum_partials:
-    movaps xmm1, xmm0
-    psrldq xmm1, 8
-    addps xmm0, xmm1
-    movaps xmm2, xmm0
-    psrldq xmm2, 4
-    addps xmm0, xmm2
-    movd [rdi], xmm0
+    //movups xmm1, xmm0
+    //shufps xmm1, xmm1, 0x93
+    //addps xmm0, xmm1
+    //shufps xmm1, xmm1, 0x93
+    //addps xmm0, xmm1
+    //shufps xmm1, xmm1, 0x93
+    //addps xmm0, xmm1
+    movups [rdi], xmm0
 done:
 	ret
