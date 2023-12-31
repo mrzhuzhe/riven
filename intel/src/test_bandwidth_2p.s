@@ -8,6 +8,7 @@ _test_bandwidth_2p:
 test_bandwidth_2p:
     xor eax, eax
     pxor xmm0, xmm0
+    pxor xmm1, xmm1
 #    lea rsi, buff  # already in
 loop_start:
     addps xmm0, [rsi+4*rax]
