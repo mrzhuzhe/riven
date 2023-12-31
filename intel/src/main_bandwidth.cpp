@@ -10,7 +10,7 @@ int main(){
 
     printf("Intel ASM test go \n");  
     float sum = 0;
-    int BUFF_SIZE = 320 * 320;
+    int BUFF_SIZE = 3200 * 3200;
     float *buff = (float*)malloc(BUFF_SIZE*sizeof(float));
     sum = 0;
     for (int i = 0; i < BUFF_SIZE; i++){
@@ -39,7 +39,7 @@ int main(){
 
     start_time = clock();
     //  this is a ieee 754 bug
-    test_bandwidth(sum2, buff, BUFF_SIZE);     
+    test_bandwidth_2p(sum2, buff, BUFF_SIZE);     
     std::cout << "sum 2p " << (sum2[0]+ sum2[1] +sum2[2] +sum2[3])  << std::endl;
     // std::cout << "sum2 0 " << (sum2[0])  << std::endl;
     // std::cout << "sum2 1 " << (sum2[1])  << std::endl;
