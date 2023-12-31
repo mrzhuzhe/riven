@@ -13,16 +13,24 @@ int main(){
     float *buff = (float*)malloc(BUFF_SIZE*sizeof(float));
     sum = 0;
     for (int i = 0; i < BUFF_SIZE; i++){
-        buff[i] = 0.3333;
+        buff[i] = 1.1;
     }
-    for (int i = 0; i < BUFF_SIZE; i+=4){
+    for (int i = 0; i < BUFF_SIZE; i++){
         sum += buff[i];
     }
     std::cout << "sum " << sum << std::endl;
 
-    sum = 0;
-    test_bandwidth(&sum, buff, BUFF_SIZE);
-    std::cout << "sum2 " << sum << std::endl;
+
+    float *sum2 = (float*)malloc(4*sizeof(float));
+    test_bandwidth(sum2, buff, BUFF_SIZE);     
+    std::cout << "sum2 " << (sum2[0]+ sum2[1] +sum2[2] +sum2[3])  << std::endl;
+    std::cout << "sum2 0 " << (sum2[0])  << std::endl;
+    std::cout << "sum2 1 " << (sum2[1])  << std::endl;
+    std::cout << "sum2 2 " << (sum2[2])  << std::endl;
+    std::cout << "sum2 3 " << (sum2[3])  << std::endl;
+
+    free(buff);
+    buff = nullptr;
 
     return 0;
 }

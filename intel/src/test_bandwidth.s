@@ -22,13 +22,17 @@ loop_start:
     cmp eax, edx
     jl loop_start
 sum_partials:
-    //movups xmm1, xmm0
-    //shufps xmm1, xmm1, 0x93
-    //addps xmm0, xmm1
-    //shufps xmm1, xmm1, 0x93
-    //addps xmm0, xmm1
-    //shufps xmm1, xmm1, 0x93
-    //addps xmm0, xmm1
-    movups [rdi], xmm0
+    //  two method is both good
+    // movaps xmm1, xmm0
+    // shufps xmm1, xmm1, 0x93
+    // addps xmm0, xmm1
+    // shufps xmm1, xmm1, 0x93
+    // addps xmm0, xmm1
+    // shufps xmm1, xmm1, 0x93
+    // addps xmm0, xmm1
+    //  two method is both good
+    // haddps xmm0, xmm0
+    // haddps xmm0, xmm0
+    movaps [rdi], xmm0
 done:
 	ret
