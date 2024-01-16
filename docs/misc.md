@@ -30,7 +30,7 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 10. qume loongson
 11. mkl cbwr 
 12. intel trust zone
-
+13. large scale spice simulate
 14. measurement theory / toppology material
 16. .so pass params cpp memory align cause params address interrupt
 
