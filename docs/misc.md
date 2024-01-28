@@ -17,6 +17,7 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 22. use log to address memory leak
 
 ## Thought
+1. gentoo 
 3. shared memory mapping read
 4. EURO LLVM
 6. avx_e1 / avx_mic / avx_mic_31 differen between avx and core_avx2
