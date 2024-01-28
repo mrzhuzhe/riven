@@ -1,7 +1,6 @@
 # Misc
 
 ## Labor 
-1. fast sweep method https://github.com/rgl-epfl/fastsweep
 2. https://norasandler.com/2017/11/29/Write-a-Compiler.html
 https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 4. maxwell equation
@@ -11,7 +10,7 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 8. lazy evaluate / cpp template guide ? https://github.com/matazure/mtensor
 9. LLM Megatron Oneflow lora
 10. stable diffusion
-11. physics meaning of fft
+11. physics meaning of fft / cufft / mklfft
 13. ncnn / oneflow / taichi
 15. sagemath circultlab
 16. catmuli-clark
@@ -21,7 +20,6 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 3. shared memory mapping read
 4. EURO LLVM
 6. avx_e1 / avx_mic / avx_mic_31 differen between avx and core_avx2
-7. cpu a55 and a72
 8. theoric mechanic statistical mechanic quantum mechanic electric mechanic LBM 
 9. wasm
 10. qemu loongson risc-v
@@ -30,7 +28,7 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 13. large scale spice simulate
 14. measurement theory / toppology material
 16. .so pass params cpp memory align cause params address interrupt
-
+17. mix precision hgemm solver
 
 # done 
 1. vtune
@@ -38,3 +36,5 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 3. mix precision
 4. cuda tensor core
 5. opencv gpu implement 
+6. cpu a55 and a72
+7. fast sweep method https://github.com/rgl-epfl/fastsweep
