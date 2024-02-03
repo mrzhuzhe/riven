@@ -61,18 +61,17 @@ int main(){
     // solve a random matrix
     Eigen::MatrixXf mat03(2*rows, 2*cols);
     mat03 = Eigen::MatrixXf::Random(2*rows, 2*cols);
-    Eigen::VectorXf b2(2*rows);
-    b2 = Eigen::VectorXf::Random(2*rows);
-    Eigen::MatrixXf mat04(2*rows, 2*cols+1);
+    Eigen::MatrixXf b2(2, 2*rows);
+    b2 = Eigen::MatrixXf::Random(2*rows, 2);
+    Eigen::MatrixXf mat04(2*rows, 2*cols+2);
     mat04 << mat03 , b2;
     std::cout << "random matrix A, b: \n" << mat04 << std::endl;    
 
-    Eigen::VectorXf x2(2*rows);
+    Eigen::MatrixXf x2(2*rows, 2);
     x2 = mat03.colPivHouseholderQr().solve(b2);
-    std::cout << "\n random matrix ans: \n" << x2 << std::endl;
 
     std::cout << "\n my ans \n" << std::endl;
     simp_solver(mat04, mat04.rows(), mat04.cols());
-
+    std::cout << "\n random matrix ans: \n" << x2 << std::endl;
     return 0;
 }
