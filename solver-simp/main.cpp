@@ -6,7 +6,7 @@ void simp_solver(Eigen::MatrixXf& mat02, int rows, int comcol){
     // pivot up
     int i = 0, j = 0, iter = 0;
     float pivot = 0;
-    // so time complex is x^2 
+    // so time complex is x^3 
     // but each row rely on prev row result this algorithem cannot be parallize
     for (i = 0; i < rows; i++) {        
         pivot = mat02(i, i);
@@ -32,6 +32,7 @@ void simp_solver(Eigen::MatrixXf& mat02, int rows, int comcol){
         // show progress 
         std::cout << "\n" << mat02 << std::endl;
     }
+    // last col can be return as result
 }
 
 int main(){
