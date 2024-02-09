@@ -3,8 +3,6 @@ __pycache__
 build
 aerosmith-double
 .vscode
-<<<<<<< HEAD
 outputs_perf
-=======
 .DS_Store
->>>>>>> 7c1c6903adbaf2aba788704d7f0c7036db729fc0
+*.log
