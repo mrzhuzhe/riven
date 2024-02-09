@@ -32,33 +32,12 @@ int main(){
     Eigen::MatrixXf mat03(2*rows, 2*cols);
     mat03 = Eigen::MatrixXf::Random(2*rows, 2*cols);
     
-    // // this will cause a nan
-    // for (int i =0; i < 2*rows-1; i++) {
-    //     mat03(1, i) = 0;
-    // }
+    // this will cause a nan
+    for (int i =0; i < 2*rows-1; i++) {
+        mat03(1, i) = 0;
+    }
     
-    // plu_factor(mat03, 2*rows, 2*cols);
-
-
-    Eigen::MatrixXf mat04(2*rows, 2*cols);
-    mat04 = Eigen::MatrixXf::Random(2*rows, 2*cols);
-    Eigen::MatrixXf mat05(2*rows, 2*cols);
-    mat05 = Eigen::MatrixXf::Random(2*rows, 2*cols);
-    Eigen::MatrixXf mat06(2*rows, 2*cols);
-    mat06 = Eigen::MatrixXf::Random(2*rows, 2*cols);
-    
-
-    //std::cout << "mat3\n" << mat03 << std::endl;
-
-    // Eigen::MatrixXf b2(2, 2*rows);
-    // b2 = Eigen::MatrixXf::Random(2*rows, 2);
-    // Eigen::MatrixXf mat04(2*rows, 2*cols+2);
-    // mat04 << mat03 , b2;
-    // std::cout << "random matrix A, b: \n" << mat04 << std::endl;    
-
-    // Eigen::MatrixXf x2(2*rows, 2);
-    // x2 = mat03.colPivHouseholderQr().solve(b2);
-    // std::cout << "\n random matrix ans: \n" << x2 << std::endl;
+    plu_factor(mat03, 2*rows, 2*cols);
 
     return 0;
 }
