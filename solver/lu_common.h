@@ -92,7 +92,7 @@ void plu_factor(Eigen::MatrixXf mat, int rows, int cols){
             //L_mat(iter, i) = factor;
             for (j = i; j < cols; j++) {
                 U_mat(iter, j) -= factor * U_mat(i, j);
-                //L_mat(iter, j) += factor * L_mat(i, j);
+                L_mat(iter, j) += factor * L_mat(i, j);
             }          
         }
         // show progress 
@@ -100,9 +100,6 @@ void plu_factor(Eigen::MatrixXf mat, int rows, int cols){
         std::cout << "\n L:\n" << L_mat << std::endl;
         std::cout << "\n P:\n" << P_mat << std::endl;      
     }
-    //std::cout << "\n origin:\n" <<  P_mat * mat << std::endl; 
-    Eigen::MatrixXf x(2*rows, 2*cols);
-    x = (P_mat * mat).colPivHouseholderQr().solve(U_mat);
-    std::cout << "\n origin:\n" <<  x << std::endl; 
-    std::cout << "\n solution :\n" <<  L_mat << std::endl; 
+    std::cout << "\n origin:\n" <<  mat << std::endl; 
+    std::cout << "\n solution :\n" <<  L_mat * P_mat * U_mat << std::endl; 
 }

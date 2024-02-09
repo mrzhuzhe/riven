@@ -32,12 +32,22 @@ int main(){
     Eigen::MatrixXf mat03(2*rows, 2*cols);
     mat03 = Eigen::MatrixXf::Random(2*rows, 2*cols);
     
-    // this will cause a nan
-    for (int i =0; i < 2*rows-1; i++) {
-        mat03(1, i) = 0;
-    }
+    // // this will cause a nan
+    // for (int i =0; i < 2*rows-1; i++) {
+    //     mat03(1, i) = 0;
+    // }
     
-    plu_factor(mat03, 2*rows, 2*cols);
+    // plu_factor(mat03, 2*rows, 2*cols);
+
+
+    Eigen::MatrixXf mat04(2*rows, 2*cols);
+    mat04 = Eigen::MatrixXf::Random(2*rows, 2*cols);
+    Eigen::MatrixXf mat05(2*rows, 2*cols);
+    mat05 = Eigen::MatrixXf::Random(2*rows, 2*cols);
+    Eigen::MatrixXf mat06(2*rows, 2*cols);
+    mat06 = Eigen::MatrixXf::Random(2*rows, 2*cols);
+    
+
     //std::cout << "mat3\n" << mat03 << std::endl;
 
     // Eigen::MatrixXf b2(2, 2*rows);
