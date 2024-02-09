@@ -35,9 +35,10 @@ void lu_factor(Eigen::MatrixXf mat, int rows, int cols){
             pivot_current = U_mat(iter, i);
             //std::cout << pivot_current << " " << pivot_first << std::endl;
             factor = pivot_current / pivot_first;
+            L_mat(iter, i) = factor;
             for (j = i; j < cols; j++) {
                 U_mat(iter, j) -= factor * U_mat(i, j);
-                L_mat(iter, j) += factor * L_mat(i, j);
+                // L_mat(iter, j) += factor * L_mat(i, j);
             }          
         }
         // show progress 
@@ -49,8 +50,6 @@ void lu_factor(Eigen::MatrixXf mat, int rows, int cols){
 
 
 void plu_factor(Eigen::MatrixXf mat, int rows, int cols){
-
-
     int i=0, j=0, iter=0, k=0;
     float pivot_first, pivot_current, factor, temp;
     Eigen::MatrixXf U_mat(rows, cols);
@@ -100,12 +99,11 @@ void plu_factor(Eigen::MatrixXf mat, int rows, int cols){
         std::cout << "\n L:\n" << L_mat << std::endl;
         std::cout << "\n P:\n" << P_mat << std::endl;      
     }
+
     L_mat = P_mat * L_mat;
     for (i = 0; i < rows; i++) {
         L_mat(i, i) = 1;
     }
-    std::cout << "\n U:\n" << U_mat << std::endl;
-    std::cout << "\n L:\n" << L_mat << std::endl;
     
     std::cout << "\n origin:\n" <<  P_mat * mat << std::endl; 
     std::cout << "\n solution :\n" <<  L_mat * U_mat << std::endl; 
