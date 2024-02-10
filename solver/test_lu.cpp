@@ -29,21 +29,31 @@ int main(){
     // std::cout << "random matrix test" << std::endl;
 
     //solve a random matrix
-    Eigen::MatrixXf mat03(2*rows, 2*cols);
-    mat03 = Eigen::MatrixXf::Random(2*rows, 2*cols);
-    
+    int dbrow = 2*rows;
+    int dbcols = 2*cols;
+    Eigen::MatrixXf mat03(dbrow, dbcols);
+    mat03 = Eigen::MatrixXf::Random(dbrow, dbcols);
+    Eigen::MatrixXf U_mat(dbrow, dbcols);
+    Eigen::MatrixXf L_mat(dbrow, dbcols);
+    Eigen::MatrixXf P_mat(dbrow, dbcols);  // P matrix and be store as spatial
+
     // this will cause a nan
-    for (int i =0; i < 2*rows-1; i++) {
+    for (int i =0; i < dbrow-1; i++) {
         mat03(1, i) = 0;
     }
     // this case can be a showoff for low pivot
-    // for (int i =0; i < 2*rows; i++) {
+    // for (int i =0; i < dbrow; i++) {
     //     mat03(3, i) = 0;
     // }
-    for (int i =0; i < 2*rows-2; i++) {
+    for (int i =0; i < dbrow-2; i++) {
         mat03(3, i) = 0;
     }
-    plu_factor(mat03, 2*rows, 2*cols);
+    plu_factor(mat03, dbrow, dbcols, U_mat, L_mat, P_mat);
 
+    std::cout << "\n U:\n" << U_mat << std::endl;
+    std::cout << "\n L:\n" << L_mat << std::endl;
+    std::cout << "\n P:\n" << P_mat << std::endl;   
+    std::cout << "\n origin:\n" <<  P_mat * mat03 << std::endl; 
+    std::cout << "\n solution :\n" <<  L_mat * U_mat << std::endl; 
     return 0;
 }
