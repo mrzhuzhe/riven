@@ -9,7 +9,7 @@ set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 
 include_directories(${Eigen3_include_path})
 
-add_executable(simp simp.cpp)
+add_executable(test_simp test_simp.cpp)
 add_executable(test_lu test_lu.cpp)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")

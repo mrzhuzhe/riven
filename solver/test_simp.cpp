@@ -65,6 +65,7 @@ int main(){
     Eigen::MatrixXf b2(2, 2*rows);
     b2 = Eigen::MatrixXf::Random(2*rows, 2);
     Eigen::MatrixXf mat04(2*rows, 2*cols+2);
+    
     mat04 << mat03 , b2;
     std::cout << "random matrix A, b: \n" << mat04 << std::endl;    
 

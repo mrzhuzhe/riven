@@ -37,6 +37,11 @@ int main(){
     Eigen::MatrixXf L_mat(dbrow, dbcols);
     Eigen::MatrixXf P_mat(dbrow, dbcols);  // P matrix and be store as spatial
 
+    Eigen::MatrixXf x2(dbrow, 1);
+    Eigen::MatrixXf y_hat(dbrow, 1);
+    Eigen::MatrixXf b2(dbrow, 1);
+    b2 = Eigen::MatrixXf::Random(dbrow, 1);
+
     // this will cause a nan
     for (int i =0; i < dbrow-1; i++) {
         mat03(1, i) = 0;
@@ -55,5 +60,28 @@ int main(){
     std::cout << "\n P:\n" << P_mat << std::endl;   
     std::cout << "\n origin:\n" <<  P_mat * mat03 << std::endl; 
     std::cout << "\n solution :\n" <<  L_mat * U_mat << std::endl; 
+
+    Eigen::MatrixXf pb2(dbrow, 1);
+    pb2 = P_mat * b2;
+    solve_l(
+        L_mat, 
+        y_hat,
+        pb2,
+        dbrow,
+        dbcols
+    );
+    
+    solve_u(U_mat, 
+        x2,
+        y_hat,
+        dbrow,
+        dbcols);
+
+    Eigen::MatrixXf x3(dbrow, 1);
+    x3 = mat03.colPivHouseholderQr().solve(b2);
+    std::cout << "x3 \n" << x3 << std::endl;
+
+    std::cout << "x2 \n" << x2 << std::endl;
+
     return 0;
 }
