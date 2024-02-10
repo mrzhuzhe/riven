@@ -36,7 +36,13 @@ int main(){
     for (int i =0; i < 2*rows-1; i++) {
         mat03(1, i) = 0;
     }
-    
+    // this case can be a showoff for low pivot
+    // for (int i =0; i < 2*rows; i++) {
+    //     mat03(3, i) = 0;
+    // }
+    for (int i =0; i < 2*rows-2; i++) {
+        mat03(3, i) = 0;
+    }
     plu_factor(mat03, 2*rows, 2*cols);
 
     return 0;

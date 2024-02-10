@@ -70,7 +70,7 @@ void plu_factor(Eigen::MatrixXf mat, int rows, int cols){
         // first row
         // check and swap pivot  
         k = i;
-        while (U_mat(i, i) == 0)
+        while (U_mat(i, i) == 0 && k < rows)
         {
             for (j = 0; j < cols; j++) {
                 temp = U_mat(i, j);
