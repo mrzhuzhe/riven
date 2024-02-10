@@ -1,8 +1,8 @@
 //  https://johnfoster.pge.utexas.edu/numerical-methods-book/LinearAlgebra_LU.html lu solver
 #include <iostream>
 #include <Eigen/Dense>
-#include "lu_common.h"
-
+#include "lu.h"
+#include "plu.h"
 
 int main(){
     int rows = 3, cols = 3;
