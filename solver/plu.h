@@ -96,3 +96,25 @@ void solve_u(
     }
 }
 
+void plu_solver(Eigen::MatrixXf A, Eigen::MatrixXf& x, Eigen::MatrixXf b, int dbrows, int dbcols){    
+    Eigen::MatrixXf U_mat(dbrows, dbcols);
+    Eigen::MatrixXf L_mat(dbrows, dbcols);
+    Eigen::MatrixXf P_mat(dbrows, dbcols);
+    Eigen::MatrixXf y_hat(dbrows, 1);
+    Eigen::MatrixXf pb(dbrows, 1);
+
+    plu_factor(A, dbrows, dbcols, U_mat, L_mat, P_mat);
+    pb = P_mat * b;
+    solve_l(
+        L_mat, 
+        y_hat,
+        pb,
+        dbrows,
+        dbcols
+    );    
+    solve_u(U_mat, 
+        x,
+        y_hat,
+        dbrows,
+        dbcols);
+}
