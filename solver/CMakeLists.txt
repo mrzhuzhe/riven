@@ -11,5 +11,6 @@ include_directories(${Eigen3_include_path})
 
 add_executable(test_simp test_simp.cpp)
 add_executable(test_lu test_lu.cpp)
+add_executable(test_eigen test_eigen.cpp)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
