@@ -59,6 +59,14 @@ int main(){
     std::cout << "\n origin:\n" <<  P_mat * mat03 << std::endl; 
     std::cout << "\n solution :\n" <<  L_mat * U_mat << std::endl; 
 
+    std::cout << "det of mat03 is " << mat03.determinant() << std::endl;
+    float U_det = 1;
+    for (int i=0; i < dbcols; i++) {
+        U_det *= U_mat(i, i);
+        std::cout << U_mat(i, i) << " ";
+    }
+    std::cout << "so U det is " << U_det << std::endl;
+
     Eigen::MatrixXf x3(dbrows, 1);
     x3 = mat03.colPivHouseholderQr().solve(b2);
     std::cout << "x3 \n" << x3 << std::endl;
