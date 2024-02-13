@@ -7,6 +7,12 @@ void householder(Eigen::MatrixXf& A, int rows, int cols) {
     Eigen::MatrixXf U(rows, 1);
     Eigen::MatrixXf V(rows, 1);
     Eigen::MatrixXf Z(rows, 1);
+
+    Eigen::MatrixXf eyes(rows, cols);
+    for (int i=0; i < rows; i++){
+        eyes(i, i) =1.0;
+    }
+
     float alpha = 0;
     float two_r_squared =0;
     float UV_dot, AV_dot;
@@ -55,6 +61,8 @@ void householder(Eigen::MatrixXf& A, int rows, int cols) {
         }
         A(i+1, i) -= V(i+1) * Z(i);
         A(i, i+1) = A(i+1, i);
+        //  reffer to" q1 q2 https://en.wikipedia.org/wiki/Householder_transformation
+        std::cout << "Q" << i << " V*VT \n" << (eyes - (V * V.transpose()) / (two_r_squared))  << std::endl;
     }
-    std::cout << "householder \n" << A << std::endl;
+    std::cout << "householder \n" << A << std::endl;    
 } 
