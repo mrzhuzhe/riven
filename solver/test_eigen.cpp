@@ -72,9 +72,19 @@ int main(){
     dbrows=6, dbcols=6;
     Eigen::MatrixXf mat03(dbrows, dbcols);
     Eigen::MatrixXf mat04(dbrows, dbcols);
-    mat03 = mat04 = Eigen::MatrixXf::Random(dbrows, dbcols);
-    std::cout << mat04 << std::endl;
+    //mat03 = mat04 = Eigen::MatrixXf::Random(dbrows, dbcols);
+    for (int i=0;i<dbcols;i++){
+        for (int j=0;j<dbrows;j++){
+            mat03(j,i) = mat04(j, i) = std::abs(static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
+        }
+    }
+    std::cout << "origin matrix \n " << mat04 << std::endl;
     householder(mat03, rows, cols);
+    std::cout << "householder triangular matrix \n" << mat03 << std::endl;
 
+    std::cout << "mat03 eigen value \n" << mat03.eigenvalues() << std::endl;
+
+    std::cout << "mat04 eigen value \n" << mat04.eigenvalues() << std::endl;
+    
     return 0;
 }

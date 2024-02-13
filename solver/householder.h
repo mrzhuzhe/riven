@@ -3,7 +3,7 @@
 #include "limits.h"
 //  tridiagonalize a symmetric matrix without changing its eignenvalues. 
 //  I just translate this code from python and totally dont understand
-void householder(Eigen::MatrixXf A, int rows, int cols) {
+void householder(Eigen::MatrixXf& A, int rows, int cols) {
     Eigen::MatrixXf U(rows, 1);
     Eigen::MatrixXf V(rows, 1);
     Eigen::MatrixXf Z(rows, 1);
