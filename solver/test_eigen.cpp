@@ -71,7 +71,9 @@ int main(){
 
     dbrows=6, dbcols=6;
     Eigen::MatrixXf mat03(dbrows, dbcols);
-    mat03 = Eigen::MatrixXf::Random(dbrows, dbcols);
+    Eigen::MatrixXf mat04(dbrows, dbcols);
+    mat03 = mat04 = Eigen::MatrixXf::Random(dbrows, dbcols);
+    std::cout << mat04 << std::endl;
     householder(mat03, rows, cols);
 
     return 0;

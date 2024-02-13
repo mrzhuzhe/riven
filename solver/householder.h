@@ -1,7 +1,8 @@
+//  https://johnfoster.pge.utexas.edu/numerical-methods-book/LinearAlgebra_EigenProblem2.html
 #pragma once
 #include "limits.h"
-
-//Continuing in this manner, the tridiagonal and symmetric matrix  A(n−1) is formed
+//  tridiagonalize a symmetric matrix without changing its eignenvalues. 
+//  I just translate this code from python and totally dont understand
 void householder(Eigen::MatrixXf A, int rows, int cols) {
     Eigen::MatrixXf U(rows, 1);
     Eigen::MatrixXf V(rows, 1);
