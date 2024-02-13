@@ -7,8 +7,9 @@ void householder(Eigen::MatrixXf& A, int rows, int cols) {
     Eigen::MatrixXf U(rows, 1);
     Eigen::MatrixXf V(rows, 1);
     Eigen::MatrixXf Z(rows, 1);
-
     Eigen::MatrixXf eyes(rows, cols);
+    Eigen::MatrixXf Q(rows, cols);
+
     for (int i=0; i < rows; i++){
         eyes(i, i) =1.0;
     }
@@ -32,6 +33,15 @@ void householder(Eigen::MatrixXf& A, int rows, int cols) {
         for (int j=i+2;j<rows;j++) {
             V(j) = A(j, i);
         }
+        Q = (eyes - (V * V.transpose()) / (two_r_squared));
+        // Q and V matrix is done
+        // reffer to" q1 q2 https://en.wikipedia.org/wiki/Householder_transformation
+        std::cout << "Q" << i << " V*VT \n" <<  Q << std::endl;
+    
+        // A = Q * A * Q;
+        // continue;
+
+        // triangular A matrix start this part is equal to A = Q * A * Q
         for (int j=i;j<rows;j++){
             AV_dot = 0;
             for (int k=i+1; k < cols; k++){
@@ -39,7 +49,6 @@ void householder(Eigen::MatrixXf& A, int rows, int cols) {
             }            
             U(j) = 1 / two_r_squared * AV_dot;   
         }
-        //  Todo uv dot
         UV_dot = 0;
         for (int j=0;j<rows;j++){
              UV_dot += U(j) * V(j);
@@ -60,9 +69,8 @@ void householder(Eigen::MatrixXf& A, int rows, int cols) {
             A(j, i) =0;
         }
         A(i+1, i) -= V(i+1) * Z(i);
-        A(i, i+1) = A(i+1, i);
-        //  reffer to" q1 q2 https://en.wikipedia.org/wiki/Householder_transformation
-        std::cout << "Q" << i << " V*VT \n" << (eyes - (V * V.transpose()) / (two_r_squared))  << std::endl;
+        A(i, i+1) = A(i+1, i);   
+        //  triangular A matrix end    
     }
     std::cout << "householder \n" << A << std::endl;    
 } 
