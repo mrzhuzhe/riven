@@ -1,3 +1,5 @@
+#pragma once
+
 void plu_factor(
     Eigen::MatrixXf mat, int rows, int cols, 
     Eigen::MatrixXf& U_mat, Eigen::MatrixXf& L_mat,  Eigen::MatrixXf& P_mat

@@ -1,3 +1,5 @@
+#pragma once
+
 void lu_factor(Eigen::MatrixXf mat, int rows, int cols){
     int i=0, j=0, iter=0;
     float pivot_first, pivot_current, factor;

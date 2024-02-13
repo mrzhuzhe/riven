@@ -1,6 +1,7 @@
 #include <iostream>
 #include <Eigen/Dense>
 #include <limits.h>
+#include "householder.h"
 
 int find_maxnorm_index(Eigen::MatrixXf x, int rows) {
     float max = 0;
@@ -67,5 +68,10 @@ int main(){
     //mat02 = Eigen::MatrixXf::Random(dbrows, dbcols);
     mat02 << 1, 2, 3, 2, 4, 5, 3, 5, 6; // This method has the disadvantage that it will not work if the matrix does not have a single dominant eigenvalue.
     power_method(mat02, dbcols, dbrows);
+
+    Eigen::MatrixXf mat03(dbrows, dbcols);
+    mat03 = Eigen::MatrixXf::Random(dbrows, dbcols);
+    householder(mat03, rows, cols);
+
     return 0;
 }
