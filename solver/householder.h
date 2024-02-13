@@ -15,10 +15,8 @@ void householder(Eigen::MatrixXf& A, int rows, int cols) {
         for (int j = i+1;j < rows; j++){
             alpha += A(j, i) * A(j, i);
         }
-        if (std::abs(A(i+1, i) < __FLT_EPSILON__ )) {            
-            alpha = -1.0f * std::sqrt(alpha);
-        } else {           
-            alpha = -1.0f * std::sqrt(alpha);
+        alpha = -1.0f * std::sqrt(alpha);
+        if (std::abs(A(i+1, i)) > __FLT_EPSILON__ ) {                     
             alpha *= (A(i+1, i) >= 0 ? 1.0f : -1.0f);
         }
         // std::cout << " i:"<< i << " alpha:" << alpha << " ";
