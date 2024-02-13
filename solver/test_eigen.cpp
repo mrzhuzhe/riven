@@ -69,6 +69,7 @@ int main(){
     mat02 << 1, 2, 3, 2, 4, 5, 3, 5, 6; // This method has the disadvantage that it will not work if the matrix does not have a single dominant eigenvalue.
     power_method(mat02, dbcols, dbrows);
 
+    dbrows=6, dbcols=6;
     Eigen::MatrixXf mat03(dbrows, dbcols);
     mat03 = Eigen::MatrixXf::Random(dbrows, dbcols);
     householder(mat03, rows, cols);
