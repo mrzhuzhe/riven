@@ -71,8 +71,8 @@ qemu-system-aarch64 \
     -cpu cortex-a57 \
     -kernel Image \
     -initrd initramfs-linux.img \
+    -append "rw roottype=ext4 console=ttyAMA0" 
     -m 4096 \
-    -cpu max,pauth-impdef=on \
     -smp 4 \
     -accel tcg \
     -device virtio-scsi-pci \
@@ -81,6 +81,7 @@ qemu-system-aarch64 \
     -display none \
 
 
+    -cpu max,pauth-impdef=on \
     -device scsi-hd,drive=hd \
     -netdev user,id=unet \
     -device virtio-net-pci,netdev=unet \
