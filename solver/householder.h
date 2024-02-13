@@ -28,7 +28,7 @@ void householder(Eigen::MatrixXf& A, int rows, int cols) {
         }
         for (int j=i;j<rows;j++){
             AV_dot = 0;
-            for (int k=i+1; k < rows; k++){
+            for (int k=i+1; k < cols; k++){
                 AV_dot += A(j,k) * V(k);
             }            
             U(j) = 1 / two_r_squared * AV_dot;   
@@ -43,7 +43,7 @@ void householder(Eigen::MatrixXf& A, int rows, int cols) {
         }
         for (int j = i+1; j < rows-1;j++){
             for (int k = j+1; k< rows; k++){
-                A(k, j) = A(k, j) - U(j) * Z(k) - V(k) * Z(j); 
+                A(k, j) = A(k, j) - V(j) * Z(k) - V(k) * Z(j); 
                 A(j, k) = A(k, j);
             }
             A(j, j) -= 2 * V(j) * Z(j);
