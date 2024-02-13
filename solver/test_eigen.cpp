@@ -69,22 +69,33 @@ int main(){
     mat02 << 1, 2, 3, 2, 4, 5, 3, 5, 6; // This method has the disadvantage that it will not work if the matrix does not have a single dominant eigenvalue.
     power_method(mat02, dbcols, dbrows);
 
-    dbrows=6, dbcols=6;
+    dbrows=4, dbcols=4;
     Eigen::MatrixXf mat03(dbrows, dbcols);
     Eigen::MatrixXf mat04(dbrows, dbcols);
+    Eigen::MatrixXf mat05(dbrows, dbcols);
     //mat03 = mat04 = Eigen::MatrixXf::Random(dbrows, dbcols);
-    for (int i=0;i<dbcols;i++){
-        for (int j=0;j<dbrows;j++){
-            mat03(j,i) = mat04(j, i) = std::abs(static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
-        }
-    }
+    // for (int i=0;i<dbcols;i++){
+    //     for (int j=0;j<dbrows;j++){
+    //         mat03(j,i) = mat04(j, i) = std::abs(static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
+    //     }
+    // }
+    mat04 << 4, 1, -2, 2,    1, 2, 0, 1,    -2, 0, 3, -2,   2, 1, -2, -1;
+    mat03 = mat04;
     std::cout << "origin matrix \n " << mat04 << std::endl;
-    householder(mat03, rows, cols);
+    householder(mat03, dbrows, dbcols);
     std::cout << "householder triangular matrix \n" << mat03 << std::endl;
 
     std::cout << "mat03 eigen value \n" << mat03.eigenvalues() << std::endl;
 
     std::cout << "mat04 eigen value \n" << mat04.eigenvalues() << std::endl;
     
+    mat05 << 4.0f, -3.0f, 0.0f, 0.0f,
+    -3.0f, (10.f/3.f), (-5.f/3.f), 0.0f,    
+    0.0f, (-5.f/3.f), (-33.f/25.f), (68.f/75.f),   
+    0.0f, 0.0f, (68.f/75.f), (149.f/75.f);
+
+    std::cout << "mat05 \n" << mat05 << std::endl;
+    std::cout << "mat05 eigen value \n" << mat05.eigenvalues() << std::endl;
+
     return 0;
 }

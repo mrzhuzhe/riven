@@ -19,7 +19,7 @@ void householder(Eigen::MatrixXf& A, int rows, int cols) {
             alpha = -1.0f * std::sqrt(alpha);
         } else {           
             alpha = -1.0f * std::sqrt(alpha);
-            alpha *= A(i+1, i) >= 0 ? 1 : -1;
+            alpha *= (A(i+1, i) >= 0 ? 1.0f : -1.0f);
         }
         // std::cout << " i:"<< i << " alpha:" << alpha << " ";
         two_r_squared = alpha * alpha - alpha * A(i+1, i);
@@ -33,7 +33,7 @@ void householder(Eigen::MatrixXf& A, int rows, int cols) {
             for (int k=i+1; k < rows; k++){
                 AV_dot += A(j,k) * V(k);
             }            
-            U(i) = 1 / two_r_squared * AV_dot;   
+            U(j) = 1 / two_r_squared * AV_dot;   
         }
         //  Todo uv dot
         UV_dot = 0;
@@ -41,11 +41,11 @@ void householder(Eigen::MatrixXf& A, int rows, int cols) {
              UV_dot += U(j) * V(j);
         }       
         for (int j=i;j<rows;j++){
-            Z(i) = U(i) - UV_dot / 2.0f * two_r_squared * V(i);
+            Z(j) = U(j) - UV_dot / (2.0f * two_r_squared) * V(j);
         }
-        for (int j = i+1; j < rows;j++){
+        for (int j = i+1; j < rows-1;j++){
             for (int k = j+1; k< rows; k++){
-                A(k, j) -= V(j) * Z(k) - V(k) * Z(j); 
+                A(k, j) = A(k, j) - U(j) * Z(k) - V(k) * Z(j); 
                 A(j, k) = A(k, j);
             }
             A(j, j) -= 2 * V(j) * Z(j);
