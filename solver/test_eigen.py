@@ -35,7 +35,22 @@ def householder(A):
         A[k + 1, k] = A[k + 1, k] - v[k + 1] * z[k]
         A[k, k + 1] = A[k + 1, k]
 
+def gram_schmidt(A):
 
+    m = A.shape[1]
+    Q = np.zeros(A.shape, dtype=np.double)
+    temp_vector = np.zeros(m, dtype=np.double)
+
+    Q[:, 0] = A[:, 0] / np.linalg.norm(A[:, 0], ord=2)
+
+    for i in range(1, m):
+        q = Q[:, :i]
+        temp_vector = np.sum(np.sum(q * A[:, i, None], axis=0) * q, axis=1)
+        Q[:, i] = A[:, i] - temp_vector
+        Q[:, i] /= np.linalg.norm(Q[:, i], ord=2)
+
+    return Q
+    
 A = np.array([
     [4, 1, -2, 2],
     [1, 2, 0, 1],    
@@ -43,7 +58,15 @@ A = np.array([
     [2, 1, -2, -1]
 ], dtype=np.double)
 
+B = np.array([
+    [4, 1, -2, 2],
+    [1, 2, 0, 1],    
+    [-2, 0, 3, -2],   
+    [2, 1, -2, -1]
+], dtype=np.double)
 
 if __name__ == "__main__":
     householder(A)
     print(A)
+
+    print("\n", gram_schmidt(B))

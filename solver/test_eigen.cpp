@@ -98,5 +98,21 @@ int main(){
     std::cout << "mat05 \n" << mat05 << std::endl;
     std::cout << "mat05 eigen value \n" << mat05.eigenvalues() << std::endl;
 
+
+    Eigen::MatrixXf mat06(dbrows, dbcols);
+    mat06 = mat04;
+    Eigen::MatrixXf Qmat06(dbrows, dbcols);
+    gram_schmidt(mat06, Qmat06, dbrows, dbcols);
+    std::cout << "Qmat06\n" << Qmat06  << std::endl;
+    std::cout << "R\n" << Qmat06.transpose() * mat06  << std::endl;
+
+    Eigen::MatrixXf Rmat06(dbrows, dbcols);
+    Rmat06 << 5,          1.6,         -3.6,          2.2,
+0,      1.85472,     0.948929,    -0.280365,
+0, 0,      1.77187,        0.105,
+0,  0,  0,      2.25175;
+    std::cout << "A = Qmat06 * (Qmat06.transpose() * mat06)\n" << Qmat06 * (Qmat06.transpose() * mat06)  << std::endl;
+    std::cout << "A = Qmat06 * Rmat06 \n" << Qmat06 * Rmat06  << std::endl;
+    std::cout << "Qmat06 \n" << Qmat06 << std::endl;
     return 0;
 }
