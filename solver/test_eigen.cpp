@@ -2,6 +2,7 @@
 #include <Eigen/Dense>
 #include <limits.h>
 #include "householder.h"
+#include "qr.h"
 
 int find_maxnorm_index(Eigen::MatrixXf x, int rows) {
     float max = 0;
