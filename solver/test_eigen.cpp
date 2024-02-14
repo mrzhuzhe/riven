@@ -113,6 +113,6 @@ int main(){
 0,  0,  0,      2.25175;
     std::cout << "A = Qmat06 * (Qmat06.transpose() * mat06)\n" << Qmat06 * (Qmat06.transpose() * mat06)  << std::endl;
     std::cout << "A = Qmat06 * Rmat06 \n" << Qmat06 * Rmat06  << std::endl;
-    std::cout << "Qmat06 \n" << Qmat06 << std::endl;
+    std::cout << "mat06 \n" << mat06 << std::endl;
     return 0;
 }
