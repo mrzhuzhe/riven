@@ -34,6 +34,21 @@ void gram_schmidt(Eigen::MatrixXf A, Eigen::MatrixXf& Q, int rows, int cols){
     }
 }
 
-void qr() {
+void qr_eigen(Eigen::MatrixXf& A, int rows, int cols) {
+    Eigen::MatrixXf Qmat(rows, rows);
+    gram_schmidt(A, Qmat, rows, cols);
+    std::cout << "qr eigen:\n" << Qmat << std::endl;    
+    std::cout << "qr eigen Qmat inverse:\n" << Qmat.inverse() << std::endl;
+    std::cout << "qr eigen Qmat transpose * Qmat:\n" << Qmat.transpose() * Qmat << std::endl;
 
+    std::cout << "eigenvalues \n" << A.eigenvalues() << std::endl;
+    int iter=0;
+    for (iter=0;iter<1000;iter++){
+        A = Qmat.transpose() * A * Qmat;
+        gram_schmidt(A, Qmat, rows, cols);
+        if (iter % 100 == 0) {
+            std::cout << "iter " << iter << "\n" << A << std::endl;
+        }
+    }
+    
 }

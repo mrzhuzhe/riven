@@ -100,19 +100,16 @@ int main(){
 
 
     Eigen::MatrixXf mat06(dbrows, dbcols);
-    mat06 = mat04;
+    mat06 = mat05;
     Eigen::MatrixXf Qmat06(dbrows, dbcols);
     gram_schmidt(mat06, Qmat06, dbrows, dbcols);
     std::cout << "Qmat06\n" << Qmat06  << std::endl;
     std::cout << "R\n" << Qmat06.transpose() * mat06  << std::endl;
 
-    Eigen::MatrixXf Rmat06(dbrows, dbcols);
-    Rmat06 << 5,          1.6,         -3.6,          2.2,
-0,      1.85472,     0.948929,    -0.280365,
-0, 0,      1.77187,        0.105,
-0,  0,  0,      2.25175;
     std::cout << "A = Qmat06 * (Qmat06.transpose() * mat06)\n" << Qmat06 * (Qmat06.transpose() * mat06)  << std::endl;
-    std::cout << "A = Qmat06 * Rmat06 \n" << Qmat06 * Rmat06  << std::endl;
     std::cout << "mat06 \n" << mat06 << std::endl;
+
+    qr_eigen(mat06, dbrows, dbcols);
+    // std::cout << "Q * Q \n" << Qmat06 * Qmat06 << std::endl;
     return 0;
 }
