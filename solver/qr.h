@@ -1,4 +1,6 @@
 //  https://johnfoster.pge.utexas.edu/numerical-methods-book/LinearAlgebra_EigenProblem2.html
+//  todo iteration method anad svd
+
 #pragma once 
 
 /*
