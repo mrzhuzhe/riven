@@ -9,7 +9,7 @@ int main() {
     Eigen::MatrixXf b(rows, 1);
     Eigen::MatrixXf x(rows, 1);
     mat01 = Eigen::MatrixXf::Random(rows, cols);
-    //mat01 = mat01.transpose() * mat01;  // easy to solve positive sysmetric
+    mat01 = mat01.transpose() * mat01;  // easy to solve positive sysmetric
     // mat01 << 10, -1 , 2, 0, 
     // -1, 11, -1,3,
     // 2, -1, 10,-1,
