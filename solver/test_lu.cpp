@@ -60,6 +60,8 @@ int main(){
     std::cout << "\n solution :\n" <<  L_mat * U_mat << std::endl; 
 
     std::cout << "det of mat03 is " << mat03.determinant() << std::endl;
+    std::cout << "eigenvalues of mat03 is " << mat03.eigenvalues() << std::endl;
+
     float U_det = 1;
     for (int i=0; i < dbcols; i++) {
         U_det *= U_mat(i, i);

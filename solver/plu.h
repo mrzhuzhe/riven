@@ -7,13 +7,16 @@ void plu_factor(
     int i=0, j=0, iter=0, k=0;
     float pivot_first, pivot_current, factor, temp;
     // initial P and L
-    for (i = 0; i < rows; i++) {
-        P_mat(i, i) = 1;
-    }
     // initial U
     for (j = 0; j < cols; j++) {
         for (i=0;i<rows;i++) {
             U_mat(j, i) = mat(j, i);
+            L_mat(j, i) = 0;
+            if (i == j) {
+                P_mat(i, j) = 1;
+            } else {
+                P_mat(i, j) = 0;
+            }
         }        
     }
     // i > 0 do eliminate
@@ -106,6 +109,7 @@ void plu_solver(Eigen::MatrixXf A, Eigen::MatrixXf& x, Eigen::MatrixXf b, int db
     Eigen::MatrixXf pb(dbrows, 1);
 
     plu_factor(A, dbrows, dbcols, U_mat, L_mat, P_mat);
+    
     pb = P_mat * b;
     solve_l(
         L_mat, 
@@ -119,4 +123,5 @@ void plu_solver(Eigen::MatrixXf A, Eigen::MatrixXf& x, Eigen::MatrixXf b, int db
         y_hat,
         dbrows,
         dbcols);
+    
 }
