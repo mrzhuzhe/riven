@@ -16,7 +16,8 @@ void jacobian_solver(Eigen::MatrixXf A, Eigen::MatrixXf& x, Eigen::MatrixXf b, i
             T(i, j) = A(i, j);
         }
     }
-    const int max_iter = 100;
+    std::cout << "T\n" << T << std::endl;
+    const int max_iter = 10000;
     float temp = 0, max_diff_norm=0, max_norm=0;
     for (int iter=0; iter<max_iter; iter++){
         old = x;    // this is deep copy in eigen
@@ -37,15 +38,10 @@ void jacobian_solver(Eigen::MatrixXf A, Eigen::MatrixXf& x, Eigen::MatrixXf b, i
             max_diff_norm = temp > max_diff_norm ? temp : max_diff_norm;            
         }
         if ( max_diff_norm / max_norm < __FLT_EPSILON__ ) {
+            std::cout << "break " << iter << std::endl;
             break;
         }
     }
-    /*    
-
-        if np.linalg.norm(x - x_old, ord=np.inf) / np.linalg.norm(x, ord=np.inf) < tolerance:
-            break
-            
-    */
     std::cout << "x\n" << x << std::endl;
 }
 

@@ -4,11 +4,17 @@
 #include "jacobian.h"
 
 int main() {
-    int rows = 6, cols = 6;
+    int rows = 4, cols = 4;
     Eigen::MatrixXf mat01(rows, cols);
     Eigen::MatrixXf b(rows, 1);
     Eigen::MatrixXf x(rows, 1);
     mat01 = Eigen::MatrixXf::Random(rows, cols);
+    //mat01 = mat01.transpose() * mat01;  // easy to solve positive sysmetric
+    // mat01 << 10, -1 , 2, 0, 
+    // -1, 11, -1,3,
+    // 2, -1, 10,-1,
+    // 0, -3, -1, 8;
+    // b << 6, 25, -11, 15;
     b = Eigen::MatrixXf::Random(rows, 1);
     jacobian_solver(mat01, x, b, rows, cols);
 
