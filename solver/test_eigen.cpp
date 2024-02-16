@@ -75,7 +75,9 @@ int main(){
     Eigen::MatrixXf mat03(dbrows, dbcols);
     Eigen::MatrixXf mat04(dbrows, dbcols);
     Eigen::MatrixXf mat05(dbrows, dbcols);
-    mat03 = mat04 = Eigen::MatrixXf::Random(dbrows, dbcols);
+    mat03 = Eigen::MatrixXf::Random(dbrows, dbcols);
+    //mat03 = mat03.transpose() * mat03;
+    mat04 = mat03;
     // for (int i=0;i<dbcols;i++){
     //     for (int j=0;j<dbrows;j++){
     //         mat03(j,i) = mat04(j, i) = std::abs(static_cast <float> (rand()) / static_cast <float> (RAND_MAX));

@@ -45,7 +45,7 @@ void qr_eigen(Eigen::MatrixXf& A, int rows, int cols) {
 
     std::cout << "eigenvalues \n" << A.eigenvalues() << std::endl;
     int iter=0;
-    for (iter=0;iter<10000;iter++){
+    for (iter=0;iter<1000;iter++){
         A = Qmat.transpose() * A * Qmat;
         gram_schmidt(A, Qmat, rows, cols);
         if (iter % 100 == 0) {

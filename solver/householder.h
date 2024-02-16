@@ -10,8 +10,14 @@ void householder(Eigen::MatrixXf& A, int rows, int cols) {
     Eigen::MatrixXf eyes(rows, cols);
     Eigen::MatrixXf Q(rows, cols);
 
-    for (int i=0; i < rows; i++){
-        eyes(i, i) =1.0;
+    for (int j=0; j < cols; j++){
+        for (int i=0; i < rows; i++){
+            if (i == j){
+                eyes(i, j) =1.0;
+            } else {
+                eyes(i, j) =0.0;
+            }
+        }
     }
 
     float alpha = 0;
