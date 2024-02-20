@@ -4,7 +4,7 @@
 #include "jacobian.h"
 
 int main() {
-    int rows = 4, cols = 4;
+    int rows = 16, cols = 16;
     Eigen::MatrixXf mat01(rows, cols);
     Eigen::MatrixXf b(rows, 1);
     Eigen::MatrixXf x(rows, 1);
@@ -17,6 +17,9 @@ int main() {
     // b << 6, 25, -11, 15;
     b = Eigen::MatrixXf::Random(rows, 1);
     jacobian_solver(mat01, x, b, rows, cols);
+    
+    Eigen::MatrixXf x1(rows, 1);
+    gs_solver(mat01, x1, b, rows, cols);
 
     Eigen::MatrixXf x2(rows, 1);
     x2 = mat01.colPivHouseholderQr().solve(b);
