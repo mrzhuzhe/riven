@@ -29,10 +29,10 @@ int main() {
 
     Eigen::MatrixXf x2(rows, 1);
     x2 = mat01.colPivHouseholderQr().solve(b);
-    std::cout << "eigen solution\n" << x2 << std::endl;
+    //std::cout << "eigen solution\n" << x2 << std::endl;
     
-    std::cout << "jacobian error" << (x - x2).maxCoeff() << " " << (x - x2).minCoeff() << std::endl;
-    std::cout << "gs error" << (x1 - x2).maxCoeff() << " " << (x1 - x2).minCoeff() << std::endl;
+    std::cout << "jacobian error " << (x - x2).maxCoeff() << " " << (x - x2).minCoeff() << std::endl;
+    std::cout << "gs error " << (x1 - x2).maxCoeff() << " " << (x1 - x2).minCoeff() << std::endl;
 
     Eigen::MatrixXf mat01_16(rows, cols);
     Eigen::MatrixXf mat01_8(rows/2, cols/2);
@@ -74,6 +74,6 @@ int main() {
     Cmat2Fmat(x_8, x_16, rows/2, 1);
     jacobian_solver(mat01, x_16, b, rows, cols);
 
-    std::cout << (x_16 - x2).maxCoeff() << " " << (x_16 - x2).minCoeff() << std::endl;
+    std::cout << "multi grid error" << (x_16 - x2).maxCoeff() << " " << (x_16 - x2).minCoeff() << std::endl;
     return 0;
 }
