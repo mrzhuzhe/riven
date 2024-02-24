@@ -5,7 +5,7 @@
 #include "multigrid.h"
 
 int main() {
-    int rows = 64, cols = 64;
+    int rows = 128, cols = 128;
     Eigen::MatrixXf mat01(rows, cols);
     Eigen::MatrixXf b(rows, 1);
     Eigen::MatrixXf x(rows, 1);
@@ -14,7 +14,7 @@ int main() {
     // mat01 = mat01.transpose() * mat01;  // easy to solve positive sysmetric
     
     Tridiagonal_mat(mat01, rows, cols);
-    //std::cout << mat01 << std::endl;
+    std::cout << "\n mat01.block(0, 0, 8, 8) \n" << mat01.block(0, 0, 8, 8) << std::endl;
 
     // mat01 << 10, -1 , 2, 0, 
     // -1, 11, -1,3,
@@ -42,7 +42,7 @@ int main() {
     Fmat2Cmat(mat01_8, mat01_4, rows/2, cols/2);    
     //std::cout << "\n mat01_8 \n" << mat01_8 << std::endl;
     
-    Cmat2Fmat(mat01_8, mat01_16, rows/2, cols/2);    
+    Cmat2Fmat(mat01_8, mat01_16, rows/2, cols/2);    // this interpolate is not good
     //std::cout << "\n mat01_16 \n" << mat01_16 << std::endl;
     
     std::cout << "\n------------------------------ V multi grid" << std::endl;
