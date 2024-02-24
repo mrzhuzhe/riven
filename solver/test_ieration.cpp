@@ -5,7 +5,7 @@
 #include "multigrid.h"
 
 int main() {
-    int rows = 320, cols = 320;
+    int rows = 64, cols = 64;
     Eigen::MatrixXf mat01(rows, cols);
     Eigen::MatrixXf b(rows, 1);
     Eigen::MatrixXf x(rows, 1);
