@@ -25,7 +25,8 @@ int main() {
     Eigen::MatrixXf x2(rows, 1);
     x2 = mat01.colPivHouseholderQr().solve(b);
     std::cout << "eigen solution\n" << x2 << std::endl;
-  
+    
+    /*
     std::cout << "\n------------------------------ 1d possion intepolate" << std::endl;
     int nc = 8;
     int nf = 16;
@@ -51,7 +52,7 @@ int main() {
     for (int i=0; i < nf; i++){
         std::cout <<  uc2f[i] << " ";
     }
-        
+    */
     std::cout << "\n------------------------------ V multi grid" << std::endl;
     Eigen::MatrixXf mat01_16(rows, cols);
     Eigen::MatrixXf mat01_8(rows/2, cols/2);
@@ -73,16 +74,24 @@ int main() {
     Fmat2Cmat(b, b_8, rows, 1);  // initial mat8 and mat4
     Fmat2Cmat(b_8, b_4, rows/2, 1);    
 
-    // // 16 - 8
-    // jacobian_solver(mat01, x_16, b, rows, cols, 1e-2f);    
-    // Fmat2Cmat(x_16, x_8, rows, 1);
+    // 16 - 8
+    jacobian_solver(mat01, x_16, b, rows, cols, 1e-3f);    
+    Fmat2Cmat(x_16, x_8, rows, 1);
 
-    // // 8-4
-    // jacobian_solver(mat01_8, x_8, b_8, rows/2, cols/2, 1e-3f);
+    // 8-4
+    jacobian_solver(mat01_8, x_8, b_8, rows/2, cols/2, 1e-4f);
     // Fmat2Cmat(x_8, x_4, rows/2, 1);
     
-    // // 4 -8
-    // jacobian_solver(mat01_4, x_4, b_4, rows/4, cols/4, 1e-3f);
+    // 4
+    jacobian_solver(mat01_4, x_4, b_4, rows/4, cols/4, 1e-5f);
+    
+    // // 4-8
+    // Cmat2Fmat(x_4, x_8, rows/4, 1);
+    jacobian_solver(mat01_8, x_8, b_8, rows/2, cols/2, 1e-6f);
+
+    // // 8 - 16
+    Cmat2Fmat(x_8, x_16, rows/2, 1);
+    jacobian_solver(mat01_16, x_16, b, rows, cols);
 
     return 0;
 }
