@@ -46,10 +46,18 @@ void ftoc ( int nf, double uf[], double rf[], int nc, double uc[],
   return;
 }
 
-void FtoC(const Eigen::MatrixXf& F_mat, const Eigen::MatrixXf& C_mat, int rows, int cols){
-
+void Fmat2Cmat(const Eigen::MatrixXf& F_mat, Eigen::MatrixXf& C_mat, int rows, int cols){
+    for (int j=0; j<cols/2; j++){
+        for (int i=0; i<rows/2; i++){            
+            C_mat(i, j) += 0.25 * (F_mat(2*i, 2*j) + F_mat(2*i, 2*j+1) + F_mat(2*i+1, 2*j) + F_mat(2*i+1, 2*j+1));
+        }
+    }
 }
 
-void CtoF(const Eigen::MatrixXf& C_mat, const Eigen::MatrixXf& F_mat, int rows, int cols){
-
+void Cmat2Fmat(const Eigen::MatrixXf& C_mat, Eigen::MatrixXf& F_mat, int rows, int cols){
+    for (int j=0; j<cols; j++){
+        for (int i=0; i<rows; i++){            
+            F_mat(2*i, 2*j) = F_mat(2*i, 2*j+1) = F_mat(2*i+1, 2*j) = F_mat(2*i+1, 2*j+1) = C_mat(i, j);
+        }
+    }
 }
