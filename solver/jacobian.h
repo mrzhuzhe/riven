@@ -4,8 +4,8 @@
 
 void jacobian_solver(const Eigen::MatrixXf& A, Eigen::MatrixXf& x,const Eigen::MatrixXf& b, int rows, int cols, float tol=FLT_EPSILON ){
     std::cout << "jacobian_solver" << std::endl;
-    std::cout << "A\n" << A << std::endl;    
-    std::cout << "b\n" << b << std::endl;
+    // std::cout << "A\n" << A << std::endl;    
+    // std::cout << "b\n" << b << std::endl;
 
     Eigen::MatrixXf T(rows, cols);
     Eigen::MatrixXf old(rows, cols);
@@ -19,7 +19,7 @@ void jacobian_solver(const Eigen::MatrixXf& A, Eigen::MatrixXf& x,const Eigen::M
             }
         }
     }
-    std::cout << "T\n" << T << std::endl;
+    //std::cout << "T\n" << T << std::endl;
     const int max_iter = 10000;
     float temp = 0, max_diff_norm=0, max_norm=0;
     for (int iter=0; iter<max_iter; iter++){
@@ -45,13 +45,13 @@ void jacobian_solver(const Eigen::MatrixXf& A, Eigen::MatrixXf& x,const Eigen::M
             break;
         }
     }
-    std::cout << "x\n" << x << std::endl;
+    //std::cout << "x\n" << x << std::endl;
 }
 
 void gs_solver(const Eigen::MatrixXf& A, Eigen::MatrixXf& x,const Eigen::MatrixXf& b, int rows, int cols, float tol=FLT_EPSILON){
     std::cout << "gs_solver" << std::endl;
-    std::cout << "A\n" << A << std::endl;
-    std::cout << "b\n" << b << std::endl;
+    // std::cout << "A\n" << A << std::endl;
+    // std::cout << "b\n" << b << std::endl;
 
     Eigen::MatrixXf old(rows, cols);
 
@@ -84,5 +84,5 @@ void gs_solver(const Eigen::MatrixXf& A, Eigen::MatrixXf& x,const Eigen::MatrixX
         }
     }
 
-    std::cout << "x\n" << x << std::endl;
+    //std::cout << "x\n" << x << std::endl;
 }
