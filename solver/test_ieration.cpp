@@ -43,19 +43,19 @@ void test_case(Eigen::MatrixXf mat01, int rows, int cols){
     Fmat2Cmat(b_8, b_4, rows/2, 1);    
 
     // 16 - 8
-    jacobian_solver(mat01, x_16, b, rows, cols, 1e-3f);    
+    jacobian_solver(mat01, x_16, b, rows, cols, 1e-2f);    
     Fmat2Cmat(x_16, x_8, rows, 1);
 
     // 8-4
-    jacobian_solver(mat01_8, x_8, b_8, rows/2, cols/2, 1e-4f);
+    jacobian_solver(mat01_8, x_8, b_8, rows/2, cols/2, 1e-3f);
     Fmat2Cmat(x_8, x_4, rows/2, 1);
     
     // 4
-    jacobian_solver(mat01_4, x_4, b_4, rows/4, cols/4, 1e-5f);
+    jacobian_solver(mat01_4, x_4, b_4, rows/4, cols/4, 1e-4f);
     
     // 4-8
     Cmat2Fmat(x_4, x_8, rows/4, 1);
-    jacobian_solver(mat01_8, x_8, b_8, rows/2, cols/2, 1e-6f);
+    jacobian_solver(mat01_8, x_8, b_8, rows/2, cols/2, 1e-5f);
 
     // 8 - 16
     Cmat2Fmat(x_8, x_16, rows/2, 1);
