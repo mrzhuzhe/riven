@@ -1,7 +1,12 @@
-#include <float.h>
 #pragma once
+#include <float.h>
 
 void cg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, const Eigen::MatrixXf& b, float tol=FLT_EPSILON ){
+
+    // std::cout << " \n A \n " << mat << std::endl;
+    // std::cout << " \n x \n " << x << std::endl;
+    // std::cout << " \n b \n " << b << std::endl;
+
     int brows = b.rows();
     int bcols = b.cols();
     Eigen::MatrixXf search_direction(brows, bcols); 
@@ -14,9 +19,8 @@ void cg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, cons
     search_direction = residual=  b - mat * x;
     old_sqr_resid_norm = residual.transpose() * residual;
     int iter_count = 0;
-    //while ((old_sqr_resid_norm.maxCoeff() > tol) && (iter_count < 10)) {
-    //while ((iter_count < 100)) {
-    while ((residual.maxCoeff() > tol) && (iter_count < 100)) {
+    //while ((old_sqr_resid_norm.maxCoeff() > tol) && (iter_count < 100)) {
+    while ((old_sqr_resid_norm.maxCoeff() > tol)) {
         iter_count++;
         A_search_direction = mat * search_direction;
         step_size = (search_direction.transpose() * A_search_direction);

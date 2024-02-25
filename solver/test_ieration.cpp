@@ -59,7 +59,7 @@ void test_case(const Eigen::MatrixXf& mat01, int rows, int cols, Eigen::MatrixXf
 }
 
 int main() {
-    int rows = 32, cols = 32;
+    int rows = 64, cols = 64;
     Eigen::MatrixXf mat01(rows, cols);
     Eigen::MatrixXf b(rows, 1);
     Eigen::MatrixXf x(rows, 1);
@@ -90,8 +90,10 @@ int main() {
 
     test_case(mat02, rows, cols, x, b, x2);
 
+    std::cout << "\n ------------------------------ test cg \n" << std::endl;
     //  CG 
     Eigen::MatrixXf cg_x(rows, 1);
+    cg_x.setZero(rows, 1);
     cg(mat01, rows, cols, cg_x, b);
     //std::cout << cg_x << std::endl;
     std::cout << "cg error " << (cg_x - x2).maxCoeff() << " " << (cg_x - x2).minCoeff() << std::endl;
