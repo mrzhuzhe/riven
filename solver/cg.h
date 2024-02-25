@@ -14,14 +14,27 @@ void cg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, cons
     search_direction = residual=  b - mat * x;
     old_sqr_resid_norm = residual.transpose() * residual;
     int iter_count = 0;
-    while (old_sqr_resid_norm.maxCoeff() > tol) {
+    //while ((old_sqr_resid_norm.maxCoeff() > tol) && (iter_count < 10)) {
+    while ((iter_count < 100)) {
         iter_count++;
         A_search_direction = mat * search_direction;
-        step_size =  (old_sqr_resid_norm * old_sqr_resid_norm) / (search_direction.transpose() * A_search_direction);
-        x += A_search_direction * step_size;
+        step_size = (search_direction.transpose() * A_search_direction);
+        for (int j=0;j<bcols;j++) {
+            for (int i=0;i<bcols;i++) {
+                //step_size(i, j) =  (old_sqr_resid_norm(i, j) * old_sqr_resid_norm(i, j)) / step_size(i, j);
+                step_size(i, j) =  (old_sqr_resid_norm(i, j)) / step_size(i, j);
+            }
+        }        
+        x += search_direction * step_size;
         residual -= A_search_direction * step_size;
         new_sqr_resid_norm = residual.transpose() * residual;
-        search_direction = residual + A_search_direction * std::pow(new_sqr_resid_norm / old_sqr_resid_norm, 2) ;
+        for (int j=0;j<bcols;j++) {
+            for (int i=0;i<bcols;i++) {                
+                //step_size(i, j) = (new_sqr_resid_norm(i, j) / old_sqr_resid_norm(i, j)) * (new_sqr_resid_norm(i, j) / old_sqr_resid_norm(i, j));
+                step_size(i, j) = (new_sqr_resid_norm(i, j) / old_sqr_resid_norm(i, j));
+            }
+        }
+        search_direction = residual + search_direction * step_size;
         old_sqr_resid_norm = new_sqr_resid_norm;
     }
     std::cout << "cg break! iter_count: " << iter_count << std::endl;
