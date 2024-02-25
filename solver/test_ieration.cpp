@@ -3,12 +3,10 @@
 #include <limits.h>
 #include "jacobian.h"
 #include "multigrid.h"
+#include "cg.h"
 
-
-void test_case(Eigen::MatrixXf mat01, int rows, int cols){
-    Eigen::MatrixXf b(rows, 1);
-    Eigen::MatrixXf x(rows, 1);
-    b = Eigen::MatrixXf::Random(rows, 1);
+void test_case(const Eigen::MatrixXf& mat01, int rows, int cols, Eigen::MatrixXf& x, const Eigen::MatrixXf& b){
+    
     jacobian_solver(mat01, x, b, rows, cols);
     
     Eigen::MatrixXf x1(rows, 1);
@@ -65,8 +63,12 @@ void test_case(Eigen::MatrixXf mat01, int rows, int cols){
 }
 
 int main() {
-    int rows = 96, cols = 96;
+    int rows = 32, cols = 32;
     Eigen::MatrixXf mat01(rows, cols);
+    Eigen::MatrixXf b(rows, 1);
+    Eigen::MatrixXf x(rows, 1);
+    b = Eigen::MatrixXf::Random(rows, 1);
+
     Tridiagonal_mat(mat01, rows, cols);
     std::cout << "\n ------------------------------ test case 1 mat01.block(0, 0, 8, 8) \n" 
     << mat01.block(0, 0, 8, 8) 
@@ -77,7 +79,7 @@ int main() {
     // 2, -1, 10,-1,
     // 0, -3, -1, 8;
     // b << 6, 25, -11, 15;
-    test_case(mat01, rows, cols);
+    test_case(mat01, rows, cols, x, b);
 
     Eigen::MatrixXf mat02(rows, cols);
     mat02 = Eigen::MatrixXf::Random(rows, cols);
@@ -86,7 +88,22 @@ int main() {
     << mat02.block(0, 0, 8, 8) 
     << " \n rows cols " << rows << " " << cols << std::endl;
 
-    test_case(mat02, rows, cols);
+    test_case(mat02, rows, cols, x, b);
+
+    //  CG 
+    cg(mat01, rows, cols, x, b);
+
+    //  PCG
+
+    //  BICG
+
+    //  BICGSTAB
+
+    //  GMRES
+
+    //  GMRES-LU0
+
+    //  GMRES-LUT
 
     return 0;
 }
