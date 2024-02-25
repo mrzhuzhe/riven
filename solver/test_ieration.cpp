@@ -68,7 +68,7 @@ int main() {
 
     Eigen::MatrixXf x2(rows, 1);
     x2 = mat01.colPivHouseholderQr().solve(b);
-    std::cout << "eigen solution\n" << x2 << std::endl;
+    //std::cout << "eigen solution\n" << x2 << std::endl;
 
     std::cout << "\n ------------------------------ test case 1 mat01.block(0, 0, 8, 8) \n" 
     << mat01.block(0, 0, 8, 8) 
@@ -93,7 +93,7 @@ int main() {
     //  CG 
     Eigen::MatrixXf cg_x(rows, 1);
     cg(mat01, rows, cols, cg_x, b);
-    std::cout << cg_x << std::endl;
+    //std::cout << cg_x << std::endl;
     std::cout << "cg error " << (cg_x - x2).maxCoeff() << " " << (cg_x - x2).minCoeff() << std::endl;
 
     //  PCG

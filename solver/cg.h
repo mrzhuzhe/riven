@@ -15,7 +15,8 @@ void cg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, cons
     old_sqr_resid_norm = residual.transpose() * residual;
     int iter_count = 0;
     //while ((old_sqr_resid_norm.maxCoeff() > tol) && (iter_count < 10)) {
-    while ((iter_count < 100)) {
+    //while ((iter_count < 100)) {
+    while ((residual.maxCoeff() > tol) && (iter_count < 100)) {
         iter_count++;
         A_search_direction = mat * search_direction;
         step_size = (search_direction.transpose() * A_search_direction);
