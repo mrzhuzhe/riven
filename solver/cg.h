@@ -34,7 +34,7 @@ void cg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, cons
     int iter_count = 0;
     //while ((old_sqr_resid_norm.maxCoeff() > tol) && (iter_count < 100)) {
     //while ((old_sqr_resid_norm.maxCoeff() > tol)) {
-    while ((std::sqrt(old_sqr_resid_norm.sum()) > tol*getNorm(b)) && (iter_count < 1000)) {
+    while ((std::sqrt(old_sqr_resid_norm.sum()) > tol*getNorm(b)) && (iter_count < 10000)) {
         iter_count++;
         A_search_direction = mat * search_direction;
         step_size = (search_direction.transpose() * A_search_direction);
@@ -86,10 +86,10 @@ void bicg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, co
     Eigen::MatrixXf new_sqr_resid_norm(bcols, bcols);
 
     search_direction_2 = search_direction = residual_2 = residual =  b - mat * x;
-    old_sqr_resid_norm = residual.transpose() * residual_2;
+    old_sqr_resid_norm = residual_2.transpose() * residual;
     int iter_count = 0;
     //while ((old_sqr_resid_norm.maxCoeff() > tol) && (iter_count < 100)) {
-    while ((getNorm(residual) > tol*getNorm(b)) && (iter_count < 1000)) {
+    while ((getNorm(residual) > tol*getNorm(b)) && (iter_count < 10000)) {
         iter_count++;
         A_search_direction = mat * search_direction;
         A_search_direction_2 = mat.transpose() * search_direction_2;
