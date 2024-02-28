@@ -10,6 +10,7 @@ void test_case(const Eigen::MatrixXf& mat01, int rows, int cols, Eigen::MatrixXf
     jacobian_solver(mat01, x, b, rows, cols);
     
     Eigen::MatrixXf x1(rows, 1);
+    x1.setZero(rows, 1);
     gs_solver(mat01, x1, b, rows, cols);
     
     std::cout << "jacobian error " << (x - eigen_ans).maxCoeff() << " " << (x - eigen_ans).minCoeff() << std::endl;
@@ -68,7 +69,23 @@ int main(int argc, char *argv[]) {
     Eigen::MatrixXf b(rows, 1);
     Eigen::MatrixXf x(rows, 1);
     b = Eigen::MatrixXf::Random(rows, 1);
-    Tridiagonal_mat(mat01, rows, cols);
+
+    int test_type = 0;
+    if (argc > 2) {
+        test_type = atoi(argv[2]);
+    }
+    mat01 = Eigen::MatrixXf::Random(rows, cols);
+    switch (test_type)
+    {
+    case 1:
+        Tridiagonal_mat(mat01, rows, cols);
+        break;
+    case 2:
+        mat01 = mat01.transpose() * mat01;
+        break;
+    default:
+        break;
+    }   
 
     Eigen::MatrixXf x2(rows, 1);
     x2 = mat01.colPivHouseholderQr().solve(b);
@@ -83,6 +100,7 @@ int main(int argc, char *argv[]) {
     // 2, -1, 10,-1,
     // 0, -3, -1, 8;
     // b << 6, 25, -11, 15;
+    x.setZero(rows, 1);
     test_case(mat01, rows, cols, x, b, x2);
 
     Eigen::MatrixXf mat02(rows, cols);
@@ -92,6 +110,7 @@ int main(int argc, char *argv[]) {
     << mat02.block(0, 0, 8, 8) 
     << " \n rows cols " << rows << " " << cols << std::endl;
 
+    x.setZero(rows, 1);
     test_case(mat02, rows, cols, x, b, x2);
 
     std::cout << "\n ------------------------------ test cg \n" << std::endl;

@@ -34,7 +34,7 @@ void cg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, cons
     int iter_count = 0;
     //while ((old_sqr_resid_norm.maxCoeff() > tol) && (iter_count < 100)) {
     //while ((old_sqr_resid_norm.maxCoeff() > tol)) {
-    while ((std::sqrt(old_sqr_resid_norm.sum()) / getNorm(b) > tol) && (iter_count < 1000)) {
+    while ((std::sqrt(old_sqr_resid_norm.sum()) > tol*getNorm(b)) && (iter_count < 1000)) {
         iter_count++;
         A_search_direction = mat * search_direction;
         step_size = (search_direction.transpose() * A_search_direction);
@@ -63,6 +63,7 @@ void cg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, cons
 /*
 https://mathworld.wolfram.com/BiconjugateGradientMethod.html
 wikipedia is wrong
+https://www.cfd-online.com/Wiki/Biconjugate_gradient_method
 */
 void bicg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, const Eigen::MatrixXf& b, float tol=FLT_EPSILON ){
 
@@ -88,7 +89,7 @@ void bicg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, co
     old_sqr_resid_norm = residual.transpose() * residual_2;
     int iter_count = 0;
     //while ((old_sqr_resid_norm.maxCoeff() > tol) && (iter_count < 100)) {
-    while ((getNorm(residual) / getNorm(b) > tol) && (iter_count < 1000)) {
+    while ((getNorm(residual) > tol*getNorm(b)) && (iter_count < 1000)) {
         iter_count++;
         A_search_direction = mat * search_direction;
         A_search_direction_2 = mat.transpose() * search_direction_2;
@@ -102,7 +103,7 @@ void bicg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, co
         x += search_direction * step_size;
         residual -= A_search_direction * step_size;
         residual_2 -= A_search_direction_2 * step_size;
-        new_sqr_resid_norm = residual.transpose() * residual_2;
+        new_sqr_resid_norm = residual_2.transpose() * residual;
         for (int j=0;j<bcols;j++) {
             for (int i=0;i<bcols;i++) {                
                 //step_size(i, j) = (new_sqr_resid_norm(i, j) / old_sqr_resid_norm(i, j)) * (new_sqr_resid_norm(i, j) / old_sqr_resid_norm(i, j));

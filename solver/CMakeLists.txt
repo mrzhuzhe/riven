@@ -13,5 +13,6 @@ add_executable(test_simp test_simp.cpp)
 add_executable(test_lu test_lu.cpp)
 add_executable(test_eigen test_eigen.cpp)
 add_executable(test_ieration test_ieration.cpp)
+add_executable(test_cg test_cg.cpp)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
