@@ -58,8 +58,12 @@ void test_case(const Eigen::MatrixXf& mat01, int rows, int cols, Eigen::MatrixXf
     std::cout << "multi grid error " << (x_16 - eigen_ans).maxCoeff() << " " << (x_16 - eigen_ans).minCoeff() << std::endl;
 }
 
-int main() {
-    int rows = 64, cols = 64;
+int main(int argc, char *argv[]) {
+    int size = 64;
+    if (argc > 1) {
+        size = atoi(argv[1]);
+    }
+    int rows = size, cols = size;
     Eigen::MatrixXf mat01(rows, cols);
     Eigen::MatrixXf b(rows, 1);
     Eigen::MatrixXf x(rows, 1);
@@ -101,6 +105,11 @@ int main() {
     //  PCG
 
     //  BICG
+    Eigen::MatrixXf bicg_x(rows, 1);
+    bicg_x.setZero(rows, 1);
+    bicg(mat01, rows, cols, bicg_x, b);
+    //std::cout << cg_x << std::endl;
+    std::cout << "bicg error " << (bicg_x - x2).maxCoeff() << " " << (bicg_x - x2).minCoeff() << std::endl;
 
     //  BICGSTAB
 
