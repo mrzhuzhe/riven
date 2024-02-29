@@ -2,6 +2,7 @@
 #include <Eigen/Dense>
 #include "multigrid.h"
 #include "cg.h"
+#include "bicg.h"
 
 int main(int argc, char *argv[]) {
     int size = 64;
@@ -31,9 +32,8 @@ int main(int argc, char *argv[]) {
         break;
     }   
 
-    Eigen::MatrixXf x2(rows, 1);
-    x2 = mat01.colPivHouseholderQr().solve(b);
-    //std::cout << "eigen solution\n" << x2 << std::endl;
+    x = mat01.colPivHouseholderQr().solve(b);
+    //std::cout << "eigen solution\n" << x << std::endl;
 
     std::cout << "\n ------------------------------ test cg \n" << std::endl;
     //  CG 
@@ -41,16 +41,32 @@ int main(int argc, char *argv[]) {
     cg_x.setZero(rows, 1);
     cg(mat01, rows, cols, cg_x, b);
     //std::cout << cg_x << std::endl;
-    std::cout << "cg error " << (cg_x - x2).maxCoeff() << " " << (cg_x - x2).minCoeff() << std::endl;
+    std::cout << "cg error " << (cg_x - x).maxCoeff() << " " << (cg_x - x).minCoeff() << std::endl;
 
     //  PCG
-
+    Eigen::MatrixXf pcg_x(rows, 1);
+    pcg_x.setZero(rows, 1);
+    Eigen::MatrixXf jacobian_M(rows, cols);
+    // jacobian precondition
+    for (int j=0;j<cols;j++){
+        for (int i=0;i<rows;i++){
+            if (i==j) {
+                jacobian_M(i,j) = mat01(i,j);
+            } else {
+                jacobian_M(i,j) = 0;
+            }
+        }
+    }
+    pcg(mat01, rows, cols, pcg_x, b, jacobian_M);
+    //std::cout << pcg_x << std::endl;
+    std::cout << "pcg jacobian_M error " << (pcg_x - x).maxCoeff() << " " << (pcg_x - x).minCoeff() << std::endl;
+    
     //  BICG
     Eigen::MatrixXf bicg_x(rows, 1);
     bicg_x.setZero(rows, 1);
     bicg(mat01, rows, cols, bicg_x, b);
-    //std::cout << cg_x << std::endl;
-    std::cout << "bicg error " << (bicg_x - x2).maxCoeff() << " " << (bicg_x - x2).minCoeff() << std::endl;
+    //std::cout << bicg_x << std::endl;
+    std::cout << "bicg error " << (bicg_x - x).maxCoeff() << " " << (bicg_x - x).minCoeff() << std::endl;
 
     //  BICGSTAB
 

@@ -60,12 +60,9 @@ void cg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, cons
 
 }
 
-/*
-https://mathworld.wolfram.com/BiconjugateGradientMethod.html
-wikipedia is wrong
-https://www.cfd-online.com/Wiki/Biconjugate_gradient_method
-*/
-void bicg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, const Eigen::MatrixXf& b, float tol=FLT_EPSILON ){
+
+//  https://www.cse.psu.edu/~b58/cse456/lecture20.pdf
+void pcg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, const Eigen::MatrixXf& b, const Eigen::MatrixXf&  M, float tol=FLT_EPSILON ){
 
     // std::cout << " \n A \n " << mat << std::endl;
     // std::cout << " \n x \n " << x << std::endl;
@@ -76,44 +73,40 @@ void bicg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, co
     Eigen::MatrixXf search_direction(brows, bcols); 
     Eigen::MatrixXf residual(brows, bcols); 
     Eigen::MatrixXf A_search_direction(brows, bcols); // brows == A.rows()
-
-    Eigen::MatrixXf search_direction_2(brows, bcols); 
-    Eigen::MatrixXf residual_2(brows, bcols); 
-    Eigen::MatrixXf A_search_direction_2(brows, bcols); 
-
     Eigen::MatrixXf step_size(bcols, bcols);
     Eigen::MatrixXf old_sqr_resid_norm(bcols, bcols);
     Eigen::MatrixXf new_sqr_resid_norm(bcols, bcols);
 
-    search_direction_2 = search_direction = residual_2 = residual =  b - mat * x;
-    old_sqr_resid_norm = residual_2.transpose() * residual;
+    Eigen::MatrixXf M_inv(rows, cols);
+    M_inv = M.inverse(); 
+    Eigen::MatrixXf Z(brows, bcols); 
+
+    residual =  b - mat * x;
+    Z = M_inv * residual; // Notice this is only good for jacobian can be further optimized
+    search_direction = Z;
+    old_sqr_resid_norm = residual.transpose() * Z;
     int iter_count = 0;
-    //while ((old_sqr_resid_norm.maxCoeff() > tol) && (iter_count < 100)) {
-    while ((getNorm(residual) > tol*getNorm(b)) && (iter_count < 10000)) {
+    while ((std::sqrt(old_sqr_resid_norm.sum()) > tol*getNorm(b)) && (iter_count < 10000)) {
         iter_count++;
         A_search_direction = mat * search_direction;
-        A_search_direction_2 = mat.transpose() * search_direction_2;
-        step_size = (search_direction_2.transpose() * A_search_direction);
+        step_size = (search_direction.transpose() * A_search_direction);
         for (int j=0;j<bcols;j++) {
             for (int i=0;i<bcols;i++) {
-                //step_size(i, j) =  (old_sqr_resid_norm(i, j) * old_sqr_resid_norm(i, j)) / step_size(i, j);
                 step_size(i, j) =  (old_sqr_resid_norm(i, j)) / step_size(i, j);
             }
         }        
         x += search_direction * step_size;
         residual -= A_search_direction * step_size;
-        residual_2 -= A_search_direction_2 * step_size;
-        new_sqr_resid_norm = residual_2.transpose() * residual;
+        Z = M_inv * residual;
+        new_sqr_resid_norm = residual.transpose() * Z;
         for (int j=0;j<bcols;j++) {
             for (int i=0;i<bcols;i++) {                
-                //step_size(i, j) = (new_sqr_resid_norm(i, j) / old_sqr_resid_norm(i, j)) * (new_sqr_resid_norm(i, j) / old_sqr_resid_norm(i, j));
                 step_size(i, j) = (new_sqr_resid_norm(i, j) / old_sqr_resid_norm(i, j));
             }
         }
-        search_direction = residual + search_direction * step_size;
-        search_direction_2 = residual_2 + search_direction_2 * step_size;
+        search_direction = Z + search_direction * step_size;
         old_sqr_resid_norm = new_sqr_resid_norm;
     }
-    std::cout << "bicg break! iter_count: " << iter_count << std::endl;
+    std::cout << "pcg break! iter_count: " << iter_count << std::endl;
 
 }

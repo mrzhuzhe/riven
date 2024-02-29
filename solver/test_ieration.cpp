@@ -121,22 +121,5 @@ int main(int argc, char *argv[]) {
     //std::cout << cg_x << std::endl;
     std::cout << "cg error " << (cg_x - x2).maxCoeff() << " " << (cg_x - x2).minCoeff() << std::endl;
 
-    //  PCG
-
-    //  BICG
-    Eigen::MatrixXf bicg_x(rows, 1);
-    bicg_x.setZero(rows, 1);
-    bicg(mat01, rows, cols, bicg_x, b);
-    //std::cout << cg_x << std::endl;
-    std::cout << "bicg error " << (bicg_x - x2).maxCoeff() << " " << (bicg_x - x2).minCoeff() << std::endl;
-
-    //  BICGSTAB
-
-    //  GMRES
-
-    //  GMRES-LU0
-
-    //  GMRES-LUT
-
     return 0;
 }
