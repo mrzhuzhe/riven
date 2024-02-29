@@ -14,6 +14,29 @@ float getNorm(const Eigen::MatrixXf& mat){
     return std::sqrt(sum);
 }
 
+void ichl(Eigen::MatrixXf& mat, int rows, int cols){
+    for (int k=0;k<cols;k++){
+        mat(k, k) = std::sqrt(mat(k, k));
+        for (int i=k+1;i<rows;i++){
+            if (mat(i, k)!=0) {
+                mat(i, k) /= mat(k, k);
+            }            
+        }
+        for (int j=k+1;j<cols;j++){
+            for (int i=j;i<rows;i++){
+                if (mat(i, j)!=0) {
+                    mat(i, j) -= mat(i, k) * mat(j,k);
+                }
+            }
+        }
+        for (int j=0;j<cols;j++){
+            for (int i=0;i<j;i++){
+                mat(i, j) = 0;
+            }
+        }
+    }
+}
+
 void cg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, const Eigen::MatrixXf& b, float tol=FLT_EPSILON ){
 
     // std::cout << " \n A \n " << mat << std::endl;

@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
     cg_x.setZero(rows, 1);
     cg(mat01, rows, cols, cg_x, b);
     //std::cout << cg_x << std::endl;
-    std::cout << "cg error " << (cg_x - x).maxCoeff() << " " << (cg_x - x).minCoeff() << std::endl;
+    std::cout << "cg error " << (cg_x - x).maxCoeff() << " " << (cg_x - x).minCoeff() << "\n " << std::endl;
 
     //  PCG
     Eigen::MatrixXf pcg_x(rows, 1);
@@ -56,17 +56,30 @@ int main(int argc, char *argv[]) {
                 jacobian_M(i,j) = 0;
             }
         }
-    }
+    }    
     pcg(mat01, rows, cols, pcg_x, b, jacobian_M);
     //std::cout << pcg_x << std::endl;
-    std::cout << "pcg jacobian_M error " << (pcg_x - x).maxCoeff() << " " << (pcg_x - x).minCoeff() << std::endl;
+    std::cout << "pcg jacobian_M error " << (pcg_x - x).maxCoeff() << " " << (pcg_x - x).minCoeff() << "\n " << std::endl;
     
+    // Incomplete_Cholesky_factorization precondition
+    Eigen::MatrixXf ich_M(rows, cols);
+    ich_M = mat01;
+    // ich_M << 5,-2,0,-2,-2, -2,5,-2,0,0, 0,-2,5,-2,0, -2,0,-2,5,-2, -2,0,0,-2,5;    
+    // ichl(ich_M, 5, 5);
+    //std::cout << ich_M << std::endl;
+    ichl(ich_M, rows, cols);
+    ich_M = ich_M * ich_M.transpose();
+    pcg_x.setZero(rows, 1);
+    pcg(mat01, rows, cols, pcg_x, b, ich_M);
+    //std::cout << pcg_x << std::endl;
+    std::cout << "pcg ichl_M error " << (pcg_x - x).maxCoeff() << " " << (pcg_x - x).minCoeff() << "\n " << std::endl;
+
     //  BICG
     Eigen::MatrixXf bicg_x(rows, 1);
     bicg_x.setZero(rows, 1);
     bicg(mat01, rows, cols, bicg_x, b);
     //std::cout << bicg_x << std::endl;
-    std::cout << "bicg error " << (bicg_x - x).maxCoeff() << " " << (bicg_x - x).minCoeff() << std::endl;
+    std::cout << "bicg error " << (bicg_x - x).maxCoeff() << " " << (bicg_x - x).minCoeff() << "\n " << std::endl;
 
     //  BICGSTAB
 
