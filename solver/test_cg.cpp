@@ -3,6 +3,7 @@
 #include "multigrid.h"
 #include "cg.h"
 #include "bicg.h"
+#include "gmres.h"
 
 int main(int argc, char *argv[]) {
     int size = 64;
@@ -81,13 +82,9 @@ int main(int argc, char *argv[]) {
     //std::cout << bicg_x << std::endl;
     std::cout << "bicg error " << (bicg_x - x).maxCoeff() << " " << (bicg_x - x).minCoeff() << "\n " << std::endl;
 
-    //  BICGSTAB
-
-    //  GMRES
-
-    //  GMRES-LU0
-
-    //  GMRES-LUT
+    // GMRES
+    test_arnoldi(mat01, b, rows, cols);
+    
 
     return 0;
 }

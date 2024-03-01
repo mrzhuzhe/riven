@@ -37,7 +37,7 @@ void ichl(Eigen::MatrixXf& mat, int rows, int cols){
     }
 }
 
-void cg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, const Eigen::MatrixXf& b, float tol=FLT_EPSILON ){
+void cg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, const Eigen::MatrixXf& b, float tol=FLT_EPSILON){
 
     // std::cout << " \n A \n " << mat << std::endl;
     // std::cout << " \n x \n " << x << std::endl;
