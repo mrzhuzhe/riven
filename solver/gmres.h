@@ -2,7 +2,7 @@
 #include "cg.h"
 
 //  https://en.wikipedia.org/wiki/Arnoldi_iteration
-void arnoldi(const Eigen::MatrixXf& A, Eigen::MatrixXf& b, Eigen::MatrixXf& Q , int rows, int cols, int k, Eigen::MatrixXf& H, float tol=FLT_EPSILON){
+void arnoldi(const Eigen::MatrixXf& A, const Eigen::MatrixXf& b, Eigen::MatrixXf& Q , int rows, int cols, int k, Eigen::MatrixXf& H, float tol=FLT_EPSILON){
     int bcols = b.cols();
     for (int i=0;i<bcols;i++){
         Q.col(i) = b / getNorm(b.col(i));
@@ -25,7 +25,7 @@ std::tuple<float, float> given_rotation(float v1, float v2) {
 
 void apply_givens_rotation(Eigen::MatrixXf& H, Eigen::VectorXf& cs, Eigen::VectorXf& sn, int k) {
     float temp = 0;
-    for (int i = 0;i<k-1;i++){
+    for (int i = 0;i<=k-1;i++){
         temp = cs(i) * H(i, k) + sn(i) *H(i+1, k);
         H(i+1,k) = -sn(i) * H(i, k) + cs(i) * H(i+1, k);
         H(i, k) = temp;
@@ -58,7 +58,7 @@ void test_arnoldi(const Eigen::MatrixXf& A, Eigen::MatrixXf& b, int rows, int co
 }
 
 // todo test bcols > 1
-void gmres(const Eigen::MatrixXf& A, Eigen::MatrixXf& x, Eigen::MatrixXf& b, int rows, int cols, float tol=FLT_EPSILON) {
+void gmres(const Eigen::MatrixXf& A, Eigen::MatrixXf& x, const Eigen::MatrixXf& b, int rows, int cols, float tol=FLT_EPSILON) {
     int max_iteration = 1000;
     int bcols = b.cols();
     
