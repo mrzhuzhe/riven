@@ -83,6 +83,11 @@ int main(int argc, char *argv[]) {
     std::cout << "bicg error " << (bicg_x - x).maxCoeff() << " " << (bicg_x - x).minCoeff() << "\n " << std::endl;
 
     // GMRES
+    mat01 << 2, -1, 0, 0, 
+    -1, 2, -1, 0, 
+    0, -1,2, -1,
+    0, 0, -1, 2;
+    b << 1, 2, 3, 4;
     test_arnoldi(mat01, b, rows, cols);
     
 
