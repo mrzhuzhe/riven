@@ -83,13 +83,18 @@ int main(int argc, char *argv[]) {
     std::cout << "bicg error " << (bicg_x - x).maxCoeff() << " " << (bicg_x - x).minCoeff() << "\n " << std::endl;
 
     // GMRES
-    mat01 << 2, -1, 0, 0, 
-    -1, 2, -1, 0, 
-    0, -1,2, -1,
-    0, 0, -1, 2;
-    b << 1, 2, 3, 4;
-    test_arnoldi(mat01, b, rows, cols);
-    
+    // mat01 << 2, -1, 0, 0, 
+    // -1, 2, -1, 0, 
+    // 0, -1,2, -1,
+    // 0, 0, -1, 2;
+    // b << 1, 2, 3, 4;
+    // test_arnoldi(mat01, b, rows, cols);
+
+    Eigen::MatrixXf gmres_x(rows, 1);
+    gmres_x.setZero(rows, 1);
+    gmres(mat01, gmres_x, b, rows, cols);
+    //std::cout << bicg_x << std::endl;
+    std::cout << "gmres error " << (gmres_x - x).maxCoeff() << " " << (gmres_x - x).minCoeff() << "\n " << std::endl;
 
     return 0;
 }
