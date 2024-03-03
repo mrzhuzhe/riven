@@ -17,19 +17,18 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 22. use log to address memory leak
 
 ## Thought
-1. gentoo 
+1. gentoo tinocore
 3. shared memory mapping read
 4. EURO LLVM
 6. avx_e1 / avx_mic / avx_mic_31 differen between avx and core_avx2
 8. theoric mechanic statistical mechanic quantum mechanic electric mechanic LBM 
 9. wasm
-10. qemu loongson risc-v
 11. mkl cbwr 
 12. intel trust zone
 13. large scale spice simulate
 14. measurement theory / toppology material
 16. .so pass params cpp memory align cause params address interrupt
-17. mix precision hgemm solver
+
 
 # done 
 1. vtune
@@ -39,3 +38,5 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 5. opencv gpu implement 
 6. cpu a55 and a72
 7. fast sweep method https://github.com/rgl-epfl/fastsweep
+8. mix precision hgemm solver
+9. qemu loongson risc-v
