@@ -1,6 +1,7 @@
 #pragma once
 #include "cg.h"
 
+// two inner function seems not linear dependent
 //  https://en.wikipedia.org/wiki/Arnoldi_iteration
 void arnoldi(const Eigen::MatrixXf& A, const Eigen::MatrixXf& b, Eigen::MatrixXf& Q , int rows, int cols, int k, Eigen::MatrixXf& H, float tol=FLT_EPSILON){
     int bcols = b.cols();
