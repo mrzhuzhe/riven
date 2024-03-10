@@ -4,6 +4,7 @@
 #include "cg.h"
 #include "bicg.h"
 #include "gmres.h"
+#include "bicg_stab.h"
 
 int main(int argc, char *argv[]) {
     int size = 64;
@@ -95,6 +96,13 @@ int main(int argc, char *argv[]) {
     gmres(mat01, gmres_x, b, rows, cols);
     //std::cout << bicg_x << std::endl;
     std::cout << "gmres error " << (gmres_x - x).maxCoeff() << " " << (gmres_x - x).minCoeff() << "\n " << std::endl;
+
+    // BICG-STAB
+    Eigen::MatrixXf bicg_stab_x(rows, 1);
+    bicg_stab_x.setZero(rows, 1);
+    bicg_stab(mat01, rows, cols, bicg_stab_x, b);
+    //std::cout << bicg_x << std::endl;
+    std::cout << "bicg stablized error " << (bicg_stab_x - x).maxCoeff() << " " << (bicg_stab_x - x).minCoeff() << "\n " << std::endl;
 
     return 0;
 }
