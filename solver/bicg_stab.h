@@ -38,7 +38,7 @@ void bicg_stab(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& 
     int iter_count = 0;
     float temp0 = 0, temp1 = 0, temp2 = 0, temp3 = 0;
     float bnorm = getNorm(b);
-    std::cout << "tol*bnorm" << tol*bnorm << std::endl;
+    //std::cout << "tol*bnorm" << tol*bnorm << std::endl;
 
     while ((iter_count < 10000)) {
     //while ((getNorm(residual) > tol*bnorm) && (iter_count < 10000)) {
@@ -46,7 +46,7 @@ void bicg_stab(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& 
         A_search_direction = mat * search_direction;
         //A_search_direction_2 = mat.transpose() * search_direction_2;
         step_size = (residual_2.transpose() * A_search_direction);
-        std::cout << old_sqr_resid_norm << " " <<  step_size << std::endl;
+        //std::cout << old_sqr_resid_norm << " " <<  step_size << std::endl;
         for (int j=0;j<bcols;j++) {
             for (int i=0;i<bcols;i++) {
                 step_size(i, j) =  step_size(i, j) != 0 ? (old_sqr_resid_norm(i, j)) / step_size(i, j) :  (old_sqr_resid_norm(i, j));    // alpha
@@ -58,7 +58,7 @@ void bicg_stab(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& 
         //std::cout << "s " << getNorm(s) << " " << step_size << " \n " << A_search_direction << "\n"  << std::endl;
         if (getNorm(s) <= tol*bnorm) {
             x = h;
-            std::cout << "s earlier break" << std::endl;
+            std::cout << "s earlier break iter_count: " << iter_count << std::endl;
             break;
         }
         t = mat * s;
@@ -81,14 +81,14 @@ void bicg_stab(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& 
         }  
         x = h + s * w;  
         residual = s - t * w; 
-        std::cout << "r " << getNorm(residual) << std::endl;
+        //std::cout << "r " << getNorm(residual) << std::endl;
         if (getNorm(residual) <= tol*bnorm) {
-            std::cout << "residual earlier break" << std::endl;
+            std::cout << "residual earlier break iter_count: " << iter_count << std::endl;
             break;
         }
         //residual_2 = s2 - t2 * w2;
         new_sqr_resid_norm = residual_2.transpose() * residual;        
-        std::cout << "alpha " << step_size << " " << new_sqr_resid_norm << std::endl;
+        //std::cout << "alpha " << step_size << " " << new_sqr_resid_norm << std::endl;
         for (int j=0;j<bcols;j++) {
             for (int i=0;i<bcols;i++) {   
                 alpha_div_w(i, j) = w(i, j) != 0 ? step_size(i, j) / w(i, j): step_size(i, j);      
@@ -96,7 +96,7 @@ void bicg_stab(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& 
                 step_size(i, j) = old_sqr_resid_norm(i, j) != 0 ? (new_sqr_resid_norm(i, j) / old_sqr_resid_norm(i, j)) : new_sqr_resid_norm(i, j) ; // beta
             }
         }
-        std::cout << "alpha_div_w" << alpha_div_w << " \n " << std::endl;
+        //std::cout << "alpha_div_w" << alpha_div_w << " \n " << std::endl;
         search_direction = residual + (search_direction - A_search_direction * w ) * (step_size * alpha_div_w);
         //search_direction_2 = residual_2 + (search_direction_2 - A_search_direction_2 * w2) * (step_size * alpha_div_w);
         old_sqr_resid_norm = new_sqr_resid_norm;

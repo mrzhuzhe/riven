@@ -55,9 +55,10 @@ void cg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, cons
     search_direction = residual=  b - mat * x;
     old_sqr_resid_norm = residual.transpose() * residual;
     int iter_count = 0;
+    float bnorm_tol = tol*getNorm(b);
     //while ((old_sqr_resid_norm.maxCoeff() > tol) && (iter_count < 100)) {
     //while ((old_sqr_resid_norm.maxCoeff() > tol)) {
-    while ((std::sqrt(old_sqr_resid_norm.sum()) > tol*getNorm(b)) && (iter_count < 10000)) {
+    while ((std::sqrt(old_sqr_resid_norm.sum()) > bnorm_tol) && (iter_count < 10000)) {
         iter_count++;
         A_search_direction = mat * search_direction;
         step_size = (search_direction.transpose() * A_search_direction);
@@ -102,6 +103,7 @@ void pcg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, con
 
     Eigen::MatrixXf M_inv(rows, cols);
     M_inv = M.inverse(); 
+    //cg(M, rows, cols, M_inv, Eigen::MatrixXf::Identity(rows, cols));
     Eigen::MatrixXf Z(brows, bcols); 
 
     residual =  b - mat * x;
@@ -109,7 +111,8 @@ void pcg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, con
     search_direction = Z;
     old_sqr_resid_norm = residual.transpose() * Z;
     int iter_count = 0;
-    while ((std::sqrt(old_sqr_resid_norm.sum()) > tol*getNorm(b)) && (iter_count < 10000)) {
+    float bnorm_tol = tol*getNorm(b);
+    while ((std::sqrt(old_sqr_resid_norm.sum()) > bnorm_tol) && (iter_count < 10000)) {
         iter_count++;
         A_search_direction = mat * search_direction;
         step_size = (search_direction.transpose() * A_search_direction);

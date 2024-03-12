@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 #include <Eigen/Dense>
 #include <limits.h>
 #include "jacobian.h"
@@ -7,12 +8,27 @@
 
 void test_case(const Eigen::MatrixXf& mat01, int rows, int cols, Eigen::MatrixXf& x, const Eigen::MatrixXf& b, const Eigen::MatrixXf& eigen_ans){
     
+    auto start{std::chrono::steady_clock::now()};
+    auto end{std::chrono::steady_clock::now()};
+    std::chrono::duration<double> elapsed_seconds{end - start};
+    
+    start = std::chrono::steady_clock::now();
     jacobian_solver(mat01, x, b, rows, cols);
+    end = std::chrono::steady_clock::now();
+    elapsed_seconds = end - start;
+    std::cout << "jacobian_solver: " << elapsed_seconds.count() << " Elapsed time " << std::endl;
+
+
     
     Eigen::MatrixXf x1(rows, 1);
     x1.setZero(rows, 1);
+
+    start = std::chrono::steady_clock::now();
     gs_solver(mat01, x1, b, rows, cols);
-    
+    end = std::chrono::steady_clock::now();
+    elapsed_seconds = end - start;
+    std::cout << "gs_solver: " << elapsed_seconds.count() << " Elapsed time " << std::endl;
+
     std::cout << "jacobian error " << (x - eigen_ans).maxCoeff() << " " << (x - eigen_ans).minCoeff() << std::endl;
     std::cout << "gs error " << (x1 - eigen_ans).maxCoeff() << " " << (x1 - eigen_ans).minCoeff() << std::endl;
 
@@ -88,7 +104,18 @@ int main(int argc, char *argv[]) {
     }   
 
     Eigen::MatrixXf x2(rows, 1);
+
+    auto start{std::chrono::steady_clock::now()};
+    auto end{std::chrono::steady_clock::now()};
+    std::chrono::duration<double> elapsed_seconds{end - start};
+    
+    start = std::chrono::steady_clock::now();
     x2 = mat01.colPivHouseholderQr().solve(b);
+    end = std::chrono::steady_clock::now();
+    elapsed_seconds = end - start;
+    std::cout << "eigen solver: " << elapsed_seconds.count() << " Elapsed time " << std::endl;
+
+    
     //std::cout << "eigen solution\n" << x2 << std::endl;
 
     std::cout << "\n ------------------------------ test case 1 mat01.block(0, 0, 8, 8) \n" 
@@ -103,21 +130,17 @@ int main(int argc, char *argv[]) {
     x.setZero(rows, 1);
     test_case(mat01, rows, cols, x, b, x2);
 
-    Eigen::MatrixXf mat02(rows, cols);
-    mat02 = Eigen::MatrixXf::Random(rows, cols);
-    mat02 = mat02.transpose() * mat02;  // easy to solve positive sysmetric
-    std::cout << "\n ------------------------------ test case2 mat02.block(0, 0, 8, 8) \n" 
-    << mat02.block(0, 0, 8, 8) 
-    << " \n rows cols " << rows << " " << cols << std::endl;
-
-    x.setZero(rows, 1);
-    test_case(mat02, rows, cols, x, b, x2);
-
     std::cout << "\n ------------------------------ test cg \n" << std::endl;
     //  CG 
     Eigen::MatrixXf cg_x(rows, 1);
     cg_x.setZero(rows, 1);
+
+    start = std::chrono::steady_clock::now();
     cg(mat01, rows, cols, cg_x, b);
+    end = std::chrono::steady_clock::now();
+    elapsed_seconds = end - start;
+    std::cout << "cg_solver: " << elapsed_seconds.count() << " Elapsed time " << std::endl;
+
     //std::cout << cg_x << std::endl;
     std::cout << "cg error " << (cg_x - x2).maxCoeff() << " " << (cg_x - x2).minCoeff() << std::endl;
 
