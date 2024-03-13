@@ -58,28 +58,28 @@ void cg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, cons
     float bnorm_tol = tol*getNorm(b);
     //while ((old_sqr_resid_norm.maxCoeff() > tol) && (iter_count < 100)) {
     //while ((old_sqr_resid_norm.maxCoeff() > tol)) {
-    while ((std::sqrt(old_sqr_resid_norm.sum()) > bnorm_tol) && (iter_count < 10000)) {
-        iter_count++;
+    while ((std::sqrt(old_sqr_resid_norm.sum()) > bnorm_tol) && (iter_count < 10000)) {        
         A_search_direction = mat * search_direction;
         step_size = (search_direction.transpose() * A_search_direction);
-        //std::cout << (old_sqr_resid_norm) << "  \n\n" <<  step_size << std::endl; //  must be othogonal to preview 
+        std::cout << (old_sqr_resid_norm) << "  \n\n" <<  step_size << std::endl; //  must be othogonal to preview 
         for (int j=0;j<bcols;j++) {
             for (int i=0;i<bcols;i++) {
                 //step_size(i, j) =  (old_sqr_resid_norm(i, j) * old_sqr_resid_norm(i, j)) / step_size(i, j);
-                step_size(i, j) = step_size(i, j)!=0 ? (old_sqr_resid_norm(i, j)) / step_size(i, j) : (old_sqr_resid_norm(i, j)) ;
+                step_size(i, j) = step_size(i, j)!=0 ? (old_sqr_resid_norm(i, j)) / step_size(i, j) : (old_sqr_resid_norm(i, j));
             }
         }        
         x += search_direction * step_size;
-        residual -= A_search_direction * step_size;
+        residual = iter_count%50 == 0 ? b - mat * x : residual - A_search_direction * step_size;
         new_sqr_resid_norm = residual.transpose() * residual;
         for (int j=0;j<bcols;j++) {
             for (int i=0;i<bcols;i++) {                
                 //step_size(i, j) = (new_sqr_resid_norm(i, j) / old_sqr_resid_norm(i, j)) * (new_sqr_resid_norm(i, j) / old_sqr_resid_norm(i, j));
-                step_size(i, j) = (new_sqr_resid_norm(i, j) / old_sqr_resid_norm(i, j));
+                step_size(i, j) = old_sqr_resid_norm(i, j)!=0?(new_sqr_resid_norm(i, j) / old_sqr_resid_norm(i, j)):new_sqr_resid_norm(i, j);
             }
         }
         search_direction = residual + search_direction * step_size;
         old_sqr_resid_norm = new_sqr_resid_norm;
+        iter_count++;
     }
     std::cout << "cg break! iter_count: " << iter_count << std::endl;
 
@@ -120,7 +120,7 @@ void pcg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, con
         step_size = (search_direction.transpose() * A_search_direction);
         for (int j=0;j<bcols;j++) {
             for (int i=0;i<bcols;i++) {
-                step_size(i, j) =  (old_sqr_resid_norm(i, j)) / step_size(i, j);
+                step_size(i, j) = step_size(i, j)!=0 ? (old_sqr_resid_norm(i, j)) / step_size(i, j) : (old_sqr_resid_norm(i, j)) ;
             }
         }        
         x += search_direction * step_size;

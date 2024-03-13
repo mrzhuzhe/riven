@@ -13,9 +13,9 @@ int main(int argc, char *argv[]) {
     }
     int rows = size, cols = size;
     Eigen::MatrixXf mat01(rows, cols);
-    Eigen::MatrixXf b(rows, 1);
-    Eigen::MatrixXf x(rows, 1);
-    b = Eigen::MatrixXf::Random(rows, 1);
+    Eigen::MatrixXf b(rows, rows);
+    Eigen::MatrixXf x(rows, rows);
+    b = Eigen::MatrixXf::Random(rows, rows);
 
     int test_type = 0;
     if (argc > 2) {
@@ -39,12 +39,13 @@ int main(int argc, char *argv[]) {
 
     std::cout << "\n ------------------------------ test cg \n" << std::endl;
     //  CG 
-    Eigen::MatrixXf cg_x(rows, 1);
-    cg_x.setZero(rows, 1);
+    Eigen::MatrixXf cg_x(rows, cols);
+    cg_x.setZero(rows, cols);
     cg(mat01, rows, cols, cg_x, b);
-    //std::cout << cg_x << std::endl;
+    std::cout << cg_x << std::endl;
     std::cout << "cg error " << (cg_x - x).maxCoeff() << " " << (cg_x - x).minCoeff() << "\n " << std::endl;
-
+    return 0;
+    
     //  PCG
     Eigen::MatrixXf pcg_x(rows, 1);
     pcg_x.setZero(rows, 1);
