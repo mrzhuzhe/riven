@@ -62,10 +62,11 @@ void cg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, cons
         iter_count++;
         A_search_direction = mat * search_direction;
         step_size = (search_direction.transpose() * A_search_direction);
+        //std::cout << (old_sqr_resid_norm) << "  \n\n" <<  step_size << std::endl; //  must be othogonal to preview 
         for (int j=0;j<bcols;j++) {
             for (int i=0;i<bcols;i++) {
                 //step_size(i, j) =  (old_sqr_resid_norm(i, j) * old_sqr_resid_norm(i, j)) / step_size(i, j);
-                step_size(i, j) =  (old_sqr_resid_norm(i, j)) / step_size(i, j);
+                step_size(i, j) = step_size(i, j)!=0 ? (old_sqr_resid_norm(i, j)) / step_size(i, j) : (old_sqr_resid_norm(i, j)) ;
             }
         }        
         x += search_direction * step_size;
@@ -102,8 +103,9 @@ void pcg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, con
     Eigen::MatrixXf new_sqr_resid_norm(bcols, bcols);
 
     Eigen::MatrixXf M_inv(rows, cols);
-    M_inv = M.inverse(); 
-    //cg(M, rows, cols, M_inv, Eigen::MatrixXf::Identity(rows, cols));
+    //M_inv = M.inverse(); 
+    cg(M, rows, cols, M_inv, Eigen::MatrixXf::Identity(rows, cols));
+    std::cout << "diff " << M_inv - M.inverse()<< std::endl;
     Eigen::MatrixXf Z(brows, bcols); 
 
     residual =  b - mat * x;
@@ -127,7 +129,7 @@ void pcg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, con
         new_sqr_resid_norm = residual.transpose() * Z;
         for (int j=0;j<bcols;j++) {
             for (int i=0;i<bcols;i++) {                
-                step_size(i, j) = (new_sqr_resid_norm(i, j) / old_sqr_resid_norm(i, j));
+                step_size(i, j) = old_sqr_resid_norm(i, j)!=0?(new_sqr_resid_norm(i, j) / old_sqr_resid_norm(i, j)):new_sqr_resid_norm(i, j);
             }
         }
         search_direction = Z + search_direction * step_size;
