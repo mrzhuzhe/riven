@@ -108,8 +108,6 @@ void pcg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, con
     Eigen::MatrixXf Z(brows, bcols);
     Z.setZero();
     cg(M, rows, cols, Z, residual);
-
-    //std::cout << Z - M_inv * residual << std::endl;
     // Z = M_inv * residual; // Notice this is only good for jacobian can be further optimized 
 
     search_direction = Z;
@@ -130,7 +128,6 @@ void pcg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, con
         //Z = M_inv * residual;
         Z.setZero();
         cg(M, rows, cols, Z, residual);
-        //std::cout << Z - M_inv * residual << std::endl;
         new_sqr_resid_norm = residual.transpose() * Z;
         for (int j=0;j<bcols;j++) {
             for (int i=0;i<bcols;i++) {                
