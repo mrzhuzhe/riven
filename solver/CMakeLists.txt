@@ -8,6 +8,7 @@ set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 
 include_directories(${Eigen3_include_path})
+include_directories(inc)
 
 add_executable(test_simp test_simp.cpp)
 add_executable(test_lu test_lu.cpp)

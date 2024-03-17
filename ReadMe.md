@@ -2,6 +2,13 @@
 
 > Parallel programing with Cuda
 
+## Clone with submodule
+> git clone --recursive git@github.com:mrzhuzhe/riven.git
+
+Submodules list:
+
+- Eigen
+
 ## Notice
 
 1. all application is compiler with cuda Arch 80 (RTX 3090) you can change it on CMakeLists
