@@ -61,7 +61,7 @@ void cg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, cons
     while ((std::sqrt(old_sqr_resid_norm.sum()) > bnorm_tol) && (iter_count < 10000)) {        
         A_search_direction = mat * search_direction;
         step_size = (search_direction.transpose() * A_search_direction);
-        std::cout << (old_sqr_resid_norm) << "  \n\n" <<  step_size << std::endl; //  must be othogonal to preview 
+        //std::cout << (old_sqr_resid_norm) << "  \n\n" <<  step_size << std::endl; //  must be othogonal to preview 
         for (int j=0;j<bcols;j++) {
             for (int i=0;i<bcols;i++) {
                 //step_size(i, j) =  (old_sqr_resid_norm(i, j) * old_sqr_resid_norm(i, j)) / step_size(i, j);
@@ -102,14 +102,16 @@ void pcg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, con
     Eigen::MatrixXf old_sqr_resid_norm(bcols, bcols);
     Eigen::MatrixXf new_sqr_resid_norm(bcols, bcols);
 
-    Eigen::MatrixXf M_inv(rows, cols);
-    //M_inv = M.inverse(); 
-    cg(M, rows, cols, M_inv, Eigen::MatrixXf::Identity(rows, cols));
-    std::cout << "diff " << M_inv - M.inverse()<< std::endl;
-    Eigen::MatrixXf Z(brows, bcols); 
-
     residual =  b - mat * x;
-    Z = M_inv * residual; // Notice this is only good for jacobian can be further optimized
+    //Eigen::MatrixXf M_inv(rows, cols);
+    //M_inv = M.inverse();
+    Eigen::MatrixXf Z(brows, bcols);
+    Z.setZero();
+    cg(M, rows, cols, Z, residual);
+
+    //std::cout << Z - M_inv * residual << std::endl;
+    // Z = M_inv * residual; // Notice this is only good for jacobian can be further optimized 
+
     search_direction = Z;
     old_sqr_resid_norm = residual.transpose() * Z;
     int iter_count = 0;
@@ -125,7 +127,10 @@ void pcg(const Eigen::MatrixXf& mat, int rows, int cols, Eigen::MatrixXf& x, con
         }        
         x += search_direction * step_size;
         residual -= A_search_direction * step_size;
-        Z = M_inv * residual;
+        //Z = M_inv * residual;
+        Z.setZero();
+        cg(M, rows, cols, Z, residual);
+        //std::cout << Z - M_inv * residual << std::endl;
         new_sqr_resid_norm = residual.transpose() * Z;
         for (int j=0;j<bcols;j++) {
             for (int i=0;i<bcols;i++) {                
