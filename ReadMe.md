@@ -57,11 +57,33 @@ cmake --build build
 
 ```
 
-### Arm Neon
+### Solver
 
-Arm neon  intrinsi on Mac M1
+```
+cd solver
 
-There is a bug that this cannot be build with cmake.
+# build
+cmake -S src -B build
+cmake --build build
+
+# test_case
+# 1. simple guassion elimination solver (as same as middle school)
+test_simp
+
+# 2. LU factor, PLU factor, PLU linear equation solver 
+test_lu
+
+# 3. power method for eigen value, household process for simillar matrix, qr factor for eigen values
+test_eigen
+
+#4. jacobian iteration, guassion_seidel iteration, multi grid method, conjugate gradient
+test_iteration 32 1
+
+#5. conjugate gradient, biconjugate gradient, preconditioner(jacobian and Incomplete_Cholesky_factorization) conjugate gradient, GMRES, biconjugate gradient stablized
+test_cg 32 1
+
+```
+
 
 
 ### Legacy
