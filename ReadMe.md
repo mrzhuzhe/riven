@@ -57,7 +57,7 @@ cmake --build build
 
 ```
 
-### Solver
+### Linear equation Solver
 
 ```
 cd solver
@@ -76,10 +76,10 @@ test_lu
 # 3. power method for eigen value, household process for simillar matrix, qr factor for eigen values
 test_eigen
 
-#4. jacobian iteration, guassion_seidel iteration, multi grid method, conjugate gradient
+# 4. jacobian iteration, guassion_seidel iteration, multi grid method, conjugate gradient
 test_iteration 32 1
 
-#5. conjugate gradient, biconjugate gradient, preconditioner(jacobian and Incomplete_Cholesky_factorization) conjugate gradient, GMRES, biconjugate gradient stablized
+# 5. conjugate gradient, biconjugate gradient, preconditioner(jacobian and Incomplete_Cholesky_factorization) conjugate gradient, GMRES, biconjugate gradient stablized
 test_cg 32 1
 
 ```
