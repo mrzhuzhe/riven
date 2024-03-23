@@ -10,7 +10,7 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 8. lazy evaluate / cpp template guide ? https://github.com/matazure/mtensor
 9. LLM Megatron Oneflow lora
 10. stable diffusion
-11. physics meaning of fft / cufft / mklfft
+11. VLSI CAD Bookshelf
 13. ncnn / oneflow / taichi
 15. sagemath circultlab
 16. catmuli-clark
@@ -20,7 +20,7 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 1. gentoo tinocore
 3. shared memory mapping read
 4. EURO LLVM
-6. avx_e1 / avx_mic / avx_mic_31 differen between avx and core_avx2
+
 8. theoric mechanic statistical mechanic quantum mechanic electric mechanic LBM 
 9. wasm
 11. mkl cbwr 
@@ -40,3 +40,5 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 7. fast sweep method https://github.com/rgl-epfl/fastsweep
 8. mix precision hgemm solver
 9. qemu loongson risc-v
+10. avx_e1 / avx_mic / avx_mic_31 differen between avx and core_avx2
+11. fft physic meaning
