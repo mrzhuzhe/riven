@@ -1,8 +1,6 @@
 # Misc
 
 ## Labor 
-2. https://norasandler.com/2017/11/29/Write-a-Compiler.html
-https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 4. maxwell equation
 5. blender uv paint / animate
 6. cuda kernel input cannot be a struct , and what about output
@@ -20,7 +18,7 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 1. gentoo tinocore
 3. shared memory mapping read
 4. EURO LLVM
-
+5. yosys openroad 
 8. theoric mechanic statistical mechanic quantum mechanic electric mechanic LBM 
 9. wasm
 11. mkl cbwr 
@@ -42,3 +40,5 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 9. qemu loongson risc-v
 10. avx_e1 / avx_mic / avx_mic_31 differen between avx and core_avx2
 11. fft physic meaning
+12. https://norasandler.com/2017/11/29/Write-a-Compiler.html
+https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
