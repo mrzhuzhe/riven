@@ -17,6 +17,7 @@
 
 ## Thought
 1. gentoo tinocore
+2. reverse proxy k8s
 3. shared memory mapping read
 4. EURO LLVM
 5. yosys openroad 
