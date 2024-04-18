@@ -6,6 +6,7 @@
 3. tcp ip illustate 
 4. maxwell equation
 5. blender uv paint / animate
+6. bgp algorithem
 7. cgal normalize
 8. lazy evaluate / cpp template guide ? https://github.com/matazure/mtensor
 9. LLM Megatron Oneflow lora
