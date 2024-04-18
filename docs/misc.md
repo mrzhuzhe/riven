@@ -3,6 +3,7 @@
 ## Labor 
 1. Mosfet http://www.ime.cas.cn/icac/learning/learning_2/202203/t20220318_6400106.html
 2. pki auth
+3. tcp ip illustate 
 4. maxwell equation
 5. blender uv paint / animate
 7. cgal normalize
