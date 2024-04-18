@@ -5,7 +5,6 @@
 2. pki auth
 4. maxwell equation
 5. blender uv paint / animate
-6. cuda kernel input cannot be a struct , and what about output
 7. cgal normalize
 8. lazy evaluate / cpp template guide ? https://github.com/matazure/mtensor
 9. LLM Megatron Oneflow lora
@@ -45,4 +44,5 @@
 11. fft physic meaning
 12. https://norasandler.com/2017/11/29/Write-a-Compiler.html
 https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
-13. slurm job
+13. slurm job, ptr copy
+14. cuda kernel input cannot be a struct , and what about output
