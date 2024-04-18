@@ -3,7 +3,6 @@
 ## Labor 
 1. Mosfet http://www.ime.cas.cn/icac/learning/learning_2/202203/t20220318_6400106.html
 2. pki auth
-3. slurm job
 4. maxwell equation
 5. blender uv paint / animate
 6. cuda kernel input cannot be a struct , and what about output
@@ -46,3 +45,4 @@
 11. fft physic meaning
 12. https://norasandler.com/2017/11/29/Write-a-Compiler.html
 https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
+13. slurm job
