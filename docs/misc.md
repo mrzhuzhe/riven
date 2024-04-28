@@ -26,7 +26,7 @@
 9. wasm
 11. mkl cbwr 
 12. intel trust zone
-13. large scale spice simulate
+13. large scale spice simulate / gspice
 14. measurement theory / toppology material
 16. .so pass params cpp memory align cause params address interrupt
 
