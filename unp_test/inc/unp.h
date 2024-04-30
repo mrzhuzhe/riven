@@ -112,10 +112,12 @@
 #endif
 
 /* The structure returned by recvfrom_flags() */
-struct in_pktinfo {
-  struct in_addr	ipi_addr;	/* dst IPv4 address */
-  int				ipi_ifindex;/* received interface index */
-};
+//	/usr/include/x86_64-linux-gnu/bits/in.h:157:8: note: previous definition of ‘struct in_pktinfo’
+// struct in_pktinfo {
+//   struct in_addr	ipi_addr;	/* dst IPv4 address */
+//   int				ipi_ifindex;/* received interface index */
+// };
+
 /* $$.It in_pktinfo$$ */
 /* $$.Ib ipi_addr$$ */
 /* $$.Ib ipi_ifindex$$ */
