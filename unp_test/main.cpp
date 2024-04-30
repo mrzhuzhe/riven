@@ -1,6 +1,7 @@
 /*
     Todo
-    unp header 
+    1. gun auto config
+    2. unp header 
 */   
 #include <iostream>
 
