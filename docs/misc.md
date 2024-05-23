@@ -6,7 +6,6 @@
 3. tcp ip illustate 
 4. maxwell equation
 5. blender uv paint / animate
-6. bgp algorithem
 7. cgal normalize
 8. lazy evaluate / cpp template guide ? https://github.com/matazure/mtensor
 9. LLM Megatron Oneflow lora
@@ -27,7 +26,7 @@
 9. wasm
 11. mkl cbwr 
 12. intel trust zone
-13. large scale spice simulate
+13. large scale spice simulate / gspice
 14. measurement theory / toppology material
 16. .so pass params cpp memory align cause params address interrupt
 
@@ -48,4 +47,5 @@
 https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 13. slurm job, ptr copy
 14. cuda kernel input cannot be a struct , and what about output
-22. use log to address memory leak
+15. bgp algorithem
+16. use log to address memory leak
