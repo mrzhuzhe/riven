@@ -15,7 +15,7 @@
 13. ncnn / oneflow / taichi
 15. sagemath circultlab
 16. catmuli-clark
-22. use log to address memory leak
+17. vim copy paste
 
 ## Thought
 1. gentoo tinocore
@@ -48,3 +48,4 @@
 https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 13. slurm job, ptr copy
 14. cuda kernel input cannot be a struct , and what about output
+22. use log to address memory leak
