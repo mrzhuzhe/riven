@@ -13,8 +13,7 @@
 11. VLSI CAD Bookshelf
 13. ncnn / oneflow / taichi
 15. sagemath circultlab
-
-
+16. vim copy paste
 
 ## Thought
 1. gentoo tinocore
