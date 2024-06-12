@@ -13,7 +13,7 @@
 11. VLSI CAD Bookshelf
 13. ncnn / oneflow / taichi
 15. sagemath circultlab
-16. catmuli-clark
+
 
 
 ## Thought
@@ -49,3 +49,4 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 14. cuda kernel input cannot be a struct , and what about output
 15. bgp algorithem
 16. use log to address memory leak
+17. catmuli-clark B-spline nurms
