@@ -28,7 +28,8 @@
 13. large scale spice simulate / gspice
 14. measurement theory / toppology material
 16. .so pass params cpp memory align cause params address interrupt
-
+17. seperate compiling
+18. gpu caceheline prefetch
 
 # done 
 1. vtune
