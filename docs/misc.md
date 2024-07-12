@@ -27,9 +27,7 @@
 12. intel trust zone
 13. large scale spice simulate / gspice
 14. measurement theory / toppology material
-16. .so pass params cpp memory align cause params address interrupt
-17. seperate compiling
-18. gpu caceheline prefetch
+
 
 # done 
 1. vtune
@@ -50,3 +48,6 @@ https://www.ti.com/lit/ug/spru514y/spru514y.pdf?ts=1690030350601
 15. bgp algorithem
 16. use log to address memory leak
 17. catmuli-clark B-spline nurms
+18. .so pass params cpp memory align cause params address interrupt
+19. seperate compiling
+20. gpu caceheline prefetch

@@ -1,5 +1,5 @@
 # Cpp practice
-3. lsf sge
+
 4. tiger complier 
 5. cpu0
 
@@ -9,3 +9,4 @@
 3. sve2 and neon 
 4. perf vtune and so on
 5. thread santinzer / how to debug multi process
+6. lsf sge
