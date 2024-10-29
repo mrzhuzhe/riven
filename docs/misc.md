@@ -2,18 +2,14 @@
 
 ## Labor 
 1. Mosfet http://www.ime.cas.cn/icac/learning/learning_2/202203/t20220318_6400106.html
-2. pki auth
 3. tcp ip illustate 
 4. maxwell equation
-5. blender uv paint / animate
-7. cgal normalize
-8. lazy evaluate / cpp template guide ? https://github.com/matazure/mtensor
 9. LLM Megatron Oneflow lora
 10. stable diffusion
 11. VLSI CAD Bookshelf
 13. ncnn / oneflow / taichi
 15. sagemath circultlab
-16. vim copy paste
+
 
 ## Thought
 1. gentoo tinocore
